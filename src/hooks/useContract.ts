@@ -35,6 +35,8 @@ import {
   getSpyNFTRewardContract,
   getOldSpyNFTRewardContract,
   getNFTMarketplaceContract,
+  getBNBVaultContract,
+  getCompoundVaultContract,
 } from 'utils/contractHelpers'
 import { getMulticallAddress } from 'utils/addressHelpers'
 
@@ -210,6 +212,16 @@ export const useNftSaleContract = () => {
 export const usePancakeSquadContract = () => {
   const { library } = useActiveWeb3React()
   return useMemo(() => getPancakeSquadContract(library.getSigner()), [library])
+}
+
+export const useBNBVaultContract = (address: string) => {
+  const { library } = useActiveWeb3React()
+  return useMemo(() => getBNBVaultContract(address, library.getSigner()), [address, library])
+}
+
+export const useCompoundVaultContract = (address: string) => {
+  const { library } = useActiveWeb3React()
+  return useMemo(() => getCompoundVaultContract(address, library.getSigner()), [address, library])
 }
 
 export const useFarmAuctionContract = () => {

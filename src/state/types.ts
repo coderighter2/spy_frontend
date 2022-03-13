@@ -12,6 +12,8 @@ import {
   Team,
   TranslatableText,
   DeserializedFarmConfig,
+  SerializedVaultConfig,
+  DeserializedVaultConfig,
 } from 'config/constants/types'
 import { NftToken, State as NftMarketState } from './nftMarket/types'
 
@@ -23,6 +25,52 @@ export interface BigNumberToJson {
 }
 
 export type SerializedBigNumber = string
+
+interface SerializedVaultUserData {
+  tokenBalance: string
+  stakedBalance: string
+  earnings: string
+}
+
+export interface DeserializedVaultUserData {
+  tokenBalance: BigNumber
+  stakedBalance: BigNumber
+  earnings: BigNumber
+}
+
+export interface SerializedVault extends SerializedVaultConfig {
+  spyPerBlock?: SerializedBigNumber
+  userData?: SerializedVaultUserData
+  farm?: SerializedFarm
+  totalSupply?: SerializedBigNumber
+  totalPoolPendingRewards?: SerializedBigNumber
+  totalPoolAmount?: SerializedBigNumber
+  nearestCompoundingTime?: SerializedBigNumber
+  rewardForCompounder?: SerializedBigNumber
+}
+
+export interface DeserializedVault extends DeserializedVaultConfig {
+  spyPerBlock?: BigNumber
+  userData?: DeserializedVaultUserData
+  farm?: DeserializedFarm
+  totalSupply?: BigNumber
+  totalPoolPendingRewards?: BigNumber
+  totalPoolAmount?: BigNumber
+  nearestCompoundingTime?: BigNumber
+  rewardForCompounder?: BigNumber
+}
+
+export interface SerializedVaultsState {
+  data: SerializedVault[]
+  loadArchivedVaultsData: boolean
+  userDataLoaded: boolean
+}
+
+export interface DeserializedVaultsState {
+  data: DeserializedVault[]
+  loadArchivedVaultsData: boolean
+  userDataLoaded: boolean
+}
 
 interface SerializedFarmUserData {
   allowance: string
@@ -687,6 +735,7 @@ export interface State {
   achievements: AchievementState
   block: BlockState
   farms: SerializedFarmsState
+  vaults: SerializedVaultsState
   pools: PoolsState
   nft: SerializedNFTState
   predictions: PredictionsState
