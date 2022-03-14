@@ -1,12 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import vaultsConfig from 'config/constants/vaults'
 import {
-  fetchVaultUserAllowances,
   fetchVaultUserDatas,
-  fetchVaultUserEarnings,
-  fetchVaultUserInfos,
-  fetchVaultUserLPAllowances,
-  fetchVaultUserLPTokenBalances,
 } from './fetchVaultUser'
 import { SerializedVaultsState, SerializedVault } from '../types'
 import fetchVaults from './fetchVaults'
@@ -62,28 +57,6 @@ export const fetchVaultUserDataAsync = createAsyncThunk<VaultUserDataResponse[],
         pid: vaultsToFetch[index].pid
       }
     })
-    // console.log('here')
-    // const userVaultAllowances = await fetchVaultUserAllowances(account, vaultsConfig)
-    // console.log('herea')
-    // const userVaultLPAllowances = await fetchVaultUserLPAllowances(account, vaultsConfig)
-    // console.log('here1')
-    // const userVaultLPTokenBalances = await fetchVaultUserLPTokenBalances(account, vaultsToFetch)
-    // console.log('here2')
-    // const userInfos = await fetchVaultUserInfos(account, vaultsToFetch)
-    // console.log('here3')
-    // const userVaultEarnings = await fetchVaultUserEarnings(account, vaultsToFetch)
-    // console.log('here4')
-
-    // return userVaultLPTokenBalances.map((_, index) => {
-    //   return {
-    //     pid: vaultsToFetch[index].pid,
-    //     tokenAllowance: userVaultAllowances[index],
-    //     lpAllowance: userVaultLPAllowances[index],
-    //     lpTokenBalance: userVaultLPTokenBalances[index],
-    //     stakedBalance: userInfos[0][index],
-    //     earnings: userVaultEarnings[index],
-    //   }
-    // })
   },
 )
 

@@ -1,6 +1,5 @@
 import { useCallback } from 'react'
-import { ethers, Contract } from 'ethers'
-import { useMasterchef } from 'hooks/useContract'
+import { ethers } from 'ethers'
 import { useCallWithGasPrice } from 'hooks/useCallWithGasPrice'
 
 const useApproveVault = (vaultAddress: string) => {
