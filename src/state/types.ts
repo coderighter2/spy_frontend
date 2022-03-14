@@ -27,13 +27,19 @@ export interface BigNumberToJson {
 export type SerializedBigNumber = string
 
 interface SerializedVaultUserData {
-  tokenBalance: string
+  tokenAllowance: string
+  lpAllowance: string
+  lpTokenBalance: string
+  tokenBalanceInVault: string
   stakedBalance: string
   earnings: string
 }
 
 export interface DeserializedVaultUserData {
-  tokenBalance: BigNumber
+  tokenAllowance: BigNumber
+  lpAllowance: BigNumber
+  lpTokenBalance: BigNumber
+  tokenBalanceInVault: BigNumber
   stakedBalance: BigNumber
   earnings: BigNumber
 }

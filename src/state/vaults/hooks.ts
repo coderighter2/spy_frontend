@@ -13,7 +13,10 @@ import { State, SerializedVault, DeserializedVaultUserData, DeserializedVault, D
 
 const deserializeVaultUserData = (vault: SerializedVault): DeserializedVaultUserData => {
   return {
-    tokenBalance: vault.userData ? new BigNumber(vault.userData.tokenBalance) : BIG_ZERO,
+    tokenAllowance: vault.userData ? new BigNumber(vault.userData.tokenAllowance) : BIG_ZERO,
+    lpAllowance: vault.userData ? new BigNumber(vault.userData.lpAllowance) : BIG_ZERO,
+    lpTokenBalance: vault.userData ? new BigNumber(vault.userData.lpTokenBalance) : BIG_ZERO,
+    tokenBalanceInVault: vault.userData ? new BigNumber(vault.userData.tokenBalanceInVault) : BIG_ZERO,
     stakedBalance: vault.userData ? new BigNumber(vault.userData.stakedBalance) : BIG_ZERO,
     earnings: vault.userData ? new BigNumber(vault.userData.earnings) : BIG_ZERO,
   }
@@ -108,9 +111,12 @@ export const useVaultFromLpSymbol = (symbol: string): DeserializedVault => {
 
 export const useVaultUser = (pid): DeserializedVaultUserData => {
   const { userData } = useVaultFromPid(pid)
-  const { tokenBalance, stakedBalance, earnings } = userData
+  const { tokenAllowance, lpAllowance, lpTokenBalance, tokenBalanceInVault, stakedBalance, earnings } = userData
   return {
-    tokenBalance,
+    tokenAllowance,
+    lpAllowance,
+    lpTokenBalance,
+    tokenBalanceInVault,
     stakedBalance,
     earnings
   }

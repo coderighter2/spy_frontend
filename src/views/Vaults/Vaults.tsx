@@ -12,6 +12,7 @@ import { useTranslation } from 'contexts/Localization'
 import Loading from 'components/Loading'
 import { BIG_ZERO } from 'utils/bigNumber'
 import { getFarmApr } from 'utils/apr'
+import { getBalanceAmount } from 'utils/formatBalance'
 import { usePollVaultsWithUserData, useVaults } from 'state/vaults/hooks'
 import VaultCard, { VaultWithStakedValue } from './components/VaultCard/VaultCard'
 
@@ -121,7 +122,7 @@ const Vaults: React.FC = () => {
           return vault
         }
         const lpPrice = getLpTokenPrice(farm)
-        const totalLiquidity = vault.totalSupply ? vault.totalSupply.multipliedBy(lpPrice) : BIG_ZERO
+        const totalLiquidity = vault.totalSupply ? getBalanceAmount(vault.totalSupply).multipliedBy(lpPrice) : BIG_ZERO
         const { cakeRewardsApr, lpRewardsApr } = getFarmApr(new BigNumber(farm.poolWeight).multipliedBy(vault.totalSupply).dividedBy(farm.lpTotalSupply), farm.spyPerBlock, cakePrice, totalLiquidity, farm.lpAddresses[parseInt(process.env.REACT_APP_CHAIN_ID, 10)])
 
         return {...vault, farm, apr: cakeRewardsApr, lpRewardsApr, liquidity: totalLiquidity}

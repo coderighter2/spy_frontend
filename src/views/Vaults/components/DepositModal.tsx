@@ -1,57 +1,52 @@
 import BigNumber from 'bignumber.js'
 import React, { useCallback, useMemo, useState } from 'react'
 import styled from 'styled-components'
-import { Flex, Text, Button, Modal, LinkExternal, CalculateIcon, IconButton } from '@pancakeswap/uikit'
+import { Flex, Text, Button, Modal, LinkExternal, IconButton, ModalHeader, ModalTitle, Heading, CloseIcon, ModalContainer, ModalBody, WarningIcon, Checkbox } from '@pancakeswap/uikit'
 import { ModalActions, ModalInput } from 'components/Modal'
-import RoiCalculatorModal from 'components/RoiCalculatorModal'
 import { useTranslation } from 'contexts/Localization'
-import { getFullDisplayBalance, formatNumber } from 'utils/formatBalance'
+import { getFullDisplayBalance } from 'utils/formatBalance'
 import useToast from 'hooks/useToast'
-import { getInterestBreakdown } from 'utils/compoundApyHelpers'
 
-const AnnualRoiContainer = styled(Flex)`
-  cursor: pointer;
-`
-
-const AnnualRoiDisplay = styled(Text)`
-  width: 72px;
-  max-width: 72px;
-  overflow: hidden;
-  text-align: right;
-  text-overflow: ellipsis;
+const StyledCheckbox = styled(Checkbox)`
+  background: transparent;
+  width: 20px;
+  height: 20px;
+  border: 1px solid ${({ theme }) => theme.colors.text};
+  border-radius: 4px;
+  ::after {
+  }
+  &:checked {
+    border: 1px solid ${({ theme }) => theme.colors.text};
+    background: transparent;
+    ::after {
+      border-color: ${({ theme }) => theme.colors.text};
+    }
+  }
+  &:focus:not(:disabled), &:hover:not(:disabled):not(:checked) {
+      box-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0.1), 0px 0px 0px 2px rgba(0, 0, 0, 0.1);
+  }
 `
 
 interface DepositModalProps {
   max: BigNumber
-  stakedLPBalance: BigNumber
-  multiplier?: string
-  lpLabel?: string
   onConfirm: (amount: string) => void
   onDismiss?: () => void
   tokenName?: string
-  apr?: number
-  displayApr?: string
   addTokenUrl?: string
-  cakePrice?: BigNumber
 }
 
 const DepositModal: React.FC<DepositModalProps> = ({
   max,
-  stakedLPBalance,
   onConfirm,
   onDismiss,
   tokenName = '',
-  multiplier,
-  displayApr,
-  lpLabel,
-  apr,
   addTokenUrl,
-  cakePrice,
 }) => {
   const [val, setVal] = useState('')
   const { toastSuccess, toastError } = useToast()
   const [pendingTx, setPendingTx] = useState(false)
-  const [showRoiCalculator, setShowRoiCalculator] = useState(false)
+  const [agreed, setAgreed] = useState(false)
+  const [checked, setChecked] = useState(false)
   const { t } = useTranslation()
   const fullBalance = useMemo(() => {
     return getFullDisplayBalance(max)
@@ -73,24 +68,48 @@ const DepositModal: React.FC<DepositModalProps> = ({
     setVal(fullBalance)
   }, [fullBalance, setVal])
 
-  // if (showRoiCalculator) {
-  //   return (
-  //     <RoiCalculatorModal
-  //       linkLabel={t('Get %symbol%', { symbol: lpLabel })}
-  //       stakingTokenBalance={stakedBalance.plus(max)}
-  //       stakingTokenSymbol={tokenName}
-  //       stakingTokenPrice={1}
-  //       earningTokenPrice={cakePrice.toNumber()}
-  //       apr={apr}
-  //       multiplier={multiplier}
-  //       displayApr={displayApr}
-  //       linkHref={addTokenUrl}
-  //       isFarm
-  //       initialValue={val}
-  //       onBack={() => setShowRoiCalculator(false)}
-  //     />
-  //   )
-  // }
+  if (!agreed) {
+    return (
+      <ModalContainer minWidth="300px">
+        <ModalHeader>
+          <ModalTitle  mt="8px">
+            <WarningIcon width="32px" height="32px" mr="12px" color="warning"/>
+            <Heading color="warning">{t('Risk Warning')}</Heading>
+          </ModalTitle>
+          <IconButton variant="text" color="primary" onClick={onDismiss}>
+            <CloseIcon width="20px" color="text" />
+          </IconButton>
+        </ModalHeader>
+        <ModalBody p="24px 24px 12px" maxWidth="400px" width="100%">
+          <Flex flexDirection="column" >
+            <Text textAlign="justify">
+              {t('Staking BUSD into this vault, you will be a liquidity provider, and this is not risk-fee. When the market price of tokens fluctuates greatly, the staking amount may be lower than the staked amount, which is called Impermanent Loss.')}
+            </Text>
+            <Text textAlign="justify" mt="12px">
+              {t('This vault is still in beta. Please use at your own risk.')}
+            </Text>
+            <Flex mt="12px">
+              <StyledCheckbox onChange={() => setChecked(!checked)} checked={checked}/>
+              <Flex flex="1">
+                <Text>
+                  {t('I confirm that I have read, understand, and agree all the risks.')}
+                </Text>
+              </Flex>
+            </Flex>
+          </Flex>
+          <ModalActions>
+            <Button variant="secondary" onClick={onDismiss} width="100%" disabled={pendingTx}>
+              {t('Cancel')}
+            </Button>
+            <Button width="100%" disabled={!checked} onClick={() => setAgreed(true)}>
+              {t('Confirm')}
+            </Button>
+          </ModalActions>
+        </ModalBody>
+
+      </ModalContainer>
+    )
+  }
 
   return (
     <Modal title={t('Stake %symbol%', {symbol: tokenName})} onDismiss={onDismiss}>

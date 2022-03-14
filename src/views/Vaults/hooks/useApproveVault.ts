@@ -3,16 +3,15 @@ import { ethers, Contract } from 'ethers'
 import { useMasterchef } from 'hooks/useContract'
 import { useCallWithGasPrice } from 'hooks/useCallWithGasPrice'
 
-const useApproveFarm = (lpContract: Contract) => {
-  const masterChefContract = useMasterchef()
+const useApproveVault = (vaultAddress: string) => {
   const { callWithGasPrice } = useCallWithGasPrice()
-  const handleApprove = useCallback(async () => {
-    const tx = await callWithGasPrice(lpContract, 'approve', [masterChefContract.address, ethers.constants.MaxUint256])
+  const handleApprove = useCallback(async (tokenContract) => {
+    const tx = await callWithGasPrice(tokenContract, 'approve', [vaultAddress, ethers.constants.MaxUint256])
     const receipt = await tx.wait()
     return receipt.status
-  }, [lpContract, masterChefContract, callWithGasPrice])
+  }, [vaultAddress, callWithGasPrice])
 
   return { onApprove: handleApprove }
 }
 
-export default useApproveFarm
+export default useApproveVault

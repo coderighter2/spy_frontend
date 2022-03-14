@@ -23,6 +23,21 @@ export const stakeVault = async (vaultContract, amount, userRefferer) => {
   return receipt.status
 }
 
+export const stakeLPVault = async (vaultContract, lpAmount, userRefferer) => {
+  const gasPrice = getGasPrice()
+
+  let referrer = userRefferer
+  if (!userRefferer || !userRefferer.startsWith('0x')) {
+    referrer = AddressZero
+  }
+
+  const tx = await callWithEstimateGas(vaultContract, 'depositLP', [lpAmount, referrer], {
+    gasPrice,
+  })
+  const receipt = await tx.wait()
+  return receipt.status
+}
+
 export const stakeBNBVault = async (vaultContract, amount, userRefferer) => {
   const gasPrice = getGasPrice()
 
@@ -38,11 +53,35 @@ export const stakeBNBVault = async (vaultContract, amount, userRefferer) => {
   return receipt.status
 }
 
+export const stakeLPBNBVault = async (vaultContract, lpAmount, userRefferer) => {
+  const gasPrice = getGasPrice()
+
+  let referrer = userRefferer
+  if (!userRefferer || !userRefferer.startsWith('0x')) {
+    referrer = AddressZero
+  }
+
+  const tx = await callWithEstimateGas(vaultContract, 'depositLP', [lpAmount, referrer], {
+    gasPrice,
+  })
+  const receipt = await tx.wait()
+  return receipt.status
+}
 
 export const unstakeVault = async (vaultContract, amount, receiveToken) => {
   const gasPrice = getGasPrice()
 
   const tx = await callWithEstimateGas(vaultContract, 'withdraw', [amount, receiveToken], {
+    gasPrice,
+  })
+  const receipt = await tx.wait()
+  return receipt.status
+}
+
+export const unstakeLPVault = async (vaultContract, lpAmount) => {
+  const gasPrice = getGasPrice()
+
+  const tx = await callWithEstimateGas(vaultContract, 'withdrawLP', [lpAmount], {
     gasPrice,
   })
   const receipt = await tx.wait()

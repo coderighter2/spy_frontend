@@ -1,23 +1,21 @@
-import React, { useState, useCallback } from 'react'
+import React, { useState, useCallback, useMemo } from 'react'
 import styled from 'styled-components'
 import BigNumber from 'bignumber.js'
 import { Button, Flex, Text } from '@pancakeswap/uikit'
-import { ETHER, JSBI, TokenAmount } from '@pancakeswap/sdk'
 import { getAddress } from 'utils/addressHelpers'
-import tokens from 'config/constants/tokens'
 import { useAppDispatch } from 'state'
 import { DeserializedVault } from 'state/types'
-import { useCurrencyBalances } from 'state/wallet/hooks'
 import { useTranslation } from 'contexts/Localization'
 import useToast from 'hooks/useToast'
 import { useERC20 } from 'hooks/useContract'
-import { ApprovalState, useApproveCallback } from 'hooks/useApproveCallback'
+import { fetchVaultUserDataAsync } from 'state/vaults'
 import useTokenBalance, { useGetBnbBalance } from 'hooks/useTokenBalance'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import Dots from 'components/Loader/Dots'
-import { BIG_TEN } from 'utils/bigNumber'
+import { BIG_ZERO } from 'utils/bigNumber'
 import StakeAction from './StakeAction'
 import HarvestAction from './HarvestAction'
+import useApproveVault from '../../hooks/useApproveVault'
 
 const Action = styled.div`
   padding-top: 16px;
@@ -37,47 +35,79 @@ interface VaultCardActionsProps {
 const CardActions: React.FC<VaultCardActionsProps> = ({ vault, account, addTokenUrl, cakePrice, lpLabel }) => {
   const { t } = useTranslation()
   const { toastError } = useToast()
-  const { pid, lpAddresses } = vault
+  const { pid } = vault
   const { balance: tokenBalance} = useTokenBalance(vault.token.address)
   const { balance: ethBalance } = useGetBnbBalance()
-  const { tokenBalance : lpBalance, stakedBalance: stakedLPBalance, earnings } = vault.userData || {}
-  const lpAddress = getAddress(lpAddresses)
+  const [requestedApproval, setRequestedApproval] = useState(false)
+  
+  const { tokenAllowance,  tokenBalanceInVault, stakedBalance: stakedLPBalance, earnings } = vault.userData || {}
   const contractAddress = getAddress(vault.contractAddresses)
-  const [spyApproval, spyApproveCallback] = useApproveCallback(new TokenAmount(tokens.spy, JSBI.BigInt(BIG_TEN.pow(24))), contractAddress)
-  const [tokenApproval, tokenApproveCallback] = useApproveCallback(!vault.isETH && vault.token ? new TokenAmount(vault.token, JSBI.BigInt(BIG_TEN.pow(24))) : undefined, contractAddress)
-  const isApproved = account && (vault.isETH || tokenApproval === ApprovalState.APPROVED)
+  const isApproved = account && (vault.isETH || (tokenAllowance && tokenAllowance.isGreaterThan(0)))
   const dispatch = useAppDispatch()
 
-  const lpContract = useERC20(lpAddress)
+  const tokenContract = useERC20(vault.token.address)
+
+  const spyAmountInLP = useMemo(() => {
+    if (!vault.farm) {
+      return BIG_ZERO
+    }
+    return vault.farm.token.symbol === 'SPY' ?  vault.farm.tokenAmountTotal : vault.farm.tokenAmountTotal.multipliedBy(vault.farm.tokenPriceVsQuote)
+  }, [vault])
+
+  const tokenAmountInLP = useMemo(() => {
+    if (!vault.farm) {
+      return BIG_ZERO
+    }
+    return vault.farm.token.symbol === 'SPY' ?  vault.farm.tokenAmountTotal.multipliedBy(vault.farm.tokenPriceVsQuote) : vault.farm.tokenAmountTotal
+  }, [vault])
+
+  const lpTotalSupply = useMemo(() => {
+    return vault.farm ? vault.farm.lpTotalSupply : BIG_ZERO
+  }, [vault])
+
+  const { onApprove: onApproveToken } = useApproveVault(getAddress(vault.contractAddresses))
+
+  const handleApproveToken = useCallback(async () => {
+    try {
+      setRequestedApproval(true)
+      await onApproveToken(tokenContract)
+      dispatch(fetchVaultUserDataAsync({ account, pids: [pid] }))
+    } catch (e) {
+      toastError(t('Error'), t('Please try again. Confirm the transaction and make sure you are paying enough gas!'))
+      console.error(e)
+    } finally {
+      setRequestedApproval(false)
+    }
+  }, [onApproveToken, dispatch, tokenContract, account, pid, t, toastError])
+
 
   const renderApprovalOrStakeButton = () => {
     return isApproved ? (
       <StakeAction
+        spyAmountInLP={spyAmountInLP}
+        tokenAmountInLP={tokenAmountInLP}
+        lpTotalSupply={lpTotalSupply}
         stakedLPBalance={stakedLPBalance}
         token={vault.token}
         tokenBalance={vault.isETH ? new BigNumber(ethBalance.toHexString()) : tokenBalance}
+        tokenBalanceInVault={tokenBalanceInVault}
         tokenName={vault.symbol}
         lpTokenName={vault.lpSymbol}
+        lpAddress={getAddress(vault.lpAddresses)}
         pid={pid}
-        apr={vault.apr}
-        lpLabel={lpLabel}
-        cakePrice={cakePrice}
         addTokenUrl={addTokenUrl}
         contractAddress={contractAddress}
         isETH={vault.isETH}
       />
     ) : (
       <>
-      {/* {spyApproval !== ApprovalState.APPROVED && (
-        <Button mt="8px" width="100%" disabled={spyApproval === ApprovalState.PENDING} onClick={spyApproveCallback}>
-          {spyApproval === ApprovalState.PENDING ? (<Dots>{t('Approving')}</Dots>) : t('Approve SPY')}
-        </Button>
-      )} */}
-      {!vault.isETH && tokenApproval !== ApprovalState.APPROVED && (
-      <Button mt="8px" width="100%" disabled={tokenApproval === ApprovalState.PENDING} onClick={tokenApproveCallback}>
-        {spyApproval === ApprovalState.PENDING ? (<Dots>{t('Approving')}</Dots>) : t('Approve %symbol%', {symbol: vault.token.symbol})}
-      </Button>
-      )}
+      {
+        !vault.isETH && (
+          <Button mt="8px" width="100%" disabled={requestedApproval} onClick={handleApproveToken}>
+            {requestedApproval ? (<Dots>{t('Approving')}</Dots>) : t('Approve %symbol%', {symbol: vault.token.symbol})}
+          </Button>
+        )
+      }
       </>
     )
   }

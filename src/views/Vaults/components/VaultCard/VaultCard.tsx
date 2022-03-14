@@ -64,7 +64,6 @@ const VaultCard: React.FC<VaultCardProps> = ({ vault, displayApr, cakePrice, acc
     const addLiquidityUrl = `${BASE_ADD_LIQUIDITY_URL}/${liquidityUrlPathParts}`
     const addTokenUrl = `/swap?outputCurrency=${vault.isETH ? 'BNB' : vault.token.address}`
     const lpAddress = getAddress(vault.lpAddresses)
-    const apy =    Math.round((getApy(vault.apr)) * 100)/100
 
     return (
         <StyledCard>
@@ -116,10 +115,13 @@ const VaultCard: React.FC<VaultCardProps> = ({ vault, displayApr, cakePrice, acc
                 {showExpandableSection && (
                     <DetailsSection
                         bscScanAddress={getBscScanLink(lpAddress, 'address')}
-                        infoAddress={`/info/pool/${lpAddress}`}
                         totalValueFormatted={totalValueFormatted}
                         lpLabel={lpLabel}
                         addLiquidityUrl={addLiquidityUrl}
+                        contractAddress={getAddress(vault.contractAddresses)}
+                        lpAddress={getAddress(vault.lpAddresses)}
+                        pid={vault.pid}
+                        account={account}
                     />
                 )}
             </ExpandingWrapper>

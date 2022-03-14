@@ -1,9 +1,12 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import vaultsConfig from 'config/constants/vaults'
 import {
+  fetchVaultUserAllowances,
+  fetchVaultUserDatas,
   fetchVaultUserEarnings,
   fetchVaultUserInfos,
-  fetchVaultUserTokenBalances,
+  fetchVaultUserLPAllowances,
+  fetchVaultUserLPTokenBalances,
 } from './fetchVaultUser'
 import { SerializedVaultsState, SerializedVault } from '../types'
 import fetchVaults from './fetchVaults'
@@ -11,7 +14,10 @@ import fetchVaults from './fetchVaults'
 const noAccountVaultsConfig = vaultsConfig.map((vault) => ({
   ...vault,
   userData: {
-    tokenBalance: '0',
+    tokenAllowance: '0',
+    lpAllowance: '0',
+    lpTokenBalance: '0',
+    tokenBalanceInVault: '0',
     stakedBalance: '0',
     earnings: '0',
   },
@@ -37,7 +43,10 @@ export const fetchVaultsPublicDataAsync = createAsyncThunk<SerializedVault[], nu
 
 interface VaultUserDataResponse {
   pid: number
-  tokenBalance: string
+  tokenAllowance: string
+  lpAllowance: string
+  lpTokenBalance: string
+  tokenBalanceInVault: string
   stakedBalance: string
   earnings: string
 }
@@ -46,18 +55,35 @@ export const fetchVaultUserDataAsync = createAsyncThunk<VaultUserDataResponse[],
   'vaults/fetchVaultUserDataAsync',
   async ({ account, pids }) => {
     const vaultsToFetch = vaultsConfig.filter((vaultConfig) => pids.includes(vaultConfig.pid))
-    const userVaultTokenBalances = await fetchVaultUserTokenBalances(account, vaultsToFetch)
-    const userInfos = await fetchVaultUserInfos(account, vaultsToFetch)
-    const userVaultEarnings = await fetchVaultUserEarnings(account, vaultsToFetch)
-
-    return userVaultTokenBalances.map((_, index) => {
+    const datas = await fetchVaultUserDatas(account, vaultsToFetch)
+    return datas.map((data, index) => {
       return {
-        pid: vaultsToFetch[index].pid,
-        tokenBalance: userVaultTokenBalances[index],
-        stakedBalance: userInfos[0][index],
-        earnings: userVaultEarnings[index],
+        ...data,
+        pid: vaultsToFetch[index].pid
       }
     })
+    // console.log('here')
+    // const userVaultAllowances = await fetchVaultUserAllowances(account, vaultsConfig)
+    // console.log('herea')
+    // const userVaultLPAllowances = await fetchVaultUserLPAllowances(account, vaultsConfig)
+    // console.log('here1')
+    // const userVaultLPTokenBalances = await fetchVaultUserLPTokenBalances(account, vaultsToFetch)
+    // console.log('here2')
+    // const userInfos = await fetchVaultUserInfos(account, vaultsToFetch)
+    // console.log('here3')
+    // const userVaultEarnings = await fetchVaultUserEarnings(account, vaultsToFetch)
+    // console.log('here4')
+
+    // return userVaultLPTokenBalances.map((_, index) => {
+    //   return {
+    //     pid: vaultsToFetch[index].pid,
+    //     tokenAllowance: userVaultAllowances[index],
+    //     lpAllowance: userVaultLPAllowances[index],
+    //     lpTokenBalance: userVaultLPTokenBalances[index],
+    //     stakedBalance: userInfos[0][index],
+    //     earnings: userVaultEarnings[index],
+    //   }
+    // })
   },
 )
 
@@ -73,7 +99,6 @@ export const vaultsSlice = createSlice({
   extraReducers: (builder) => {
     // Update vaults with live data
     builder.addCase(fetchVaultsPublicDataAsync.fulfilled, (state, action) => {
-      console.log('vaults', action.payload)
       state.data = state.data.map((vault) => {
         const liveVaultData = action.payload.find((vaultData) => vaultData.pid === vault.pid)
         return { ...vault, ...liveVaultData }

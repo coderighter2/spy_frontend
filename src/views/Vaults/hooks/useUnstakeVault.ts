@@ -1,5 +1,5 @@
 import { useCallback } from 'react'
-import { unstakeVault } from 'utils/calls'
+import { unstakeVault, unstakeLPVault } from 'utils/calls'
 import { useBNBVaultContract, useCompoundVaultContract } from 'hooks/useContract'
 
 const useUnstakeVault = (contractAddress, isETH) => {
@@ -13,7 +13,14 @@ const useUnstakeVault = (contractAddress, isETH) => {
     [bnbVault, compoundVault, isETH],
   )
 
-  return { onUnstake: handleUnstake }
+  const handleUnstakeLP = useCallback(
+    async (lpAmount: string) => {
+      await unstakeLPVault(isETH ? bnbVault : compoundVault, lpAmount)
+    },
+    [bnbVault, compoundVault, isETH],
+  )
+
+  return { onUnstake: handleUnstake, onUnstakeLP: handleUnstakeLP }
 }
 
 export default useUnstakeVault
