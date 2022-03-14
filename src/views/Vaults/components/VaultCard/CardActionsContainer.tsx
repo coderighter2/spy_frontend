@@ -122,7 +122,13 @@ const CardActions: React.FC<VaultCardActionsProps> = ({ vault, account, addToken
           {t('Earned')}
         </Text>
       </Flex>
-      <HarvestAction earnings={new BigNumber(earnings)} pid={pid} contractAddress={contractAddress} isETH={vault.isETH}/>
+      <HarvestAction
+        token={vault.token}
+        earnings={new BigNumber(earnings)} 
+        pid={pid} 
+        contractAddress={contractAddress} 
+        isETH={vault.isETH}
+      />
       <Flex>
         <Text bold textTransform="uppercase" color="secondary" fontSize="12px" pr="4px">
           {vault.symbol}

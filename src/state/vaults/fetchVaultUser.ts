@@ -33,7 +33,7 @@ export const fetchVaultUserDatas = async (account: string, vaultsToFetch: Serial
     })
     accum.push({
       address: contractAddress,
-      name: 'pendingEarned',
+      name: 'earned',
       params: [account],
     })
     return accum

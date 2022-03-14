@@ -23,7 +23,8 @@ export interface VaultWithStakedValue extends DeserializedVault {
 }
 
 const StyledCard = styled(Card)`
-    align-self: baseline;
+    width: 100%;
+    max-width: 320px;
 `
 
 const VaultCardInnerContainer = styled(Flex)`

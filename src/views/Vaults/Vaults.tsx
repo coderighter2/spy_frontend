@@ -15,78 +15,10 @@ import { getFarmApr } from 'utils/apr'
 import { getBalanceAmount } from 'utils/formatBalance'
 import { usePollVaultsWithUserData, useVaults } from 'state/vaults/hooks'
 import VaultCard, { VaultWithStakedValue } from './components/VaultCard/VaultCard'
+import VaultBountyCard from './components/VaultBountyCard'
 
-const ControlContainer = styled.div`
-  display: flex;
-  width: 100%;
-  align-items: center;
-  position: relative;
-
-  justify-content: space-between;
-  flex-direction: column;
-  margin-bottom: 32px;
-
-  ${({ theme }) => theme.mediaQueries.sm} {
-    flex-direction: row;
-    flex-wrap: wrap;
-    padding: 16px 32px;
-    margin-bottom: 0;
-  }
-`
-
-const ToggleWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  margin-left: 10px;
-
-  ${Text} {
-    margin-left: 8px;
-  }
-`
-
-const LabelWrapper = styled.div`
-  > ${Text} {
-    font-size: 12px;
-  }
-`
-
-const FilterContainer = styled.div`
-  display: flex;
-  align-items: center;
-  width: 100%;
-  padding: 8px 0px;
-
-  ${({ theme }) => theme.mediaQueries.sm} {
-    width: auto;
-    padding: 0;
-  }
-`
-
-const ViewControls = styled.div`
-  flex-wrap: wrap;
-  justify-content: space-between;
-  display: flex;
-  align-items: center;
-  width: 100%;
-
-  > div {
-    padding: 8px 0px;
-  }
-
-  ${({ theme }) => theme.mediaQueries.sm} {
-    justify-content: flex-start;
-    width: auto;
-
-    > div {
-      padding: 0;
-    }
-  }
-`
-
-const StyledImage = styled(Image)`
-  margin-left: auto;
-  margin-right: auto;
-  margin-top: 58px;
+const StyledWrapper = styled(Flex).attrs({flexDirection:"column"})`
+  align-self: baseline;
 `
 
 const getDisplayApr = (cakeRewardsApr?: number, lpRewardsApr?: number) => {
@@ -140,13 +72,19 @@ const Vaults: React.FC = () => {
     return (
       <FlexLayout>
         {vaultsToDisplay.map((vault) => (
-          <VaultCard
-            key={vault.pid}
-            vault={vault}
-            displayApr={getDisplayApr(vault.apr, vault.lpRewardsApr)}
-            cakePrice={cakePrice}
-            account={account}
-          />
+          <StyledWrapper flexDirection="column" alignItems="center"
+          key={vault.pid}>
+            <VaultBountyCard 
+              vault={vault}
+              cakePrice={cakePrice}
+            />
+            <VaultCard
+              vault={vault}
+              displayApr={getDisplayApr(vault.apr, vault.lpRewardsApr)}
+              cakePrice={cakePrice}
+              account={account}
+            />
+          </StyledWrapper>
         ))}
       </FlexLayout>
     )
