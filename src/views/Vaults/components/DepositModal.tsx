@@ -84,10 +84,10 @@ const DepositModal: React.FC<DepositModalProps> = ({
         <ModalBody p="24px 24px 12px" maxWidth="400px" width="100%">
           <Flex flexDirection="column" >
             <Text textAlign="justify">
-              {t('Staking %symbol% into this vault, you will be a liquidity provider, and this is not risk-fee. When the market price of tokens fluctuates greatly, the staking amount may be lower than the staked amount, which is called Impermanent Loss.', {symbol: tokenName})}
+              {t('Staking %symbol% into this pool, you will be a liquidity provider, and this is not risk-fee. When the market price of tokens fluctuates greatly, the staking amount may be lower than the staked amount, which is called Impermanent Loss.', {symbol: tokenName})}
             </Text>
             <Text textAlign="justify" mt="12px">
-              {t('This vault is still in beta. Please use at your own risk.')}
+              {t('This pool is still in beta. Please use at your own risk.')}
             </Text>
             <Flex mt="12px">
               <StyledCheckbox onChange={() => setChecked(!checked)} checked={checked}/>

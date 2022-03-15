@@ -116,10 +116,10 @@ const Vaults: React.FC = () => {
           <Flex justifyContent="space-between" flexDirection={['column', null, null, 'row']}>
             <Flex flex="1" flexDirection="column" mr={['8px', 0]}>
               <Heading scale="xl" color="secondary" mb="12px">
-                {t('Vaults')}
+                {t('The Auto')}
               </Heading>
               <Text color="text">
-                {t('Stake Tokens to earn with Automatic Compounding. Users can stake one Token with other users to earn POSI. Refer your friends to earn 5% on their extra rewards.')}
+                {t('Stake Tokens to earn with Automatic Compounding. Users can stake one Token with other users to earn SPY. Refer your friends to earn 5% on their extra rewards.')}
               </Text>
             </Flex>
             <Flex flex="1" height="fit-content" justifyContent={["center", null, null, "flex-end"]} alignItems="center" mt={['24px', null, '0']}>

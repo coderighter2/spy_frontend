@@ -87,7 +87,7 @@ const DetailsSection: React.FC<ExpandableSectionProps> = ({
         {totalValueFormatted ? <Text>{totalValueFormatted}</Text> : <Skeleton width={75} height={25} />}
       </Flex>
       <LinkWrapper onClick={() => onPresentDepositLP()}>
-        {t('Migrate %symbol% to this vault', {symbol: lpLabel})}
+        {t('Migrate %symbol% to this pool', {symbol: lpLabel})}
       </LinkWrapper>
       <StyledLinkExternal href={addLiquidityUrl}>{t('Get %symbol%', { symbol: lpLabel })}</StyledLinkExternal>
       <StyledLinkExternal href={bscScanAddress}>{t('View Contract')}</StyledLinkExternal>
