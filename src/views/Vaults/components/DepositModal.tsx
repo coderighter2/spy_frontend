@@ -6,6 +6,7 @@ import { ModalActions, ModalInput } from 'components/Modal'
 import { useTranslation } from 'contexts/Localization'
 import { getFullDisplayBalance } from 'utils/formatBalance'
 import useToast from 'hooks/useToast'
+import Dots from 'components/Loader/Dots'
 
 const StyledCheckbox = styled(Checkbox)`
   background: transparent;
@@ -148,7 +149,7 @@ const DepositModal: React.FC<DepositModalProps> = ({
             }
           }}
         >
-          {pendingTx ? t('Confirming') : t('Confirm')}
+          {pendingTx ? (<Dots>{t('Confirming')}</Dots>) : t('Confirm')}
         </Button>
       </ModalActions>
       <LinkExternal href={addTokenUrl} style={{ alignSelf: 'center' }}>

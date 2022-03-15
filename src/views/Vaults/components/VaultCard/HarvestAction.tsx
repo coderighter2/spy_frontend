@@ -18,14 +18,13 @@ import HarvestModal from '../HarvestModal'
 
 interface VaultCardActionsProps {
   token?: Token
-  pendingEarnings?: BigNumber
   earnings?: BigNumber
   contractAddress: string
   isETH: boolean
   pid?: number
 }
 
-const HarvestAction: React.FC<VaultCardActionsProps> = ({ token, pendingEarnings, earnings, pid, contractAddress, isETH}) => {
+const HarvestAction: React.FC<VaultCardActionsProps> = ({ token, earnings, pid, contractAddress, isETH}) => {
   const { account } = useWeb3React()
   const { t } = useTranslation()
   const { onReward } = useHarvestVault(contractAddress, isETH)
@@ -33,11 +32,9 @@ const HarvestAction: React.FC<VaultCardActionsProps> = ({ token, pendingEarnings
   const tokenPrice = useBUSDPrice(token)
   const dispatch = useAppDispatch()
   const rawEarningsBalanceInSpy = account ? getBalanceAmount(earnings, tokens.spy.decimals) : BIG_ZERO
-  const rawPendingEarningsBalanceInSpy = account ? getBalanceAmount(pendingEarnings, tokens.spy.decimals) : BIG_ZERO
   const earningsInToken = rawEarningsBalanceInSpy && tokenPrice ? rawEarningsBalanceInSpy.multipliedBy(cakePrice).dividedBy(new BigNumber(tokenPrice.toFixed())).multipliedBy(BIG_TEN.pow(token.decimals)) : BIG_ZERO
-  const pendingEarningsInToken = rawPendingEarningsBalanceInSpy && tokenPrice ? rawPendingEarningsBalanceInSpy.multipliedBy(cakePrice).dividedBy(new BigNumber(tokenPrice.toFixed())).multipliedBy(BIG_TEN.pow(token.decimals)) : BIG_ZERO
-  const pendingEarningsBusd = rawPendingEarningsBalanceInSpy ? rawPendingEarningsBalanceInSpy.multipliedBy(cakePrice).toNumber() : 0
-  const displayPendingEarnings = getBalanceAmount(pendingEarningsInToken, token.decimals).toFixed(3)
+  const earningsBusd = rawEarningsBalanceInSpy ? rawEarningsBalanceInSpy.multipliedBy(cakePrice).toNumber() : 0
+  const displayEarnings = getBalanceAmount(earningsInToken, token.decimals).toFixed(3)
 
   const handleHarvest = useCallback(async(receiveToken: boolean) => {
     await onReward(receiveToken)
@@ -56,9 +53,9 @@ const HarvestAction: React.FC<VaultCardActionsProps> = ({ token, pendingEarnings
   return (
     <Flex mb="8px" justifyContent="space-between" alignItems="center">
       <Flex flexDirection="column" alignItems="flex-start">
-        <Heading color={rawPendingEarningsBalanceInSpy.eq(0) ? 'textDisabled' : 'text'}>{displayPendingEarnings}</Heading>
-        {pendingEarningsBusd > 0 && (
-          <Balance fontSize="12px" color="textSubtle" decimals={2} value={pendingEarningsBusd} unit=" USD" prefix="~" />
+        <Heading color={rawEarningsBalanceInSpy.eq(0) ? 'textDisabled' : 'text'}>{displayEarnings}</Heading>
+        {earningsBusd > 0 && (
+          <Balance fontSize="12px" color="textSubtle" decimals={2} value={earningsBusd} unit=" USD" prefix="~" />
         )}
       </Flex>
       <Button

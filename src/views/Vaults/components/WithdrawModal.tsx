@@ -11,6 +11,7 @@ import { BIG_ONE, BIG_ZERO } from 'utils/bigNumber'
 import useToast from 'hooks/useToast'
 import PercentageButton from 'views/Pools/components/PoolCard/Modals/PercentageButton'
 import tokens from 'config/constants/tokens'
+import Dots from 'components/Loader/Dots'
 
 
 const OptionGroup = styled(Flex)<{selected?: boolean}>`
@@ -168,7 +169,7 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({ onConfirm, onDismiss, tok
           }}
           width="100%"
         >
-          {pendingTx ? t('Confirming') : t('Confirm')}
+          {pendingTx ? (<Dots>{t('Confirming')}</Dots>) : t('Confirm')}
         </Button>
       </ModalActions>
     </Modal>

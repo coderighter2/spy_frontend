@@ -87,7 +87,7 @@ const DepositLPModal: React.FC<DepositLPModalProps> = ({
           }
         }}
       >
-        {pendingTx ? t('Confirming') : t('Confirm')}
+        {pendingTx ? (<Dots>{t('Confirming')}</Dots>)  : t('Confirm')}
       </Button>
     ) : (
       <Button mt="8px" width="100%" disabled={requestedApproval} onClick={handleRequestApproval}>

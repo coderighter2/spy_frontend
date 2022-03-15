@@ -33,7 +33,7 @@ const StyledCard = styled.div`
 `
 
 interface VaultBountyCardProps {
-    vault: DeserializedVault
+    vault?: DeserializedVault
     cakePrice?: BigNumber
 }
 

@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useMemo } from 'react'
 import styled from 'styled-components'
 import BigNumber from 'bignumber.js'
-import { Button, Flex, Text } from '@pancakeswap/uikit'
+import { Button, Flex, HelpIcon, Text, useTooltip } from '@pancakeswap/uikit'
 import { getAddress } from 'utils/addressHelpers'
 import { useAppDispatch } from 'state'
 import { DeserializedVault } from 'state/types'
@@ -16,6 +16,7 @@ import { BIG_ZERO } from 'utils/bigNumber'
 import StakeAction from './StakeAction'
 import HarvestAction from './HarvestAction'
 import useApproveVault from '../../hooks/useApproveVault'
+import PendingEarned from './PendingEarned'
 
 const Action = styled.div`
   padding-top: 16px;
@@ -44,6 +45,11 @@ const CardActions: React.FC<VaultCardActionsProps> = ({ vault, account, addToken
   const contractAddress = getAddress(vault.contractAddresses)
   const isApproved = account && (vault.isETH || (tokenAllowance && tokenAllowance.isGreaterThan(0)))
   const dispatch = useAppDispatch()
+
+  const { targetRef, tooltip, tooltipVisible } = useTooltip(
+      t('Earned is the amount that is compounded from pending earnings and withdrawable at any time. Please keep it there to leverage your earnings by the compounding magic.'),
+      { },
+  )
 
   const tokenContract = useERC20(vault.token.address)
 
@@ -119,12 +125,27 @@ const CardActions: React.FC<VaultCardActionsProps> = ({ vault, account, addToken
           {vault.symbol}
         </Text>
         <Text bold textTransform="uppercase" color="textSubtle" fontSize="12px">
-          {t('Earned (pending)')}
+          {t('Pending')}
         </Text>
+      </Flex>
+      <PendingEarned
+        token={vault.token}
+        pendingEarnings={new BigNumber(pendingEarnings)} 
+      />
+      <Flex>
+        <Text bold textTransform="uppercase" color="secondary" fontSize="12px" pr="4px">
+          {vault.symbol}
+        </Text>
+        <Text bold textTransform="uppercase" color="textSubtle" fontSize="12px">
+          {t('Compounded')}
+        </Text>
+        <span ref={targetRef}>
+            <HelpIcon width="16px" height="16px" color="textSubtle" />
+        </span>
+        {tooltipVisible && tooltip}
       </Flex>
       <HarvestAction
         token={vault.token}
-        pendingEarnings={new BigNumber(pendingEarnings)} 
         earnings={new BigNumber(earnings)} 
         pid={pid} 
         contractAddress={contractAddress} 
