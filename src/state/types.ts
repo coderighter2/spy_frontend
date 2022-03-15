@@ -33,6 +33,7 @@ interface SerializedVaultUserData {
   tokenBalanceInVault: string
   stakedBalance: string
   earnings: string
+  pendingEarnings: string
 }
 
 export interface DeserializedVaultUserData {
@@ -42,6 +43,7 @@ export interface DeserializedVaultUserData {
   tokenBalanceInVault: BigNumber
   stakedBalance: BigNumber
   earnings: BigNumber
+  pendingEarnings: BigNumber
 }
 
 export interface SerializedVault extends SerializedVaultConfig {

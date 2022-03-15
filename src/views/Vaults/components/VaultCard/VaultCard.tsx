@@ -15,6 +15,7 @@ import CardHeading from './CardHeading'
 import DetailsSection from './DetailsSection'
 import ApyButton from './ApyButton'
 import CardActionsContainer from './CardActionsContainer'
+import CompoundTimer from './CompoundTimer'
 
 export interface VaultWithStakedValue extends DeserializedVault {
     apr?: number
@@ -97,6 +98,13 @@ const VaultCard: React.FC<VaultCardProps> = ({ vault, displayApr, cakePrice, acc
                 <Flex justifyContent="space-between">
                     <Text>{t('Earn')}:</Text>
                     <Text bold>SPY</Text>
+                </Flex>
+                <Flex justifyContent="space-between" mt="4px">
+                    <Text>{t('Auto compound in')}:</Text>
+                    <CompoundTimer 
+                        target={vault ? vault.nearestCompoundingTime.toNumber() : 0} 
+                        bold
+                    />
                 </Flex>
 
                 <CardActionsContainer

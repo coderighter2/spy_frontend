@@ -36,13 +36,12 @@ interface WithdrawModalProps {
   maxToken: BigNumber
   token?: Token
   lpSymbol: string,
-  tokenSymbol: string,
   onConfirm: (withdrawType: WithdrawType, amountInLP: string, amountToken: string) => void
   onDismiss?: () => void
   tokenName?: string
 }
 
-const WithdrawModal: React.FC<WithdrawModalProps> = ({ onConfirm, onDismiss, token, maxLP, maxToken, spyAmountInLP, lpTotalSupply, lpSymbol, tokenSymbol }) => {
+const WithdrawModal: React.FC<WithdrawModalProps> = ({ onConfirm, onDismiss, token, maxLP, maxToken, spyAmountInLP, lpTotalSupply, lpSymbol }) => {
 
   const { toastSuccess, toastError } = useToast()
   const { t } = useTranslation()
@@ -52,6 +51,8 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({ onConfirm, onDismiss, tok
   const [pendingTx, setPendingTx] = useState(false)
   const [amountLPToWithdraw, setAmountLPToWithdraw] = useState(BIG_ZERO)
   const [amountTokenToWithdraw, setAmountTokenToWithdraw] = useState(BIG_ZERO)
+
+  const tokenSymbol = token.symbol === 'WBNB' ? 'BNB' : token.symbol
 
   const lpAmount= useMemo(() => {
     const lpAmountNumber = getBalanceAmount(amountLPToWithdraw)
@@ -100,8 +101,8 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({ onConfirm, onDismiss, tok
             <TokenImage token={token} width={48} height={48}/>
           </Flex>
           <Flex flexDirection="column" justifyContent="center">
-            <Text>{t('Unstake to %symbol%', {symbol: token.symbol})}</Text>
-            <Text>{tokenFullAmount} {token.symbol}</Text>
+            <Text>{t('Unstake to %symbol%', {symbol: tokenSymbol})}</Text>
+            <Text>{tokenFullAmount} {tokenSymbol}</Text>
           </Flex>
         </OptionGroup>
         <OptionGroup
@@ -112,8 +113,8 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({ onConfirm, onDismiss, tok
             <TokenImage token={token} width={24} height={24}/>
           </Flex>
           <Flex flexDirection="column" justifyContent="center">
-            <Text>{t('Unstake to %symbol1% and %symbol2%', {symbol1: 'SPY', symbol2: token.symbol})}</Text>
-            <Text>{spyAmount} SPY + {tokenAmount} {token.symbol}</Text>
+            <Text>{t('Unstake to %symbol1% and %symbol2%', {symbol1: 'SPY', symbol2: tokenSymbol})}</Text>
+            <Text>{spyAmount} SPY + {tokenAmount} {tokenSymbol}</Text>
           </Flex>
         </OptionGroup>
         <OptionGroup

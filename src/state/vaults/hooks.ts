@@ -19,6 +19,7 @@ const deserializeVaultUserData = (vault: SerializedVault): DeserializedVaultUser
     tokenBalanceInVault: vault.userData ? new BigNumber(vault.userData.tokenBalanceInVault) : BIG_ZERO,
     stakedBalance: vault.userData ? new BigNumber(vault.userData.stakedBalance) : BIG_ZERO,
     earnings: vault.userData ? new BigNumber(vault.userData.earnings) : BIG_ZERO,
+    pendingEarnings: vault.userData ? new BigNumber(vault.userData.pendingEarnings) : BIG_ZERO,
   }
 }
 
@@ -69,20 +70,6 @@ export const usePollVaultsWithUserData = () => {
   }, [dispatch, slowRefresh, account])
 }
 
-/**
- * Fetches the "core" vault data used globally
- * 1 = SPY-BNB LP
- * 3 = BUSD-BNB LP
- */
-export const usePollCoreVaultData = () => {
-  const dispatch = useAppDispatch()
-  const { fastRefresh } = useRefresh()
-
-  useEffect(() => {
-    dispatch(fetchVaultsPublicDataAsync([0, 3]))
-  }, [dispatch, fastRefresh])
-}
-
 export const useVaults = (): DeserializedVaultsState => {
   const vaults = useSelector((state: State) => state.vaults)
   const deserializedVaultsData = vaults.data.map(deserializeVault)
@@ -99,80 +86,16 @@ export const useVaultFromPid = (pid: number): DeserializedVault => {
   return deserializeVault(vault)
 }
 
-export const useVaultFromSymbol = (symbol: string): DeserializedVault => {
-  const vault = useSelector((state: State) => state.vaults.data.find((f) => f.symbol === symbol))
-  return deserializeVault(vault)
-}
-
-export const useVaultFromLpSymbol = (symbol: string): DeserializedVault => {
-  const vault = useSelector((state: State) => state.vaults.data.find((f) => f.lpSymbol === symbol))
-  return deserializeVault(vault)
-}
-
 export const useVaultUser = (pid): DeserializedVaultUserData => {
   const { userData } = useVaultFromPid(pid)
-  const { tokenAllowance, lpAllowance, lpTokenBalance, tokenBalanceInVault, stakedBalance, earnings } = userData
+  const { tokenAllowance, lpAllowance, lpTokenBalance, tokenBalanceInVault, stakedBalance, earnings, pendingEarnings } = userData
   return {
     tokenAllowance,
     lpAllowance,
     lpTokenBalance,
     tokenBalanceInVault,
     stakedBalance,
-    earnings
+    earnings,
+    pendingEarnings
   }
-}
-
-// Return the base token price for a vault, from a given pid
-export const useBusdPriceFromPid = (pid: number): BigNumber => {
-  const vault = useVaultFromPid(pid)
-  return vault && new BigNumber(vault.farm.tokenPriceBusd)
-}
-
-export const getLpTokenPrice = (vault: DeserializedVault) => {
-  const vaultTokenPriceInUsd = new BigNumber(vault.farm.tokenPriceBusd)
-  let lpTokenPrice = BIG_ZERO
-
-  if (vault.farm.lpTotalSupply.gt(0) && vault.farm.lpTotalInQuoteToken.gt(0)) {
-    // Total value of base token in LP
-    const valueOfBaseTokenInVault = vaultTokenPriceInUsd.times(vault.farm.tokenAmountTotal)
-    // Double it to get overall value in LP
-    const overallValueOfAllTokensInVault = valueOfBaseTokenInVault.times(2)
-    // Divide total value of all tokens, by the number of LP tokens
-    const totalLpTokens = getBalanceAmount(vault.farm.lpTotalSupply)
-    lpTokenPrice = overallValueOfAllTokensInVault.div(totalLpTokens)
-  }
-
-  return lpTokenPrice
-}
-
-export const useLpTokenPrice = (symbol: string) => {
-  const vault = useVaultFromLpSymbol(symbol)
-  const vaultTokenPriceInUsd = useBusdPriceFromPid(vault.pid)
-  let lpTokenPrice = BIG_ZERO
-
-  if (vault.farm.lpTotalSupply.gt(0) && vault.farm.lpTotalInQuoteToken.gt(0)) {
-    // Total value of base token in LP
-    const valueOfBaseTokenInVault = vaultTokenPriceInUsd.times(vault.farm.tokenAmountTotal)
-    // Double it to get overall value in LP
-    const overallValueOfAllTokensInVault = valueOfBaseTokenInVault.times(2)
-    // Divide total value of all tokens, by the number of LP tokens
-    const totalLpTokens = getBalanceAmount(vault.farm.lpTotalSupply)
-    lpTokenPrice = overallValueOfAllTokensInVault.div(totalLpTokens)
-  }
-
-  return lpTokenPrice
-}
-
-// /!\ Deprecated , use the BUSD hook in /hooks
-
-export const usePriceCakeBusd = (): BigNumber => {
-  const cakeBnbVault = useVaultFromPid(1)
-
-  const cakePriceBusdAsString = cakeBnbVault.farm.tokenPriceBusd
-
-  const cakePriceBusd = useMemo(() => {
-    return new BigNumber(cakePriceBusdAsString)
-  }, [cakePriceBusdAsString])
-
-  return cakePriceBusd
 }

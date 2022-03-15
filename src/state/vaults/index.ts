@@ -14,6 +14,7 @@ const noAccountVaultsConfig = vaultsConfig.map((vault) => ({
     lpTokenBalance: '0',
     tokenBalanceInVault: '0',
     stakedBalance: '0',
+    pendingEarnings: '0',
     earnings: '0',
   },
 }))
@@ -43,6 +44,7 @@ interface VaultUserDataResponse {
   lpTokenBalance: string
   tokenBalanceInVault: string
   stakedBalance: string
+  pendingEarnings: string
   earnings: string
 }
 
@@ -50,7 +52,9 @@ export const fetchVaultUserDataAsync = createAsyncThunk<VaultUserDataResponse[],
   'vaults/fetchVaultUserDataAsync',
   async ({ account, pids }) => {
     const vaultsToFetch = vaultsConfig.filter((vaultConfig) => pids.includes(vaultConfig.pid))
+    console.log('fetching user data')
     const datas = await fetchVaultUserDatas(account, vaultsToFetch)
+    console.log('user data', datas)
     return datas.map((data, index) => {
       return {
         ...data,

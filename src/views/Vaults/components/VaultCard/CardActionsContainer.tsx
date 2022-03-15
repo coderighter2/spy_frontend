@@ -40,7 +40,7 @@ const CardActions: React.FC<VaultCardActionsProps> = ({ vault, account, addToken
   const { balance: ethBalance } = useGetBnbBalance()
   const [requestedApproval, setRequestedApproval] = useState(false)
   
-  const { tokenAllowance,  tokenBalanceInVault, stakedBalance: stakedLPBalance, earnings } = vault.userData || {}
+  const { tokenAllowance,  tokenBalanceInVault, stakedBalance: stakedLPBalance, earnings, pendingEarnings } = vault.userData || {}
   const contractAddress = getAddress(vault.contractAddresses)
   const isApproved = account && (vault.isETH || (tokenAllowance && tokenAllowance.isGreaterThan(0)))
   const dispatch = useAppDispatch()
@@ -119,11 +119,12 @@ const CardActions: React.FC<VaultCardActionsProps> = ({ vault, account, addToken
           {vault.symbol}
         </Text>
         <Text bold textTransform="uppercase" color="textSubtle" fontSize="12px">
-          {t('Earned')}
+          {t('Earned (pending)')}
         </Text>
       </Flex>
       <HarvestAction
         token={vault.token}
+        pendingEarnings={new BigNumber(pendingEarnings)} 
         earnings={new BigNumber(earnings)} 
         pid={pid} 
         contractAddress={contractAddress} 

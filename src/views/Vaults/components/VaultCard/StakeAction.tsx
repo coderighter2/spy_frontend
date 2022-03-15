@@ -114,7 +114,6 @@ const StakeAction: React.FC<VaultCardActionsProps> = ({
       maxToken={tokenBalanceInVault}
       onConfirm={handleUnstake} 
       lpSymbol={lpTokenName} 
-      tokenSymbol={tokenName}
       spyAmountInLP={spyAmountInLP}
       lpTotalSupply={lpTotalSupply}
       token={token}/>,

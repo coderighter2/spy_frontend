@@ -49,7 +49,7 @@ const VaultBountyCard: React.FC<VaultBountyCardProps> = ({ vault, cakePrice }) =
     const rawEarningsBalance = vault.rewardForCompounder ? getBalanceAmount(vault.rewardForCompounder, tokens.spy.decimals) : BIG_ZERO
     const displayBalance = rawEarningsBalance.toFixed(3, BigNumber.ROUND_DOWN)
     const earningsBusd = rawEarningsBalance ? rawEarningsBalance.multipliedBy(cakePrice).toFixed(2) : 0
-    const bountyEnabled = vault.nearestCompoundingTime && vault.nearestCompoundingTime.toNumber() >= new Date().getTime() / 1000
+    const bountyEnabled = vault.nearestCompoundingTime && vault.nearestCompoundingTime.toNumber() > 0 && vault.nearestCompoundingTime.toNumber() <= new Date().getTime() / 1000
 
     const { targetRef, tooltip, tooltipVisible } = useTooltip(
         t('It is a reward for who ever gets to first auto-compound for the vault by clicking on claim! Only the first person who claim it on time can receive it!'),
@@ -111,7 +111,7 @@ const VaultBountyCard: React.FC<VaultBountyCardProps> = ({ vault, cakePrice }) =
                     <Text>~${earningsBusd}</Text>
                 </Flex>
                 <Flex flexDirection="column" justifyContent="center" alignItems="center">
-                    <Button scale="sm" disabled={bountyEnabled || pendingTx} onClick={handleClaim}>
+                    <Button scale="sm" disabled={!bountyEnabled || pendingTx} onClick={handleClaim}>
                         {pendingTx ? (<Dots>{t('Claiming')}</Dots>) : t('Claim')}
                     </Button>
                     <Text>

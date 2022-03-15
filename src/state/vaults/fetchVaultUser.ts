@@ -1,7 +1,7 @@
 import BigNumber from 'bignumber.js'
 import erc20ABI from 'config/abi/erc20.json'
 import baseVaultABI from 'config/abi/baseVault.json'
-import multicall from 'utils/multicall'
+import multicall, { multicallv2 } from 'utils/multicall'
 import { getAddress } from 'utils/addressHelpers'
 import { SerializedVaultConfig } from 'config/constants/types'
 
@@ -33,14 +33,22 @@ export const fetchVaultUserDatas = async (account: string, vaultsToFetch: Serial
     })
     accum.push({
       address: contractAddress,
+      name: 'pendingEarned',
+      params: [account],
+    })
+    accum.push({
+      address: contractAddress,
       name: 'earned',
       params: [account],
     })
     return accum
   }, [])
 
-  const res1 = await multicall(erc20ABI, calls1)
-  const res2 = await multicall(baseVaultABI, calls2)
+  console.log('here')
+  const res1 = await multicallv2(erc20ABI, calls1, {requireSuccess:false})
+  console.log('here1')
+  const res2 = await multicallv2(baseVaultABI, calls2, {requireSuccess:false})
+  console.log('here2')
 
   const ercResponses = res1.reduce((accum: any[][], item, index) => {
     const chunkIdx = Math.floor(index / 3)
@@ -52,7 +60,7 @@ export const fetchVaultUserDatas = async (account: string, vaultsToFetch: Serial
   }, [])
 
   const vaultResponses = res2.reduce((accum: any[][], item, index) => {
-    const chunkIdx = Math.floor(index / 3)
+    const chunkIdx = Math.floor(index / 4)
     const chunks = accum
     const chunk = chunks[chunkIdx] ?? []
     chunk.push(item)
@@ -67,7 +75,8 @@ export const fetchVaultUserDatas = async (account: string, vaultsToFetch: Serial
       lpTokenBalance:new BigNumber(ercRes[2]).toJSON(),
       tokenBalanceInVault:new BigNumber(vaultResponses[index][0]).toJSON(),
       stakedBalance:new BigNumber(vaultResponses[index][1][0]._hex).toJSON(),
-      earnings: new BigNumber(vaultResponses[index][2]).toJSON(),
+      pendingEarnings: new BigNumber(vaultResponses[index][2]).toJSON(),
+      earnings: new BigNumber(vaultResponses[index][3]).toJSON(),
     }
   })
 }
