@@ -12,6 +12,7 @@ import useBUSDPrice from 'hooks/useBUSDPrice'
 import tokens from 'config/constants/tokens'
 import { TokenInfoChanges } from '@uniswap/token-lists'
 import Dots from 'components/Loader/Dots'
+import { usePriceCakeBusd } from 'state/farms/hooks'
 
 const OptionGroup = styled(Flex).attrs({alignItems:"center"})<{selected?: boolean}>`
   cursor: pointer;
@@ -45,7 +46,7 @@ const HarvestModal: React.FC<HarvestModalProps> = ({
   const [agreed, setAgreed] = useState(false)
   const [receiveToken, setReceiveToken] = useState(false)
 
-  const spyPrice = useBUSDPrice(tokens.spy)
+  const spyPrice = usePriceCakeBusd()
   const tokenPrice = useBUSDPrice(token)
   const tokenSymbol = token.symbol === 'WBNB' ? ETHER.symbol : token.symbol
   const spyBalance = getFullDisplayBalance(spyAmount, tokens.spy.decimals)
