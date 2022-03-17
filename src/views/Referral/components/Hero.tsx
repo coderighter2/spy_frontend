@@ -52,7 +52,7 @@ const Hero = () => {
     const loadStats = async() => {
       try {
         if (account) {
-          const stats_ = await getReferralStatistics(account)
+          const stats_ = await getReferralStatistics(account.toLowerCase())
           setStats(stats_)
         } else {
           setStats(undefined)
