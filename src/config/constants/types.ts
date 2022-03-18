@@ -60,6 +60,23 @@ export enum PoolCategory {
   'AUTO' = 'Auto',
 }
 
+interface VaultConfigBaseProps {
+  pid: number
+  symbol: string
+  lpSymbol: string
+  lpAddresses: Address
+  contractAddresses: Address
+  isETH: boolean
+}
+
+export interface SerializedVaultConfig extends VaultConfigBaseProps {
+  token: SerializedToken
+}
+
+export interface DeserializedVaultConfig extends VaultConfigBaseProps {
+  token: Token
+}
+
 interface FarmConfigBaseProps {
   pid: number
   lpSymbol: string

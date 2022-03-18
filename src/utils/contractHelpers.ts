@@ -74,6 +74,8 @@ import spyNFT from 'config/abi/spyNFT.json'
 import spyNFTFactory from 'config/abi/spyNFTFactory.json'
 import spyNFTMintProxy from 'config/abi/spyNFTMintProxy.json'
 import spyNFTMarketplace from 'config/abi/spyNFTMarketplace.json'
+import bnbSpyVaultAbi from 'config/abi/bnbSpyVault.json'
+import compoundVaultAbi from 'config/abi/compoundVault.json'
 import { ChainLinkOracleContract, FarmAuctionContract, PancakeProfileContract, PredictionsContract } from './types'
 
 const getContract = (abi: any, address: string, signer?: ethers.Signer | ethers.providers.Provider) => {
@@ -198,4 +200,12 @@ export const getPancakeSquadContract = (signer?: ethers.Signer | ethers.provider
 }
 export const getErc721CollectionContract = (signer?: ethers.Signer | ethers.providers.Provider, address?: string) => {
   return getContract(erc721CollctionAbi, address, signer)
+}
+
+export const getBNBVaultContract = (contractAddress: string, signer?: ethers.Signer | ethers.providers.Provider) => {
+  return getContract(bnbSpyVaultAbi, contractAddress, signer)
+}
+
+export const getCompoundVaultContract = (contractAddress: string, signer?: ethers.Signer | ethers.providers.Provider) => {
+  return getContract(compoundVaultAbi, contractAddress, signer)
 }
