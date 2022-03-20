@@ -28,7 +28,7 @@ const EmptyVaultBountyCard: React.FC = () => {
             <Flex justifyContent="space-between">
                 <Flex flexDirection="column" mr="16px">
                     <Flex alignItems="center">
-                        <Text color="secondary" mr="4px">{t('SPY Bountry')}</Text>
+                        <Text color="secondary" mr="4px">{t('SPY Bounty')}</Text>
                         <span ref={targetRef}>
                             <HelpIcon width="16px" height="16px" color="textSubtle" />
                         </span>
