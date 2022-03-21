@@ -31,9 +31,10 @@ interface VaultCardActionsProps {
   addTokenUrl?: string
   cakePrice?: BigNumber
   lpLabel?: string
+  disabled?: boolean
 }
 
-const CardActions: React.FC<VaultCardActionsProps> = ({ vault, account, addTokenUrl, cakePrice, lpLabel }) => {
+const CardActions: React.FC<VaultCardActionsProps> = ({ vault, account, addTokenUrl, cakePrice, lpLabel, disabled }) => {
   const { t } = useTranslation()
   const { toastError } = useToast()
   const { pid } = vault
@@ -104,6 +105,7 @@ const CardActions: React.FC<VaultCardActionsProps> = ({ vault, account, addToken
         addTokenUrl={addTokenUrl}
         contractAddress={contractAddress}
         isETH={vault.isETH}
+        disabled={disabled}
       />
     ) : (
       <>
@@ -150,6 +152,7 @@ const CardActions: React.FC<VaultCardActionsProps> = ({ vault, account, addToken
         pid={pid} 
         contractAddress={contractAddress} 
         isETH={vault.isETH}
+        disabled={disabled}
       />
       <Flex>
         <Text bold textTransform="uppercase" color="secondary" fontSize="12px" pr="4px">

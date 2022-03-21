@@ -21,7 +21,7 @@ export interface ExpandableSectionProps {
   addLiquidityUrl?: string
   account?: string
   pid?: number
-
+  disabled?: boolean
 }
 
 const Wrapper = styled.div`
@@ -51,6 +51,7 @@ const DetailsSection: React.FC<ExpandableSectionProps> = ({
   contractAddress,
   lpLabel,
   addLiquidityUrl,
+  disabled
 }) => {
   const { t } = useTranslation()
   const { onStakeLP } = useStakeVault(contractAddress, isETH)
@@ -86,7 +87,7 @@ const DetailsSection: React.FC<ExpandableSectionProps> = ({
         <Text>{t('Total Liquidity')}:</Text>
         {totalValueFormatted ? <Text>{totalValueFormatted}</Text> : <Skeleton width={75} height={25} />}
       </Flex>
-      <LinkWrapper onClick={() => onPresentDepositLP()}>
+      <LinkWrapper onClick={() => !disabled && onPresentDepositLP()}>
         {t('Migrate %symbol% to this pool', {symbol: lpLabel})}
       </LinkWrapper>
       <StyledLinkExternal href={addLiquidityUrl}>{t('Get %symbol%', { symbol: lpLabel })}</StyledLinkExternal>
