@@ -65,6 +65,7 @@ const VaultCard: React.FC<VaultCardProps> = ({ vault, displayApr, cakePrice, acc
     const addLiquidityUrl = `${BASE_ADD_LIQUIDITY_URL}/${liquidityUrlPathParts}`
     const addTokenUrl = `/swap?outputCurrency=${vault.isETH ? 'BNB' : vault.token.address}`
     const lpAddress = getAddress(vault.lpAddresses)
+    const [expired, setExpired] = useState(false)
 
     return (
         <StyledCard>
@@ -101,10 +102,19 @@ const VaultCard: React.FC<VaultCardProps> = ({ vault, displayApr, cakePrice, acc
                 <Flex justifyContent="space-between" mt="4px">
                     <Text>{t('Auto compound in')}:</Text>
                     <CompoundTimer 
+                        onChangeExpiration={(expired_) => setExpired(expired_)}
                         target={vault ? vault.nearestCompoundingTime.toNumber() : 0} 
                         bold
                     />
                 </Flex>
+
+                {vault && expired && (
+                    <Flex justifyContent="center">
+                        <Text color="warning">
+                            {t('All actions(harvest, stake, migrate) are disabled until someone compound. You can compound this pool by clicking "Claim" on the above bounty card')}
+                        </Text>
+                    </Flex>
+                )}
 
                 <CardActionsContainer
                     vault={vault}
@@ -112,6 +122,7 @@ const VaultCard: React.FC<VaultCardProps> = ({ vault, displayApr, cakePrice, acc
                     account={account}
                     cakePrice={cakePrice}
                     addTokenUrl={addTokenUrl}
+                    disabled={expired}
                 />
             </VaultCardInnerContainer>
 
@@ -130,6 +141,7 @@ const VaultCard: React.FC<VaultCardProps> = ({ vault, displayApr, cakePrice, acc
                         lpAddress={getAddress(vault.lpAddresses)}
                         pid={vault.pid}
                         account={account}
+                        disabled={expired}
                     />
                 )}
             </ExpandingWrapper>

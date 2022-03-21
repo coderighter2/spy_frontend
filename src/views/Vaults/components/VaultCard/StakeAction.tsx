@@ -32,6 +32,7 @@ interface VaultCardActionsProps {
   contractAddress: string
   isETH: boolean
   addTokenUrl?: string
+  disabled?: boolean
 }
 
 const IconButtonWrapper = styled.div`
@@ -55,7 +56,8 @@ const StakeAction: React.FC<VaultCardActionsProps> = ({
   pid,
   addTokenUrl,
   contractAddress,
-  isETH
+  isETH,
+  disabled
 }) => {
   const { t } = useTranslation()
   const { onStake } = useStakeVault(contractAddress, isETH)
@@ -122,17 +124,20 @@ const StakeAction: React.FC<VaultCardActionsProps> = ({
   const renderStakingButtons = () => {
     return stakedLPBalance.eq(0) ? (
       <Button
+        disabled={disabled}
         onClick={onPresentDeposit}
       >
         {t('Stake')}
       </Button>
     ) : (
       <IconButtonWrapper>
-        <IconButton variant="tertiary" onClick={onPresentWithdraw} mr="6px">
+        <IconButton variant="tertiary" 
+        disabled={disabled} onClick={onPresentWithdraw} mr="6px">
           <MinusIcon color="primary" width="14px" />
         </IconButton>
         <IconButton
           variant="tertiary"
+          disabled={disabled}
           onClick={onPresentDeposit}
         >
           <AddIcon color="primary" width="14px" />

@@ -22,9 +22,10 @@ interface VaultCardActionsProps {
   contractAddress: string
   isETH: boolean
   pid?: number
+  disabled?: boolean
 }
 
-const HarvestAction: React.FC<VaultCardActionsProps> = ({ token, earnings, pid, contractAddress, isETH}) => {
+const HarvestAction: React.FC<VaultCardActionsProps> = ({ token, earnings, pid, contractAddress, isETH, disabled}) => {
   const { account } = useWeb3React()
   const { t } = useTranslation()
   const { onReward } = useHarvestVault(contractAddress, isETH)
@@ -59,7 +60,7 @@ const HarvestAction: React.FC<VaultCardActionsProps> = ({ token, earnings, pid, 
         )}
       </Flex>
       <Button
-        disabled={!rawEarningsBalanceInSpy || rawEarningsBalanceInSpy.eq(0)}
+        disabled={disabled || !rawEarningsBalanceInSpy || rawEarningsBalanceInSpy.eq(0)}
         onClick={onPresentWithdraw}
       >
         {t('Harvest')}
