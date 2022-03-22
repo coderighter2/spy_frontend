@@ -61,9 +61,11 @@ const HarvestModal: React.FC<HarvestModalProps> = ({
       toastSuccess(t('Harvested!'), t('You have harvested successfully in the vault'))
       onDismiss()
     } catch(e) {
+      const error = e as any
+      const msg = error?.data?.message ?? error?.message ?? t('Please try again. Confirm the transaction and make sure you are paying enough gas!')
       toastError(
         t('Error'),
-        t('Please try again. Confirm the transaction and make sure you are paying enough gas!'),
+        msg,
       )
     } finally {
       setPendingTx(false)
