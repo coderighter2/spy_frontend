@@ -23,6 +23,7 @@ import multicall from './multicall/reducer'
 import nftMarketReducer from './nftMarket/reducer'
 import nftReducer from './nft'
 import nftmarketplace from './nftMarketplace/reducer'
+import governanceReducer from './governance'
 
 const PERSISTED_KEYS: string[] = ['user', 'transactions', 'lists', 'profile']
 
@@ -43,6 +44,7 @@ const store = configureStore({
     info: infoReducer,
     nftMarket: nftMarketReducer,
     nftmarketplace,
+    governance: governanceReducer,
     // Exchange
     user,
     transactions,
