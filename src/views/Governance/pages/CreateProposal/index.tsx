@@ -25,13 +25,6 @@ import { ProposalCommand } from '../../types'
 import useCreateProposal from '../../hooks/useCreateProposal'
 import { useProposalAdmin } from '../../hooks/getProposal'
 
-const HeaderOuter = styled(Box)<{ background?: string }>`
-  background: ${({ theme, background }) => background || theme.colors.gradients.bubblegum};
-`
-
-const HeaderInner = styled(Container)`
-  padding-top: 32px;
-`
 const EasyMde = lazy(() => import('components/EasyMde'))
 const CreateProposal: React.FC = () => {
 
@@ -125,10 +118,6 @@ const CreateProposal: React.FC = () => {
         await handleCreate();
     }
 
-    const onPresentVoteDetailsModal = async () => {
-        console.log('here')
-    }
-
     const handleCreate = useCallback(async () => {
         try {
             setIsLoading(true)
@@ -136,6 +125,7 @@ const CreateProposal: React.FC = () => {
                 command,
                 title: name,
                 description: body,
+                nftRefillAmount,
                 spyPerBlock,
                 baseAllocPoint,
                 pids: ['0', '1', '4'],
@@ -153,7 +143,7 @@ const CreateProposal: React.FC = () => {
         } finally {
             setIsLoading(false)
         }
-    }, [onCreateProposal, toastError, toastSuccess, history, t, command, name, body, spyPerBlock, baseAllocPoint, busdAllocPoint, bnbAllocPoint, usdcAllocPoint])
+    }, [onCreateProposal, toastError, toastSuccess, history, t, command, name, body, nftRefillAmount, spyPerBlock, baseAllocPoint, busdAllocPoint, bnbAllocPoint, usdcAllocPoint])
 
     if (checkingAdmin) {
         return (

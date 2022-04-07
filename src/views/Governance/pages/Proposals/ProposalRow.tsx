@@ -6,6 +6,7 @@ import { Text, Flex } from '@pancakeswap/uikit'
 import { useTranslation } from 'contexts/Localization'
 import useTheme from 'hooks/useTheme'
 import { useBlock } from 'state/block/hooks'
+import { BIG_ZERO } from 'utils/bigNumber'
 import { useGovernanceQuorum } from 'state/governance/hooks'
 import { ProposalData, ProposalStateGQ } from '../../types'
 
@@ -90,13 +91,16 @@ const ProposalRow: React.FC<ProposalRawProps> = ({proposal}) => {
             case ProposalStateGQ.Active:
                 return theme.colors.primary
             case ProposalStateGQ.Pending:
-                return theme.colors.tertiary
+                return theme.colors.text
             default:
-                return theme.colors.tertiary
+                return theme.colors.text
         }
     }, [state, theme])
 
     const voteStatus = useMemo(() => {
+        if (proposal.currentYesVote.eq(BIG_ZERO) && proposal.currentNoVote.eq(BIG_ZERO)) {
+            return t('No Votes')
+        }
         if (proposal.currentYesVote.gt(proposal.currentNoVote)) {
             return t('Passed')
         }
@@ -104,6 +108,9 @@ const ProposalRow: React.FC<ProposalRawProps> = ({proposal}) => {
     }, [t, proposal.currentYesVote, proposal.currentNoVote])
 
     const voteStatusColor = useMemo(() => {
+        if (proposal.currentYesVote.eq(BIG_ZERO) && proposal.currentNoVote.eq(BIG_ZERO)) {
+            return theme.colors.secondary
+        }
         if (proposal.currentYesVote.gt(proposal.currentNoVote)) {
             return theme.colors.success
         }

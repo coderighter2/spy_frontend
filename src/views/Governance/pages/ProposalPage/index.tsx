@@ -7,12 +7,12 @@ import Page from 'components/Layout/Page'
 import useToast from 'hooks/useToast'
 import useRefresh from 'hooks/useRefresh'
 import { useTranslation } from 'contexts/Localization'
-import { Proposal, ProposalData, ProposalStateGQ } from '../../types'
+import { Proposal, ProposalData } from '../../types'
 import { queryProposalById } from '../../hooks/queryProposal'
 import ProposalHeader from './ProposalHeader'
 import Votes from './Votes'
 import ProposalAction from './ProposalAction'
-import useGetProposal, { useProposalAdmin } from '../../hooks/getProposal'
+import useGetProposal from '../../hooks/getProposal'
 import ProposalDetail from './ProposalDetail'
 import ProposalAdminAction from './ProposalAdminAction'
 import ProposalHistory from './ProposalHistory'
@@ -50,6 +50,7 @@ const ProposalPage: React.FC<RouteComponentProps<{id: string}>> = ({
     }, [proposalId, onGetProposal])
 
     useEffect(() => {
+        console.log('slowRefresh')
         const loadProposal = async() => {
             try {
                 const proposal_ = await onGetProposal(proposalId)
@@ -65,27 +66,6 @@ const ProposalPage: React.FC<RouteComponentProps<{id: string}>> = ({
 
         loadProposal()
     }, [loaded, proposalId, onGetProposal, slowRefresh])
-
-    // const handleCancel = useCallback(async () => {
-    //     try {
-    //         setCanceling(true)
-    //         await onCancelNFTAuction(auction.id)
-    //         reloadAuction()
-    //         toastSuccess(
-    //         `${t('Success')}!`,
-    //         t('The auction has been canceled successfully')
-    //         )
-    //     } catch (e) {
-    //         if (typeof e === 'object' && 'message' in e) {
-    //             const err: any = e;
-    //             toastError(t('Error'), err.message)
-    //         } else {
-    //             toastError(t('Error'), t('Please try again. Confirm the transaction and make sure you are paying enough gas!'))
-    //         }
-    //     } finally {
-    //         setCanceling(false)
-    //     }
-    // }, [onCancelNFTAuction, toastSuccess, toastError, reloadAuction, auction, t])
 
     return (
         <>
@@ -146,19 +126,6 @@ const ProposalPage: React.FC<RouteComponentProps<{id: string}>> = ({
                                 <ProposalHistory proposalId={proposalId} proposal={proposal}/>
                             </Flex>
                         </Flex>
-                        {/* <Flex flexDirection="row" flexWrap="wrap">
-                            <AuctionSection auction={auction} account={account} reloadAuction={reloadAuction}/>
-                            <GegoSection 
-                            gego={auction.gego} 
-                            owner={auction.seller} 
-                            account={account} 
-                            showCancel={isSeller && (!auction.lastBidder || auction.lastBidder === AddressZero) && status === NFTAuctionStatus.RUNNING}
-                            onCancel={handleCancel} 
-                            cancelTitle={t('Cancel Auction')}
-                            canceling={canceling}/>
-                            <BidsSection auction={auction}/>
-                            <AuctionRuleSection/>
-                        </Flex> */}
                         </>
                     )}
                 </Flex>

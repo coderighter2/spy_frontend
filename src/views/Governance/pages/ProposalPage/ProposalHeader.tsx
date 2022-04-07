@@ -1,12 +1,15 @@
-import React, { useMemo } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { format } from 'date-fns'
 import styled from 'styled-components'
 import { Text, Flex, Heading } from '@pancakeswap/uikit'
+import { BSC_BLOCK_TIME } from 'config'
 import { useTranslation } from 'contexts/Localization'
+import { simpleRpcProvider } from 'utils/providers'
+import useRefresh from 'hooks/useRefresh'
 import useTheme from 'hooks/useTheme'
 import { useBlock } from 'state/block/hooks'
-import { Proposal, ProposalData, ProposalState } from '../../types'
+import { Proposal, ProposalData, ProposalState, ProposalStates } from '../../types'
 
 
 const VoteStatus = styled(Text)<{statusColor: string}>`
@@ -39,6 +42,8 @@ const ProposalHeader: React.FC<ProposalHeaderProps> = ({name, proposal, votesCou
     const { t } = useTranslation()
     const { currentBlock } = useBlock()
     const { theme } = useTheme()
+    const { slowRefresh } = useRefresh()
+    const [endTimestamp, setEndTimestamp] = useState(0)
 
     const stateColor = useMemo(() => {
         switch(proposal.state) {
@@ -55,25 +60,41 @@ const ProposalHeader: React.FC<ProposalHeaderProps> = ({name, proposal, votesCou
             case ProposalState.Active:
                 return theme.colors.primary
             case ProposalState.Pending:
-                return theme.colors.tertiary
+                return theme.colors.text
             default:
-                return theme.colors.tertiary
+                return theme.colors.text
         }
     }, [proposal.state, theme])
 
-    const voteStatus = useMemo(() => {
-        if (proposal.forVotes.gt(proposal.againstVotes)) {
-            return t('Passed')
-        }
-        return t('Failed')
-    }, [t, proposal.againstVotes, proposal.forVotes])
+    const proposalStatus = useMemo(() => {
+        return ProposalStates[proposal.state]
+    }, [proposal.state])
 
-    const voteStatusColor = useMemo(() => {
-        if (proposal.forVotes.gt(proposal.againstVotes)) {
-            return theme.colors.success
+    useEffect(() => {
+        const fetchEndBlock = async () => {
+            const block = await simpleRpcProvider.getBlock(proposal.endBlock)
+            if (block) {
+                setEndTimestamp(block.timestamp)
+            }
         }
-        return theme.colors.failure
-    }, [theme, proposal.forVotes, proposal.againstVotes])
+
+        if (proposal && endTimestamp === 0 && currentBlock > proposal.endBlock) {
+            fetchEndBlock()
+        }
+        
+    }, [slowRefresh, proposal, endTimestamp, currentBlock])
+
+    const endTime = useMemo(() => {
+        if (!proposal) {
+            return 0
+        }
+
+        if (currentBlock < proposal.endBlock) {
+            return new Date().getTime() / 1000 + BSC_BLOCK_TIME * (proposal.endBlock - currentBlock)
+        }
+
+        return endTimestamp
+    }, [proposal, currentBlock, endTimestamp])
 
     return (
         <Flex flexDirection="column">
@@ -81,11 +102,17 @@ const ProposalHeader: React.FC<ProposalHeaderProps> = ({name, proposal, votesCou
                 {name ?? `${proposal.proposalId.substring(0, 10)}...`}
             </Heading>
             <Flex justifyContent="start" alignItems="center" mt="4px">
-                <VoteStatus statusColor={voteStatusColor}>{voteStatus}</VoteStatus>
+                <VoteStatus statusColor={stateColor}>{proposalStatus}</VoteStatus>
                 {!!votesCount && (
                     <VotesCount ml="12px">{votesCount}</VotesCount>
                 )}
                 <Text ml="12px">{creationTime && format(creationTime * 1000, 'MM/dd/yy h:mm a')}</Text>
+                {endTime > 0 && (
+                    <>
+                    <Text ml="8px">-</Text>
+                    <Text ml="8px">{format(endTime * 1000, 'MM/dd/yy h:mm a')}</Text>
+                    </>
+                )}
             </Flex>
         </Flex>
     )

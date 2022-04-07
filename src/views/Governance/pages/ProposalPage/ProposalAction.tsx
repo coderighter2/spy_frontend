@@ -1,8 +1,10 @@
 import React, { useCallback, useMemo, useState } from 'react'
 import styled from 'styled-components'
+import { format } from 'date-fns'
 import { Text, Flex, Button } from '@pancakeswap/uikit'
 import { useTranslation } from 'contexts/Localization'
 import Dots from 'components/Loader/Dots'
+import { BSC_BLOCK_TIME } from 'config'
 import useToast from 'hooks/useToast'
 import { useBlock } from 'state/block/hooks'
 import { Proposal, ProposalState, VoteType } from '../../types'
@@ -94,7 +96,7 @@ const ProposalAction: React.FC<ProposalActionProps> = ({proposalId, proposal}) =
                 ) : (
                     <>
                     <Flex justifyContent="center">
-                    <Text mr="12px">{t('Your Voting Power:')}</Text>
+                    <Text mr="12px" mb="8px">{t('Your Voting Power:')}</Text>
                     <Text color="secondary">{gettingWeight ? (<Dots/>) : t('Not Available')}</Text>
                     </Flex>
                     <Text color="warning" fontSize="12px" mb="8px">{t('Calculate your voting power to vote on this proposal')}</Text>
@@ -117,7 +119,7 @@ const ProposalAction: React.FC<ProposalActionProps> = ({proposalId, proposal}) =
                         <Flex flexDirection="column">
                             { hasVoted && (
                                 <Flex justifyContent="center" mb="8px">
-                                    <Text mr="12px" color="info">{t('You have voted already')}</Text>
+                                    <Text color="info">{t('You have voted already')}</Text>
                                 </Flex>
                             )}
 

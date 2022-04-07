@@ -37,7 +37,7 @@ const LinkWrapper = styled(Link)`
   }
 `
 
-const NUMBER_OF_ITEMS_VISIBLE = 12
+const NUMBER_OF_ITEMS_VISIBLE = 8
 
 const Proposals: React.FC = () => {
 

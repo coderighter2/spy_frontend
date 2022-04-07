@@ -145,7 +145,7 @@ const ProposalAdminAction: React.FC<ProposalActionProps> = ({proposalId, proposa
                         </Button>
                     </Flex>
                     <Flex paddingX="8px">
-                        <Button onClick={handleCancel} disabled={pendingTx || cancelingTx || queueingTx|| proposal.canceled || proposal.executed || proposal.state === ProposalState.Queued}>
+                        <Button onClick={handleCancel} disabled={pendingTx || cancelingTx || queueingTx|| proposal.canceled || proposal.executed}>
                             { cancelingTx ? (<Dots>{t('Canceling')}</Dots>) : t('Cancel')}
                         </Button>
                     </Flex>

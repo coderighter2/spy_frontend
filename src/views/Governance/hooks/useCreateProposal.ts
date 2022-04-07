@@ -12,6 +12,8 @@ export interface CreateProposalParams {
   title: string
   description: string
 
+  nftRefillAmount?: string
+
   spyPerBlock?: string
   baseAllocPoint?: string
   pids?: string[]
@@ -25,9 +27,14 @@ const useCreateProposal = () => {
   
   const handleCreateProposal = useCallback(async (params: CreateProposalParams) => {
 
-    const {spyPerBlock, baseAllocPoint, pids, allocPoints, title, description} = params;
+    const {command, spyPerBlock, baseAllocPoint, pids, allocPoints, nftRefillAmount, title, description} = params;
 
-    const callData = adminContract.interface.encodeFunctionData('adjustMasterchefApy', [spyPerBlock, baseAllocPoint, pids, allocPoints])
+    let callData: string
+    if (command === ProposalCommand.ADJUST_FARM_APY) {
+      callData = adminContract.interface.encodeFunctionData('adjustMasterchefApy', [spyPerBlock, baseAllocPoint, pids, allocPoints])
+    } else {
+      callData = adminContract.interface.encodeFunctionData('notifyNftReward', [nftRefillAmount])
+    }
     const gasPrice = getGasPrice()
     const tx = await callWithEstimateGas(governorContract, 'propose(address[],uint256[],bytes[],string)', [
       [adminContractAddress],
