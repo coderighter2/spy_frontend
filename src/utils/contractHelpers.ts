@@ -34,6 +34,8 @@ import {
   getOldGeneralNFTRewardAddress,
   getGeneralNFTRewardAddress,
   getNFTMarketplaceAddress,
+  getGovernanceAddress,
+  getAdminAddress,
 } from 'utils/addressHelpers'
 
 // ABI
@@ -76,6 +78,8 @@ import spyNFTMintProxy from 'config/abi/spyNFTMintProxy.json'
 import spyNFTMarketplace from 'config/abi/spyNFTMarketplace.json'
 import bnbSpyVaultAbi from 'config/abi/bnbSpyVault.json'
 import compoundVaultAbi from 'config/abi/compoundVault.json'
+import spyGovernorAbi from 'config/abi/spyGovernor.json'
+import spyAdminAbi from 'config/abi/spyAdmin.json'
 import { ChainLinkOracleContract, FarmAuctionContract, PancakeProfileContract, PredictionsContract } from './types'
 
 const getContract = (abi: any, address: string, signer?: ethers.Signer | ethers.providers.Provider) => {
@@ -150,6 +154,12 @@ export const getNFTFactoryContract = (signer?: ethers.Signer | ethers.providers.
 }
 export const getNFTMintProxyContract = (signer?: ethers.Signer | ethers.providers.Provider) => {
   return getContract(spyNFTMintProxy, getNFTMintroxyAddress(), signer)
+}
+export const getGovernanceContract = (signer?: ethers.Signer | ethers.providers.Provider) => {
+  return getContract(spyGovernorAbi, getGovernanceAddress(), signer)
+}
+export const getAdminContract = (signer?: ethers.Signer | ethers.providers.Provider) => {
+  return getContract(spyAdminAbi, getAdminAddress(), signer)
 }
 export const getClaimRefundContract = (signer?: ethers.Signer | ethers.providers.Provider) => {
   return getContract(claimRefundAbi, getClaimRefundAddress(), signer)

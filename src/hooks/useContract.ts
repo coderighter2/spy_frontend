@@ -37,6 +37,7 @@ import {
   getNFTMarketplaceContract,
   getBNBVaultContract,
   getCompoundVaultContract,
+  getGovernanceContract,
 } from 'utils/contractHelpers'
 import { getMulticallAddress } from 'utils/addressHelpers'
 
@@ -132,6 +133,11 @@ export const useSpyNFT = (address: string) => {
 export const useSpyNFTMarketplace = () => {
   const { library } = useActiveWeb3React()
   return useMemo(() => getNFTMarketplaceContract(library.getSigner()), [library])
+}
+
+export const useGovernanceContract = () => {
+  const { library } = useActiveWeb3React()
+  return useMemo(() => getGovernanceContract(library.getSigner()), [library])
 }
 
 export const useSousChef = (id) => {

@@ -91,3 +91,10 @@ export const getGeneralNFTRewardAddress = () => {
 export const getNFTMarketplaceAddress = () => {
   return getAddress(addresses.nftMarketplace)
 }
+export const getGovernanceAddress = () => {
+  return getAddress(addresses.governance)
+}
+
+export const getAdminAddress = () => {
+  return getAddress(addresses.admin)
+}
