@@ -26,6 +26,31 @@ export interface BigNumberToJson {
 
 export type SerializedBigNumber = string
 
+
+export interface SerializedGovernance {
+  dev?: string
+  quorum?: SerializedBigNumber
+  delay?: number
+  period?: number
+}
+
+export interface DeserializedGovernance {
+  dev?: string
+  quorum?: SerializedBigNumber
+  delay?: number
+  period?: number
+}
+
+export interface SerializedGovernanceState {
+  data: SerializedGovernance
+  loadArchivedData: boolean
+}
+
+export interface DeserializedGovernanceState {
+  data: DeserializedGovernance
+  loadArchivedData: boolean
+}
+
 interface SerializedVaultUserData {
   tokenAllowance: string
   lpAllowance: string
@@ -752,6 +777,7 @@ export interface State {
   voting: VotingState
   lottery: LotteryState
   nftMarket: NftMarketState
+  governance: SerializedGovernanceState
 }
 
 

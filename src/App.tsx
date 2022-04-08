@@ -40,6 +40,7 @@ const Home = lazy(() => import('./views/Farms'))
 const Referral = lazy(() => import('./views/Referral'))
 const Farms = lazy(() => import('./views/Farms'))
 const Vaults = lazy(() => import('./views/Vaults'))
+const Governance = lazy(() => import('./views/Governance'))
 const Nfts = lazy(() => import('./views/Nfts'))
 const NftMarketplace = lazy(() => import('./views/NftMarketplace'))
 const FarmAuction = lazy(() => import('./views/FarmAuction'))
@@ -51,9 +52,6 @@ const Team = lazy(() => import('./views/Teams/Team'))
 const TradingCompetition = lazy(() => import('./views/TradingCompetition'))
 const Predictions = lazy(() => import('./views/Predictions'))
 const PredictionsLeaderboard = lazy(() => import('./views/Predictions/Leaderboard'))
-const Voting = lazy(() => import('./views/Voting'))
-const Proposal = lazy(() => import('./views/Voting/Proposal'))
-const CreateProposal = lazy(() => import('./views/Voting/CreateProposal'))
 const AddLiquidity = lazy(() => import('./views/AddLiquidity'))
 const Liquidity = lazy(() => import('./views/Pool'))
 const PoolFinder = lazy(() => import('./views/PoolFinder'))
@@ -115,6 +113,9 @@ const App: React.FC = () => {
               <Route path="/referral">
                 <Referral />
               </Route>
+              <Route path="/governance">
+                <Governance />
+              </Route>
               <Route path="/lottery">
                 <Lottery />
               </Route>
@@ -138,15 +139,6 @@ const App: React.FC = () => {
               </Route>
               <Route path="/prediction/leaderboard">
                 <PredictionsLeaderboard />
-              </Route>
-              <Route exact path="/voting">
-                <Voting />
-              </Route>
-              <Route exact path="/voting/proposal/create">
-                <CreateProposal />
-              </Route>
-              <Route path="/voting/proposal/:id">
-                <Proposal />
               </Route>
 
               {/* NFT */}
