@@ -36,6 +36,7 @@ import {
   getNFTMarketplaceAddress,
   getGovernanceAddress,
   getAdminAddress,
+  getOldMasterChefAddress,
 } from 'utils/addressHelpers'
 
 // ABI
@@ -135,6 +136,9 @@ export const getLotteryV2Contract = (signer?: ethers.Signer | ethers.providers.P
 }
 export const getMasterchefContract = (signer?: ethers.Signer | ethers.providers.Provider) => {
   return getContract(masterChef, getMasterChefAddress(), signer)
+}
+export const getOldMasterchefContract = (signer?: ethers.Signer | ethers.providers.Provider) => {
+  return getContract(masterChef, getOldMasterChefAddress(), signer)
 }
 
 export const getNFTMarketplaceContract = (signer?: ethers.Signer | ethers.providers.Provider) => {

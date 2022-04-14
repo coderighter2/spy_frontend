@@ -8,7 +8,7 @@ import { getBalanceAmount } from 'utils/formatBalance'
 import { farmsConfig } from 'config/constants'
 import useRefresh from 'hooks/useRefresh'
 import { deserializeToken } from 'state/user/hooks/helpers'
-import { fetchFarmsPublicDataAsync, fetchFarmUserDataAsync, nonArchivedFarms } from '.'
+import { fetchFarmsPublicDataAsync, fetchFarmUserDataAsync, fetchOldFarmsPublicDataAsync, fetchOldFarmUserDataAsync, nonArchivedFarms } from '.'
 import { State, SerializedFarm, DeserializedFarmUserData, DeserializedFarm, DeserializedFarmsState } from '../types'
 
 const deserializeFarmUserData = (farm: SerializedFarm): DeserializedFarmUserData => {
@@ -23,9 +23,10 @@ const deserializeFarmUserData = (farm: SerializedFarm): DeserializedFarmUserData
 }
 
 const deserializeFarm = (farm: SerializedFarm): DeserializedFarm => {
-  const { lpAddresses, lpSymbol, pid, dual, multiplier, isCommunity, quoteTokenPriceBusd, tokenPriceBusd } = farm
+  const { lpAddresses, lpSymbol, pid, dual, multiplier, isCommunity, quoteTokenPriceBusd, tokenPriceBusd, isOld } = farm
 
   return {
+    isOld,
     lpAddresses,
     lpSymbol,
     pid,
@@ -56,6 +57,7 @@ export const usePollFarmsPublicData = (includeArchive = false) => {
     const pids = farmsToFetch.map((farmToFetch) => farmToFetch.pid)
 
     dispatch(fetchFarmsPublicDataAsync(pids))
+    dispatch(fetchOldFarmsPublicDataAsync(pids))
   }, [includeArchive, dispatch, slowRefresh])
 }
 
@@ -69,9 +71,11 @@ export const usePollFarmsWithUserData = (includeArchive = false) => {
     const pids = farmsToFetch.map((farmToFetch) => farmToFetch.pid)
 
     dispatch(fetchFarmsPublicDataAsync(pids))
+    dispatch(fetchOldFarmsPublicDataAsync(pids))
 
     if (account) {
       dispatch(fetchFarmUserDataAsync({ account, pids }))
+      dispatch(fetchOldFarmUserDataAsync({ account, pids }))
     }
   }, [includeArchive, dispatch, slowRefresh, account])
 }
@@ -93,11 +97,14 @@ export const usePollCoreFarmData = () => {
 export const useFarms = (): DeserializedFarmsState => {
   const farms = useSelector((state: State) => state.farms)
   const deserializedFarmsData = farms.data.map(deserializeFarm)
-  const { loadArchivedFarmsData, userDataLoaded } = farms
+  const deserializedOldFarmsData = farms.old.map(deserializeFarm)
+  const { loadArchivedFarmsData, userDataLoaded, oldUserDataLoaded } = farms
   return {
     loadArchivedFarmsData,
     userDataLoaded,
+    oldUserDataLoaded,
     data: deserializedFarmsData,
+    old: deserializedOldFarmsData
   }
 }
 
@@ -106,13 +113,36 @@ export const useFarmFromPid = (pid: number): DeserializedFarm => {
   return deserializeFarm(farm)
 }
 
+export const useOldFarmFromPid = (pid: number): DeserializedFarm => {
+  const farm = useSelector((state: State) => state.farms.old.find((f) => f.pid === pid))
+  return deserializeFarm(farm)
+}
+
 export const useFarmFromLpSymbol = (lpSymbol: string): DeserializedFarm => {
   const farm = useSelector((state: State) => state.farms.data.find((f) => f.lpSymbol === lpSymbol))
   return deserializeFarm(farm)
 }
 
+export const useOldFarmFromLpSymbol = (lpSymbol: string): DeserializedFarm => {
+  const farm = useSelector((state: State) => state.farms.old.find((f) => f.lpSymbol === lpSymbol))
+  return deserializeFarm(farm)
+}
+
 export const useFarmUser = (pid): DeserializedFarmUserData => {
   const { userData } = useFarmFromPid(pid)
+  const { allowance, tokenBalance, stakedBalance, earnings, nextHarvestUntil, lockedAmount } = userData
+  return {
+    lockedAmount,
+    allowance,
+    tokenBalance,
+    stakedBalance,
+    earnings,
+    nextHarvestUntil
+  }
+}
+
+export const useOldFarmUser = (pid): DeserializedFarmUserData => {
+  const { userData } = useOldFarmFromPid(pid)
   const { allowance, tokenBalance, stakedBalance, earnings, nextHarvestUntil, lockedAmount } = userData
   return {
     lockedAmount,

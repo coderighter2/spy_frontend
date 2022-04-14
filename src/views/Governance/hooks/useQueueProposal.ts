@@ -8,7 +8,6 @@ const useQueueProposal = () => {
   
   const handleQueueProposal = useCallback(async (proposalId: string) => {
     const gasPrice = getGasPrice()
-    console.log('all keys', Object.keys(governorContract))
     const tx = await callWithEstimateGas(governorContract, 'queue(uint256)', [proposalId], {gasPrice,})
     const receipt = await tx.wait()
     return receipt.transactionHash

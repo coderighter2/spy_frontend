@@ -10,6 +10,11 @@ export const getAddress = (address: Address): string => {
 export const getMasterChefAddress = () => {
   return getAddress(addresses.masterChef)
 }
+
+export const getOldMasterChefAddress = () => {
+  return getAddress(addresses.masterChefOld)
+}
+
 export const getMulticallAddress = () => {
   return getAddress(addresses.multiCall)
 }

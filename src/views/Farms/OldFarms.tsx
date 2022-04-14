@@ -2,7 +2,7 @@ import React, { useEffect, useCallback, useState, useMemo, useRef } from 'react'
 import { Route, useRouteMatch, useLocation, NavLink, Link } from 'react-router-dom'
 import BigNumber from 'bignumber.js'
 import { useWeb3React } from '@web3-react/core'
-import { Image, Heading, RowType, Toggle, Text, Button, ArrowForwardIcon, Flex, Message } from '@pancakeswap/uikit'
+import { Image, Heading, RowType, Toggle, Text, Button, ArrowForwardIcon, Flex } from '@pancakeswap/uikit'
 import { ChainId } from '@pancakeswap/sdk'
 import styled from 'styled-components'
 import FlexLayout from 'components/Layout/Flex'
@@ -16,7 +16,7 @@ import { getFarmApr } from 'utils/apr'
 import { orderBy } from 'lodash'
 import isArchivedPid from 'utils/farmHelpers'
 import { latinise } from 'utils/latinise'
-import { useUserFarmStakedOnly, useUserFarmsViewMode, useUserReferrer } from 'state/user/hooks'
+import { useUserFarmStakedOnly, useUserFarmsViewMode, useUserOldFarmStakedOnly, useUserReferrer } from 'state/user/hooks'
 import { ViewMode } from 'state/user/actions'
 import { usePollNFTPublicData } from 'state/nft/hooks'
 import PageHeader from 'components/PageHeader'
@@ -116,11 +116,11 @@ const getDisplayApr = (cakeRewardsApr?: number, lpRewardsApr?: number) => {
   return null
 }
 
-const Farms: React.FC = () => {
+const OldFarms: React.FC = () => {
   const { path } = useRouteMatch()
   const { pathname } = useLocation()
   const { t } = useTranslation()
-  const { data: farmsLP, userDataLoaded } = useFarms()
+  const { old: farmsLP, oldUserDataLoaded: userDataLoaded } = useFarms()
   const cakePrice = usePriceCakeBusd()
   const [query, setQuery] = useState('')
   const [viewMode, setViewMode] = useUserFarmsViewMode()
@@ -140,7 +140,7 @@ const Farms: React.FC = () => {
   // Connected users should see loading indicator until first userData has loaded
   const userDataReady = !account || (!!account && userDataLoaded)
 
-  const [stakedOnly, setStakedOnly] = useUserFarmStakedOnly(isActive)
+  const [stakedOnly, setStakedOnly] = useUserOldFarmStakedOnly(isActive)
 
   const activeFarms = farmsLP.filter((farm) => farm.pid !== 3 && (farm.pid || farm.pid === 0) && farm.multiplier !== '0X' && !isArchivedPid(farm.pid))
   const inactiveFarms = farmsLP.filter((farm) => farm.pid !== 3 && (farm.pid || farm.pid === 0) && farm.multiplier === '0X' && !isArchivedPid(farm.pid))
@@ -338,7 +338,6 @@ const Farms: React.FC = () => {
               removed={false}
             />
           ))}
-          <NFTPoolCard account={account} />
         </Route>
         <Route exact path={`${path}/history`}>
           {chosenFarmsMemoized.map((farm) => (
@@ -351,7 +350,6 @@ const Farms: React.FC = () => {
               removed
             />
           ))}
-          <NFTPoolCardOld account={account} />
         </Route>
         <Route exact path={`${path}/archived`}>
           {chosenFarmsMemoized.map((farm) => (
@@ -375,27 +373,7 @@ const Farms: React.FC = () => {
 
   return (
     <>
-      {/* <PageHeader>
-        <Heading as="h1" scale="xxl" color="secondary" mb="24px">
-          {t('Farms')}
-        </Heading>
-        <Heading scale="lg" color="text">
-          {t('Stake LP tokens to earn.')}
-        </Heading>
-      </PageHeader> */}
       <Page>
-        <Flex flexDirection="column">
-          <Message variant='warning'>
-            <Flex flexDirection="column" alignItems="flex-start">
-              <Text>
-              {t('V1 Farms will be stopped working since Apr 17th, please withdraw your LP token from V1 Farms and stake into main farms.')}
-              </Text>
-              <Button variant="text" scale="sm" as={Link} to="/farms-old">
-                {t('V1 Farms >')}
-              </Button>
-            </Flex>
-          </Message>
-        </Flex>
         <ControlContainer>
           <ViewControls>
             <ToggleView viewMode={viewMode} onToggle={(mode: ViewMode) => setViewMode(mode)} />
@@ -408,42 +386,8 @@ const Farms: React.FC = () => {
               />
               <Text> {t('Staked only')}</Text>
             </ToggleWrapper>
+            <FarmTabButtons hasStakeInFinishedFarms={stakedInactiveFarms.length > 0} basePath='/farms-old'/>
           </ViewControls>
-          <FarmTabButtons hasStakeInFinishedFarms={stakedInactiveFarms.length > 0} />
-          {/* <FilterContainer>
-            <LabelWrapper>
-              <Text textTransform="uppercase">{t('Sort by')}</Text>
-              <Select
-                options={[
-                  {
-                    label: t('Hot'),
-                    value: 'hot',
-                  },
-                  {
-                    label: t('APR'),
-                    value: 'apr',
-                  },
-                  {
-                    label: t('Multiplier'),
-                    value: 'multiplier',
-                  },
-                  {
-                    label: t('Earned'),
-                    value: 'earned',
-                  },
-                  {
-                    label: t('Liquidity'),
-                    value: 'liquidity',
-                  },
-                ]}
-                onOptionChange={handleSortOptionChange}
-              />
-            </LabelWrapper>
-            <LabelWrapper style={{ marginLeft: 16 }}>
-              <Text textTransform="uppercase">{t('Search')}</Text>
-              <SearchInput onChange={handleChangeQuery} placeholder="Search Farms" />
-            </LabelWrapper>
-          </FilterContainer> */}
         </ControlContainer>
         {renderContent()}
         {account && !userDataLoaded && stakedOnly && (
@@ -452,10 +396,9 @@ const Farms: React.FC = () => {
           </Flex>
         )}
         <div ref={observerRef} />
-        {/* <StyledImage src="/images/decorations/3dpan.png" alt="Pancake illustration" width={120} height={103} /> */}
       </Page>
     </>
   )
 }
 
-export default Farms
+export default OldFarms

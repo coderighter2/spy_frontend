@@ -7,7 +7,7 @@ import Balance from 'components/Balance'
 import { BIG_ZERO } from 'utils/bigNumber'
 import { getBalanceAmount } from 'utils/formatBalance'
 import { useAppDispatch } from 'state'
-import { fetchFarmUserDataAsync } from 'state/farms'
+import { fetchFarmUserDataAsync, fetchOldFarmUserDataAsync } from 'state/farms'
 import { usePriceCakeBusd } from 'state/farms/hooks'
 import useToast from 'hooks/useToast'
 import { useTranslation } from 'contexts/Localization'
@@ -19,7 +19,7 @@ interface HarvestActionProps extends FarmWithStakedValue {
   userDataReady: boolean
 }
 
-const HarvestAction: React.FunctionComponent<HarvestActionProps> = ({ pid, userData, userDataReady }) => {
+const HarvestAction: React.FunctionComponent<HarvestActionProps> = ({ isOld, pid, userData, userDataReady }) => {
   const { toastSuccess, toastError } = useToast()
   const earningsBigNumber = new BigNumber(userData.earnings)
   const cakePrice = usePriceCakeBusd()
@@ -35,7 +35,7 @@ const HarvestAction: React.FunctionComponent<HarvestActionProps> = ({ pid, userD
   }
 
   const [pendingTx, setPendingTx] = useState(false)
-  const { onReward } = useHarvestFarm(pid)
+  const { onReward } = useHarvestFarm(pid, isOld)
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
   const { account } = useWeb3React()
@@ -76,7 +76,11 @@ const HarvestAction: React.FunctionComponent<HarvestActionProps> = ({ pid, userD
             } finally {
               setPendingTx(false)
             }
-            dispatch(fetchFarmUserDataAsync({ account, pids: [pid] }))
+            if (isOld) {
+              dispatch(fetchOldFarmUserDataAsync({ account, pids: [pid] }))
+            } else {
+              dispatch(fetchFarmUserDataAsync({ account, pids: [pid] }))
+            }
           }}
           ml="4px"
         >

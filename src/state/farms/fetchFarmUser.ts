@@ -2,11 +2,11 @@ import BigNumber from 'bignumber.js'
 import erc20ABI from 'config/abi/erc20.json'
 import masterchefABI from 'config/abi/masterchef.json'
 import multicall from 'utils/multicall'
-import { getAddress, getMasterChefAddress } from 'utils/addressHelpers'
+import { getAddress, getMasterChefAddress, getOldMasterChefAddress } from 'utils/addressHelpers'
 import { SerializedFarmConfig } from 'config/constants/types'
 
-export const fetchFarmUserAllowances = async (account: string, farmsToFetch: SerializedFarmConfig[]) => {
-  const masterChefAddress = getMasterChefAddress()
+export const fetchFarmUserAllowances = async (account: string, farmsToFetch: SerializedFarmConfig[], isOld = false) => {
+  const masterChefAddress = isOld ? getOldMasterChefAddress() : getMasterChefAddress()
 
   const calls = farmsToFetch.map((farm) => {
     const lpContractAddress = getAddress(farm.lpAddresses)
@@ -37,8 +37,8 @@ export const fetchFarmUserTokenBalances = async (account: string, farmsToFetch: 
   return parsedTokenBalances
 }
 
-export const fetchFarmUserInfos = async (account: string, farmsToFetch: SerializedFarmConfig[]) => {
-  const masterChefAddress = getMasterChefAddress()
+export const fetchFarmUserInfos = async (account: string, farmsToFetch: SerializedFarmConfig[], isOld = false) => {
+  const masterChefAddress = isOld ? getOldMasterChefAddress() : getMasterChefAddress()
 
   const calls = farmsToFetch.map((farm) => {
     return {
@@ -61,8 +61,8 @@ export const fetchFarmUserInfos = async (account: string, farmsToFetch: Serializ
   return [parsedStakedBalances, parsedNextHarvestUntils, parsedLockedAmounts]
 }
 
-export const fetchFarmUserEarnings = async (account: string, farmsToFetch: SerializedFarmConfig[]) => {
-  const masterChefAddress = getMasterChefAddress()
+export const fetchFarmUserEarnings = async (account: string, farmsToFetch: SerializedFarmConfig[], isOld = false) => {
+  const masterChefAddress = isOld ? getOldMasterChefAddress() : getMasterChefAddress()
 
   const calls = farmsToFetch.map((farm) => {
     return {

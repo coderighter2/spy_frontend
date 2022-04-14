@@ -19,6 +19,7 @@ import {
   updateUserDeadline,
   updateUserExpertMode,
   updateUserFarmStakedOnly,
+  updateUserOldFarmStakedOnly,
   updateUserSingleHopOnly,
   updateUserSlippageTolerance,
   updateGasPrice,
@@ -144,6 +145,26 @@ export function useUserFarmStakedOnly(isActive: boolean): [boolean, (stakedOnly:
   return [
     userFarmStakedOnly === FarmStakedOnly.ON_FINISHED ? !isActive : userFarmStakedOnly === FarmStakedOnly.TRUE,
     setUserFarmStakedOnly,
+  ]
+}
+
+export function useUserOldFarmStakedOnly(isActive: boolean): [boolean, (stakedOnly: boolean) => void] {
+  const dispatch = useDispatch<AppDispatch>()
+  const userFarmStakedOnly = useSelector<AppState, AppState['user']['userOldFarmStakedOnly']>((state) => {
+    return state.user.userOldFarmStakedOnly
+  })
+
+  const setUserOldFarmStakedOnly = useCallback(
+    (stakedOnly: boolean) => {
+      const farmStakedOnly = stakedOnly ? FarmStakedOnly.TRUE : FarmStakedOnly.FALSE
+      dispatch(updateUserOldFarmStakedOnly({ userOldFarmStakedOnly: farmStakedOnly }))
+    },
+    [dispatch],
+  )
+
+  return [
+    userFarmStakedOnly === FarmStakedOnly.ON_FINISHED ? !isActive : userFarmStakedOnly === FarmStakedOnly.TRUE,
+    setUserOldFarmStakedOnly,
   ]
 }
 

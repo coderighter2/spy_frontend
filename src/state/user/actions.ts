@@ -36,6 +36,9 @@ export const toggleTheme = createAction<void>('user/toggleTheme')
 export const updateUserFarmStakedOnly = createAction<{ userFarmStakedOnly: FarmStakedOnly }>(
   'user/updateUserFarmStakedOnly',
 )
+export const updateUserOldFarmStakedOnly = createAction<{ userOldFarmStakedOnly: FarmStakedOnly }>(
+  'user/updateUserOldFarmStakedOnly',
+)
 export const updateUserPoolStakedOnly = createAction<{ userPoolStakedOnly: boolean }>('user/updateUserPoolStakedOnly')
 export const updateUserPoolsViewMode = createAction<{ userPoolsViewMode: ViewMode }>('user/updateUserPoolsViewMode')
 export const updateUserFarmsViewMode = createAction<{ userFarmsViewMode: ViewMode }>('user/updateUserFarmsViewMode')
