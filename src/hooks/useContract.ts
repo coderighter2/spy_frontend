@@ -39,6 +39,7 @@ import {
   getCompoundVaultContract,
   getGovernanceContract,
   getOldMasterchefContract,
+  getAdminContract,
 } from 'utils/contractHelpers'
 import { getMulticallAddress } from 'utils/addressHelpers'
 
@@ -319,4 +320,9 @@ export function usePairContract(pairAddress?: string, withSignerIfPossible?: boo
 
 export function useMulticallContract(): Contract | null {
   return useContract(getMulticallAddress(), multiCallAbi, false)
+}
+
+export const useAdminContract = () => {
+  const { library } = useActiveWeb3React()
+  return useMemo(() => getAdminContract(library.getSigner()), [library])
 }
