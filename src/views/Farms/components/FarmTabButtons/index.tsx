@@ -6,22 +6,23 @@ import { useTranslation } from 'contexts/Localization'
 
 interface FarmTabButtonsProps {
   hasStakeInFinishedFarms: boolean
+  basePath?: string
 }
 
-const FarmTabButtons: React.FC<FarmTabButtonsProps> = ({ hasStakeInFinishedFarms }) => {
+const FarmTabButtons: React.FC<FarmTabButtonsProps> = ({ hasStakeInFinishedFarms, basePath }) => {
   const { url } = useRouteMatch()
   const location = useLocation()
   const { t } = useTranslation()
 
   let activeIndex
   switch (location.pathname) {
-    case '/farms':
+    case `${basePath}`:
       activeIndex = 0
       break
-    case '/farms/history':
+    case `${basePath}/history`:
       activeIndex = 1
       break
-    case '/farms/archived':
+    case `${basePath}/archived`:
       activeIndex = 2
       break
     default:
@@ -36,13 +37,17 @@ const FarmTabButtons: React.FC<FarmTabButtonsProps> = ({ hasStakeInFinishedFarms
           {t('Live')}
         </ButtonMenuItem>
         <NotificationDot show={hasStakeInFinishedFarms}>
-          <ButtonMenuItem id="finished-farms-button" as={Link} to="/farms/history">
+          <ButtonMenuItem id="finished-farms-button" as={Link} to={`${basePath}/history`}>
             {t('Finished')}
           </ButtonMenuItem>
         </NotificationDot>
       </ButtonMenu>
     </Wrapper>
   )
+}
+
+FarmTabButtons.defaultProps = {
+  basePath: '/farms'
 }
 
 export default FarmTabButtons

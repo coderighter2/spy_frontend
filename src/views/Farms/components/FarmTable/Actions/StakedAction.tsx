@@ -7,7 +7,7 @@ import ConnectWalletButton from 'components/ConnectWalletButton'
 import Balance from 'components/Balance'
 import { useWeb3React } from '@web3-react/core'
 import { useFarmUser, useLpTokenPrice, usePriceCakeBusd } from 'state/farms/hooks'
-import { fetchFarmUserDataAsync } from 'state/farms'
+import { fetchFarmUserDataAsync, fetchOldFarmUserDataAsync } from 'state/farms'
 import { FarmWithStakedValue } from 'views/Farms/components/FarmCard/FarmCard'
 import { useTranslation } from 'contexts/Localization'
 import useToast from 'hooks/useToast'
@@ -45,14 +45,15 @@ const Staked: React.FunctionComponent<StackedActionProps> = ({
   token,
   userDataReady,
   displayApr,
+  isOld
 }) => {
   const { t } = useTranslation()
   const { toastError } = useToast()
   const { account } = useWeb3React()
   const [requestedApproval, setRequestedApproval] = useState(false)
   const { allowance, tokenBalance, stakedBalance } = useFarmUser(pid)
-  const { onStake } = useStakeFarms(pid)
-  const { onUnstake } = useUnstakeFarms(pid)
+  const { onStake } = useStakeFarms(pid, isOld)
+  const { onUnstake } = useUnstakeFarms(pid, isOld)
   const location = useLocation()
   const lpPrice = useLpTokenPrice(lpSymbol)
   const cakePrice = usePriceCakeBusd()
@@ -68,12 +69,20 @@ const Staked: React.FunctionComponent<StackedActionProps> = ({
 
   const handleStake = async (amount: string) => {
     await onStake(amount)
-    dispatch(fetchFarmUserDataAsync({ account, pids: [pid] }))
+    if (isOld) {
+      dispatch(fetchOldFarmUserDataAsync({ account, pids: [pid] }))
+    } else {
+      dispatch(fetchFarmUserDataAsync({ account, pids: [pid] }))
+    }
   }
 
   const handleUnstake = async (amount: string) => {
     await onUnstake(amount)
-    dispatch(fetchFarmUserDataAsync({ account, pids: [pid] }))
+    if (isOld) {
+      dispatch(fetchOldFarmUserDataAsync({ account, pids: [pid] }))
+    } else {
+      dispatch(fetchFarmUserDataAsync({ account, pids: [pid] }))
+    }
   }
 
   const displayBalance = useCallback(() => {

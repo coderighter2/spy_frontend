@@ -65,6 +65,7 @@ export interface UserState {
   timestamp: number
   audioPlay: boolean
   isDark: boolean
+  userOldFarmStakedOnly: FarmStakedOnly
   userFarmStakedOnly: FarmStakedOnly
   userPoolStakedOnly: boolean
   userPoolsViewMode: ViewMode
@@ -93,6 +94,7 @@ export const initialState: UserState = {
   timestamp: currentTimestamp(),
   audioPlay: true,
   isDark: false,
+  userOldFarmStakedOnly: FarmStakedOnly.ON_FINISHED,
   userFarmStakedOnly: FarmStakedOnly.ON_FINISHED,
   userPoolStakedOnly: false,
   userPoolsViewMode: ViewMode.TABLE,

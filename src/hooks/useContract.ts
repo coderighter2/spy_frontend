@@ -38,6 +38,8 @@ import {
   getBNBVaultContract,
   getCompoundVaultContract,
   getGovernanceContract,
+  getOldMasterchefContract,
+  getAdminContract,
 } from 'utils/contractHelpers'
 import { getMulticallAddress } from 'utils/addressHelpers'
 
@@ -108,6 +110,11 @@ export const useLotteryV2Contract = () => {
 export const useMasterchef = () => {
   const { library } = useActiveWeb3React()
   return useMemo(() => getMasterchefContract(library.getSigner()), [library])
+}
+
+export const useOldMasterchef = () => {
+  const { library } = useActiveWeb3React()
+  return useMemo(() => getOldMasterchefContract(library.getSigner()), [library])
 }
 
 export const useNFTFactory = () => {
@@ -313,4 +320,9 @@ export function usePairContract(pairAddress?: string, withSignerIfPossible?: boo
 
 export function useMulticallContract(): Contract | null {
   return useContract(getMulticallAddress(), multiCallAbi, false)
+}
+
+export const useAdminContract = () => {
+  const { library } = useActiveWeb3React()
+  return useMemo(() => getAdminContract(library.getSigner()), [library])
 }

@@ -15,6 +15,7 @@ import useRefresh from 'hooks/useRefresh'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import useToast from 'hooks/useToast'
 import NotFound from 'views/NotFound'
+import Dots from 'components/Loader/Dots'
 import Markdown from '../../components/Markdown'
 import Layout from '../../components/Layout'
 import { FormState } from './types'
@@ -22,7 +23,7 @@ import { getFormErrors, useAPYCalcuation } from './helpers'
 import { FormErrors, Label } from './styles'
 import { VOTE_THRESHOLD } from '../../config'
 import { ProposalCommand } from '../../types'
-import useCreateProposal from '../../hooks/useCreateProposal'
+import useCreateProposal, { useInstantExecuteProposal } from '../../hooks/useCreateProposal'
 import { useProposalAdmin } from '../../hooks/getProposal'
 
 const EasyMde = lazy(() => import('components/EasyMde'))
@@ -37,6 +38,7 @@ const CreateProposal: React.FC = () => {
     const [currentTime, setCurrentTime] = useState(new Date().getTime() / 1000)
     const {slowRefresh} = useRefresh()
     const [isLoading, setIsLoading] = useState(false)
+    const [executing, setExecuting] = useState(false)
     const [state, setState] = useState<FormState>({
       name: '',
       body: '',
@@ -62,6 +64,7 @@ const CreateProposal: React.FC = () => {
 
     const {spyPerBlock, baseAllocPoint, bnbAllocPoint, busdAllocPoint, usdcAllocPoint} = useAPYCalcuation(targetApy, targetApy, targetApy)
     const {onCreateProposal} = useCreateProposal()
+    const {onInstantExecuteProposal} = useInstantExecuteProposal(account)
 
     const estimatedStartTime = useMemo(() => {
         return governanceData.delay ? governanceData.delay + currentTime : 0
@@ -117,6 +120,34 @@ const CreateProposal: React.FC = () => {
         evt.preventDefault()
         await handleCreate();
     }
+
+    const handleExecute = useCallback(async () => {
+        console.log('here2')
+        try {
+            setExecuting(true)
+            await onInstantExecuteProposal({
+                command,
+                title: name,
+                description: body,
+                nftRefillAmount,
+                spyPerBlock,
+                baseAllocPoint,
+                pids: ['0', '1', '4'],
+                allocPoints: [busdAllocPoint, bnbAllocPoint, usdcAllocPoint]
+            })
+            toastSuccess(t('Success'), t('You have executed the proposal instantly.'))
+        } catch (e) {
+            console.log('e', e)
+            const error = e as any
+            const msg = error?.data?.message ?? error?.message ?? t('Please try again. Confirm the transaction and make sure you are paying enough gas!')
+            toastError(
+              t('Error'),
+              msg,
+            )
+        } finally {
+            setExecuting(false)
+        }
+    }, [onInstantExecuteProposal, toastError, toastSuccess, t, command, name, body, nftRefillAmount, spyPerBlock, baseAllocPoint, busdAllocPoint, bnbAllocPoint, usdcAllocPoint])
 
     const handleCreate = useCallback(async () => {
         try {
@@ -260,7 +291,7 @@ const CreateProposal: React.FC = () => {
                                     width="100%"
                                     isLoading={isLoading}
                                     endIcon={isLoading ? <AutoRenewIcon spin color="currentColor" /> : null}
-                                    disabled={!isEmpty(formErrors)}
+                                    disabled={!isEmpty(formErrors) || executing}
                                     mb="16px"
                                     >
                                     {t('Publish')}
@@ -282,6 +313,18 @@ const CreateProposal: React.FC = () => {
                                             <Text fontSize="14px" color="secondary">{estimatedExecutionTime ? format(new Date(estimatedExecutionTime * 1000), 'MMMM dd yyyy hh:mm aa') : '-'}</Text>
                                         </Flex>
                                     </Flex>
+
+                                    <Text my="16px">
+                                        {t('Or')}
+                                    </Text>
+
+                                    <Button
+                                        as="a"
+                                        disabled={executing || isLoading || !isEmpty(formErrors)}
+                                        onClick={handleExecute}
+                                    >
+                                        {executing ? (<Dots>{t('Processing')}</Dots>) : t('Instant Execute')}
+                                    </Button>
                                 </>
                                 ) : (
                                 <ConnectWalletButton width="100%" type="button" />

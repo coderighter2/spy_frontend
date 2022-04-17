@@ -50,7 +50,6 @@ const ProposalPage: React.FC<RouteComponentProps<{id: string}>> = ({
     }, [proposalId, onGetProposal])
 
     useEffect(() => {
-        console.log('slowRefresh')
         const loadProposal = async() => {
             try {
                 const proposal_ = await onGetProposal(proposalId)

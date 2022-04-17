@@ -3,7 +3,7 @@ import BigNumber from 'bignumber.js'
 import { Button, Flex, Heading } from '@pancakeswap/uikit'
 import { useTranslation } from 'contexts/Localization'
 import { useAppDispatch } from 'state'
-import { fetchFarmUserDataAsync } from 'state/farms'
+import { fetchFarmUserDataAsync, fetchOldFarmUserDataAsync } from 'state/farms'
 import useToast from 'hooks/useToast'
 import { getBalanceAmount } from 'utils/formatBalance'
 import { BIG_ZERO } from 'utils/bigNumber'
@@ -16,14 +16,15 @@ interface FarmCardActionsProps {
   earnings?: BigNumber
   pid?: number
   nextHarvestUntil?: number
+  isOld?: boolean
 }
 
-const HarvestAction: React.FC<FarmCardActionsProps> = ({ earnings, pid, nextHarvestUntil }) => {
+const HarvestAction: React.FC<FarmCardActionsProps> = ({ isOld, earnings, pid, nextHarvestUntil }) => {
   const { account } = useWeb3React()
   const { toastSuccess, toastError } = useToast()
   const { t } = useTranslation()
   const [pendingTx, setPendingTx] = useState(false)
-  const { onReward } = useHarvestFarm(pid)
+  const { onReward } = useHarvestFarm(pid, isOld)
   const cakePrice = usePriceCakeBusd()
   const dispatch = useAppDispatch()
   const rawEarningsBalance = account ? getBalanceAmount(earnings, 0) : BIG_ZERO
@@ -57,13 +58,21 @@ const HarvestAction: React.FC<FarmCardActionsProps> = ({ earnings, pid, nextHarv
           } finally {
             setPendingTx(false)
           }
-          dispatch(fetchFarmUserDataAsync({ account, pids: [pid] }))
+          if (isOld) {
+            dispatch(fetchOldFarmUserDataAsync({ account, pids: [pid] }))
+          } else {
+            dispatch(fetchFarmUserDataAsync({ account, pids: [pid] }))
+          }
         }}
       >
         {pendingTx ? t('Harvesting') : t('Harvest')}
       </Button>
     </Flex>
   )
+}
+
+HarvestAction.defaultProps = {
+  isOld: false
 }
 
 export default HarvestAction

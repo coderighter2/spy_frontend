@@ -1,7 +1,7 @@
 import BigNumber from 'bignumber.js'
 import masterchefABI from 'config/abi/masterchef.json'
 import erc20 from 'config/abi/erc20.json'
-import { getAddress, getMasterChefAddress } from 'utils/addressHelpers'
+import { getAddress, getMasterChefAddress, getOldMasterChefAddress } from 'utils/addressHelpers'
 import { BIG_TEN, BIG_ZERO } from 'utils/bigNumber'
 import multicall from 'utils/multicall'
 import { SerializedFarm, SerializedBigNumber } from '../types'
@@ -17,7 +17,7 @@ type PublicFarmData = {
   harvestInterval: SerializedBigNumber
 }
 
-const fetchFarm = async (farm: SerializedFarm): Promise<PublicFarmData> => {
+const fetchFarm = async (farm: SerializedFarm, isOld = false): Promise<PublicFarmData> => {
   const { pid, lpAddresses, token, quoteToken } = farm
   const lpAddress = getAddress(lpAddresses)
   const calls = [
@@ -37,7 +37,7 @@ const fetchFarm = async (farm: SerializedFarm): Promise<PublicFarmData> => {
     {
       address: lpAddress,
       name: 'balanceOf',
-      params: [getMasterChefAddress()],
+      params: [isOld ? getOldMasterChefAddress() : getMasterChefAddress()],
     },
     // Total supply of LP tokens
     {
@@ -77,16 +77,16 @@ const fetchFarm = async (farm: SerializedFarm): Promise<PublicFarmData> => {
     pid || pid === 0
       ? await multicall(masterchefABI, [
           {
-            address: getMasterChefAddress(),
+            address: isOld ? getOldMasterChefAddress() : getMasterChefAddress(),
             name: 'poolInfo',
             params: [pid],
           },
           {
-            address: getMasterChefAddress(),
+            address: isOld ? getOldMasterChefAddress() : getMasterChefAddress(),
             name: 'totalAllocPoint',
           },
           {
-            address: getMasterChefAddress(),
+            address: isOld ? getOldMasterChefAddress() : getMasterChefAddress(),
             name: 'spyPerBlock',
           },
         ])

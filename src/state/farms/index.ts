@@ -22,11 +22,24 @@ const noAccountFarmConfig = farmsConfig.map((farm) => ({
     nextHarvestUntil: 0
   },
 }))
+const noAccountFarmConfigOld = farmsConfig.map((farm) => ({
+  ...farm,
+  userData: {
+    lockedAmount: '0',
+    allowance: '0',
+    tokenBalance: '0',
+    stakedBalance: '0',
+    earnings: '0',
+    nextHarvestUntil: 0
+  },
+}))
 
 const initialState: SerializedFarmsState = {
   data: noAccountFarmConfig,
+  old: noAccountFarmConfigOld,
   loadArchivedFarmsData: false,
   userDataLoaded: false,
+  oldUserDataLoaded: false,
 }
 
 export const nonArchivedFarms = farmsConfig.filter(({ pid }) => !isArchivedPid(pid))
@@ -38,6 +51,23 @@ export const fetchFarmsPublicDataAsync = createAsyncThunk<SerializedFarm[], numb
     const farmsToFetch = farmsConfig.filter((farmConfig) => pids.includes(farmConfig.pid))
 
     const farms = await fetchFarms(farmsToFetch)
+    const farmsWithPrices = await fetchFarmsPrices(farms)
+
+    // Filter out price helper LP config farms
+    const farmsWithoutHelperLps = farmsWithPrices.filter((farm: SerializedFarm) => {
+      return farm.pid || farm.pid === 0
+    })
+
+    return farmsWithoutHelperLps
+  },
+)
+
+export const fetchOldFarmsPublicDataAsync = createAsyncThunk<SerializedFarm[], number[]>(
+  'farms/fetchOldFarmsPublicDataAsync',
+  async (pids) => {
+    const farmsToFetch = farmsConfig.filter((farmConfig) => pids.includes(farmConfig.pid))
+
+    const farms = await fetchFarms(farmsToFetch, true)
     const farmsWithPrices = await fetchFarmsPrices(farms)
 
     // Filter out price helper LP config farms
@@ -82,6 +112,29 @@ export const fetchFarmUserDataAsync = createAsyncThunk<FarmUserDataResponse[], {
   },
 )
 
+export const fetchOldFarmUserDataAsync = createAsyncThunk<FarmUserDataResponse[], { account: string; pids: number[] }>(
+  'farms/fetchOldFarmUserDataAsync',
+  async ({ account, pids }) => {
+    const farmsToFetch = farmsConfig.filter((farmConfig) => pids.includes(farmConfig.pid))
+    const userFarmAllowances = await fetchFarmUserAllowances(account, farmsToFetch, true)
+    const userFarmTokenBalances = await fetchFarmUserTokenBalances(account, farmsToFetch)
+    const userInfos = await fetchFarmUserInfos(account, farmsToFetch, true)
+    const userFarmEarnings = await fetchFarmUserEarnings(account, farmsToFetch, true)
+
+    return userFarmAllowances.map((farmAllowance, index) => {
+      return {
+        pid: farmsToFetch[index].pid,
+        allowance: userFarmAllowances[index],
+        tokenBalance: userFarmTokenBalances[index],
+        stakedBalance: userInfos[0][index],
+        earnings: userFarmEarnings[index],
+        nextHarvestUntil: userInfos[1][index],
+        lockedAmount: userInfos[2][index],
+      }
+    })
+  },
+)
+
 export const farmsSlice = createSlice({
   name: 'Farms',
   initialState,
@@ -108,6 +161,22 @@ export const farmsSlice = createSlice({
         state.data[index] = { ...state.data[index], userData: userDataEl }
       })
       state.userDataLoaded = true
+    })
+    builder.addCase(fetchOldFarmsPublicDataAsync.fulfilled, (state, action) => {
+      state.old = state.old.map((farm) => {
+        const liveFarmData = action.payload.find((farmData) => farmData.pid === farm.pid)
+        return { ...farm, ...liveFarmData }
+      })
+    })
+
+    // Update farms with user data
+    builder.addCase(fetchOldFarmUserDataAsync.fulfilled, (state, action) => {
+      action.payload.forEach((userDataEl) => {
+        const { pid } = userDataEl
+        const index = state.old.findIndex((farm) => farm.pid === pid)
+        state.old[index] = { ...state.old[index], userData: userDataEl }
+      })
+      state.oldUserDataLoaded = true
     })
   },
 })

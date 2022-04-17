@@ -7,7 +7,7 @@ import { useLocation } from 'react-router-dom'
 import Balance from 'components/Balance'
 import { useTranslation } from 'contexts/Localization'
 import { useAppDispatch } from 'state'
-import { fetchFarmUserDataAsync } from 'state/farms'
+import { fetchFarmUserDataAsync, fetchOldFarmUserDataAsync } from 'state/farms'
 import { useLpTokenPrice } from 'state/farms/hooks'
 import { getBalanceAmount, getBalanceNumber } from 'utils/formatBalance'
 import DepositModal from '../DepositModal'
@@ -25,7 +25,8 @@ interface FarmCardActionsProps {
   displayApr?: string
   addLiquidityUrl?: string
   cakePrice?: BigNumber
-  lpLabel?: string
+  lpLabel?: string,
+  isOld?: boolean
 }
 
 const IconButtonWrapper = styled.div`
@@ -46,10 +47,11 @@ const StakeAction: React.FC<FarmCardActionsProps> = ({
   addLiquidityUrl,
   cakePrice,
   lpLabel,
+  isOld
 }) => {
   const { t } = useTranslation()
-  const { onStake } = useStakeFarms(pid)
-  const { onUnstake } = useUnstakeFarms(pid)
+  const { onStake } = useStakeFarms(pid, isOld)
+  const { onUnstake } = useUnstakeFarms(pid, isOld)
   const location = useLocation()
   const dispatch = useAppDispatch()
   const { account } = useWeb3React()
@@ -57,12 +59,20 @@ const StakeAction: React.FC<FarmCardActionsProps> = ({
 
   const handleStake = async (amount: string) => {
     await onStake(amount)
-    dispatch(fetchFarmUserDataAsync({ account, pids: [pid] }))
+    if (isOld) {
+      dispatch(fetchOldFarmUserDataAsync({ account, pids: [pid] }))
+    } else {
+      dispatch(fetchFarmUserDataAsync({ account, pids: [pid] }))
+    }
   }
 
   const handleUnstake = async (amount: string) => {
     await onUnstake(amount)
-    dispatch(fetchFarmUserDataAsync({ account, pids: [pid] }))
+    if (isOld) {
+      dispatch(fetchOldFarmUserDataAsync({ account, pids: [pid] }))
+    } else {
+      dispatch(fetchFarmUserDataAsync({ account, pids: [pid] }))
+    }
   }
 
   const displayBalance = useCallback(() => {
@@ -137,6 +147,10 @@ const StakeAction: React.FC<FarmCardActionsProps> = ({
       {renderStakingButtons()}
     </Flex>
   )
+}
+
+StakeAction.defaultProps = {
+  isOld: false
 }
 
 export default StakeAction

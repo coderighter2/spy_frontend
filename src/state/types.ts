@@ -134,6 +134,7 @@ export interface SerializedFarm extends SerializedFarmConfig {
   harvestInterval?: SerializedBigNumber
   spyPerBlock?: SerializedBigNumber
   userData?: SerializedFarmUserData
+  isOld?: boolean
 }
 
 export interface DeserializedFarm extends DeserializedFarmConfig {
@@ -147,6 +148,7 @@ export interface DeserializedFarm extends DeserializedFarmConfig {
   harvestInterval?: BigNumber
   spyPerBlock?: BigNumber
   userData?: DeserializedFarmUserData
+  isOld?: boolean
 }
 
 interface CorePoolProps {
@@ -301,14 +303,18 @@ export interface DeserializedNFTGego {
 
 export interface SerializedFarmsState {
   data: SerializedFarm[]
+  old: SerializedFarm[]
   loadArchivedFarmsData: boolean
   userDataLoaded: boolean
+  oldUserDataLoaded: boolean
 }
 
 export interface DeserializedFarmsState {
   data: DeserializedFarm[]
+  old: DeserializedFarm[]
   loadArchivedFarmsData: boolean
   userDataLoaded: boolean
+  oldUserDataLoaded: boolean
 }
 
 export interface VaultFees {
