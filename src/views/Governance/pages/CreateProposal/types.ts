@@ -5,6 +5,7 @@ export interface FormState {
     name: string
     body: string
     targetApy?: string
+    apyMultiplier?: string
     command: ProposalCommand
     nftRefillAmount?: string
 }

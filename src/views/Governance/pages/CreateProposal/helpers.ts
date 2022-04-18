@@ -21,7 +21,7 @@ export const combineDateAndTime = (date: Date, time: Date) => {
 }
 
 export const getFormErrors = (formData: FormState, t: ContextApi['t']) => {
-  const { name, body, nftRefillAmount, targetApy } = formData
+  const { name, body, nftRefillAmount, apyMultiplier, targetApy } = formData
   const errors: { [key: string]: string[] } = {}
 
   if (!name) {
@@ -40,6 +40,14 @@ export const getFormErrors = (formData: FormState, t: ContextApi['t']) => {
     errors.targetApy = [t('%field% is invalid', { field: 'Target APY' })]
   }
 
+  if (!apyMultiplier) {
+    errors.apyMultiplier = [t('%field% is required', { field: 'APY Multiplier' })]
+  }
+
+  if (parseInt(apyMultiplier) < 1) {
+    errors.apyMultiplier = [t('%field% is invalid', { field: 'Target APY' })]
+  }
+
   if (!nftRefillAmount) {
     errors.nftRefillAmount = [t('%field% is required', { field: 'SPY Amount' })]
   }
@@ -55,7 +63,8 @@ export const getFormErrors = (formData: FormState, t: ContextApi['t']) => {
 export const useAPYCalcuation = (
   busdApy: string,
   bnbApy: string,
-  usdcApy: string
+  usdcApy: string,
+  multiplier = '1'
 ) => {
   const spyBusdFarm = useFarmFromPid(0)
   const spyBnbFarm = useFarmFromPid(1)
@@ -101,10 +110,14 @@ export const useAPYCalcuation = (
       const spyNeeded = spyBusdSpyWeight.plus(spyBnbSpyWeight).plus(spyUsdcSpyWeight).toNumber()
 
       const spyPerBlock = Math.ceil(spyNeeded).toFixed(0)
-      const baseAllocPoint = new BigNumber(spyPerBlock).minus(spyNeeded).dividedBy(spyPerBlock).multipliedBy(100000).toFixed(0)
-      const busdAllocPoint = spyBusdSpyWeight.dividedBy(spyPerBlock).mul(100000).toFixed(0)
-      const bnbAllocPoint = spyBnbSpyWeight.dividedBy(spyPerBlock).mul(100000).toFixed(0)
-      const usdcAllocPoint = spyUsdcSpyWeight.dividedBy(spyPerBlock).mul(100000).toFixed(0)
+      const baseAllocPoint_ = new BigNumber(spyPerBlock).minus(spyNeeded).dividedBy(spyPerBlock).multipliedBy(100000).toFixed(0)
+      const busdAllocPoint_ = spyBusdSpyWeight.dividedBy(spyPerBlock).mul(100000).toFixed(0)
+      const bnbAllocPoint_ = spyBnbSpyWeight.dividedBy(spyPerBlock).mul(100000).toFixed(0)
+      const usdcAllocPoint_ = spyUsdcSpyWeight.dividedBy(spyPerBlock).mul(100000).toFixed(0)
+      const baseAllocPoint = (parseInt(baseAllocPoint_) * parseInt(multiplier)).toString()
+      const busdAllocPoint = (parseInt(busdAllocPoint_) * parseInt(multiplier)).toString()
+      const bnbAllocPoint = (parseInt(bnbAllocPoint_) * parseInt(multiplier)).toString()
+      const usdcAllocPoint = (parseInt(usdcAllocPoint_) * parseInt(multiplier)).toString()
       return {spyPerBlock, baseAllocPoint, busdAllocPoint, bnbAllocPoint, usdcAllocPoint}
     } catch {
       return {
@@ -115,5 +128,5 @@ export const useAPYCalcuation = (
         usdcAllocPoint: undefined
       }
     }
-  }, [spyBusdFarm, spyBnbFarm, spyUsdcFarm, busdApy, usdcApy, bnbApy])
+  }, [spyBusdFarm, spyBnbFarm, spyUsdcFarm, busdApy, usdcApy, bnbApy, multiplier])
 }

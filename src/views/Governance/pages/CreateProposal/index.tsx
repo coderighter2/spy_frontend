@@ -43,11 +43,12 @@ const CreateProposal: React.FC = () => {
       name: '',
       body: '',
       targetApy: '1000',
+      apyMultiplier: '1',
       command: ProposalCommand.ADJUST_FARM_APY,
       nftRefillAmount: '60000'
     })
     const [fieldsState, setFieldsState] = useState<{ [key: string]: boolean }>({})
-    const { name, body, command, targetApy, nftRefillAmount } = state
+    const { name, body, command, targetApy, apyMultiplier, nftRefillAmount } = state
     const formErrors = getFormErrors(state, t)
     const [checkingAdmin, isAdmin] = useProposalAdmin()
 
@@ -62,7 +63,7 @@ const CreateProposal: React.FC = () => {
         }
     ]
 
-    const {spyPerBlock, baseAllocPoint, bnbAllocPoint, busdAllocPoint, usdcAllocPoint} = useAPYCalcuation(targetApy, targetApy, targetApy)
+    const {spyPerBlock, baseAllocPoint, bnbAllocPoint, busdAllocPoint, usdcAllocPoint} = useAPYCalcuation(targetApy, targetApy, targetApy, apyMultiplier)
     const {onCreateProposal} = useCreateProposal()
     const {onInstantExecuteProposal} = useInstantExecuteProposal(account)
 
@@ -261,6 +262,11 @@ const CreateProposal: React.FC = () => {
                                         <Label htmlFor="targetApy">{t('Target APY')}</Label>
                                         <Input id="targetApy" name="targetApy" value={targetApy} scale="lg" onChange={handleChange} required />
                                         {formErrors.targetApy && fieldsState.targetApy && <FormErrors errors={formErrors.targetApy} />}
+                                    </Box>
+                                    <Box mb="24px">
+                                        <Label htmlFor="targetApy">{t('APY Multiplier e.g. 100')}</Label>
+                                        <Input id="apyMultiplier" name="apyMultiplier" value={apyMultiplier} scale="lg" onChange={handleChange} required />
+                                        {formErrors.apyMultiplier && fieldsState.apyMultiplier && <FormErrors errors={formErrors.apyMultiplier} />}
                                     </Box>
                                     <Box mb="24px">
                                         <Text color="warning">{t('The following parameters are calculated based on the current state of the farming pools. So actual APY won\'t be exactly same as "Target APY"')}</Text>
