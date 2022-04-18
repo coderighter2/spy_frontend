@@ -87,6 +87,7 @@ const FarmCard: React.FC<FarmCardProps> = ({ farm, displayApr, removed, cakePric
                   variant="text-and-button"
                   harvestInterval={farm.harvestInterval}
                   pid={farm.pid}
+                  isOld={farm.isOld}
                   lpSymbol={farm.lpSymbol}
                   multiplier={farm.multiplier}
                   lpLabel={lpLabel}

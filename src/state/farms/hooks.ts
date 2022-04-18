@@ -113,6 +113,15 @@ export const useFarmFromPid = (pid: number): DeserializedFarm => {
   return deserializeFarm(farm)
 }
 
+export const useFarmsFromPid = (pid: number) => {
+  const farm = useSelector((state: State) => state.farms.data.find((f) => f.pid === pid))
+  const oldFarm = useSelector((state: State) => state.farms.old.find((f) => f.pid === pid))
+  return {
+    farm:deserializeFarm(farm),
+    old: deserializeFarm(oldFarm)
+  }
+}
+
 export const useOldFarmFromPid = (pid: number): DeserializedFarm => {
   const farm = useSelector((state: State) => state.farms.old.find((f) => f.pid === pid))
   return deserializeFarm(farm)
@@ -128,9 +137,9 @@ export const useOldFarmFromLpSymbol = (lpSymbol: string): DeserializedFarm => {
   return deserializeFarm(farm)
 }
 
-export const useFarmUser = (pid): DeserializedFarmUserData => {
-  const { userData } = useFarmFromPid(pid)
-  const { allowance, tokenBalance, stakedBalance, earnings, nextHarvestUntil, lockedAmount } = userData
+export const useFarmUser = (pid, isOld=false): DeserializedFarmUserData => {
+  const { farm, old } = useFarmsFromPid(pid)
+  const { allowance, tokenBalance, stakedBalance, earnings, nextHarvestUntil, lockedAmount } = isOld? old.userData : farm.userData
   return {
     lockedAmount,
     allowance,
