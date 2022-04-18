@@ -8,7 +8,7 @@ import Balance from 'components/Balance'
 import { useTranslation } from 'contexts/Localization'
 import useBUSDPrice from 'hooks/useBUSDPrice'
 import { useAppDispatch } from 'state'
-import { fetchVaultsPublicDataAsync, fetchVaultUserDataAsync } from 'state/vaults'
+import { fetchOldVaultsPublicDataAsync, fetchOldVaultUserDataAsync, fetchVaultsPublicDataAsync, fetchVaultUserDataAsync } from 'state/vaults'
 import { useLpTokenPrice } from 'state/farms/hooks'
 import { BIG_TEN, BIG_ZERO } from 'utils/bigNumber'
 import { getBalanceAmount } from 'utils/formatBalance'
@@ -29,6 +29,7 @@ interface VaultCardActionsProps {
   lpAddress?:string
   token?: Token
   pid?: number
+  isOld?: boolean
   contractAddress: string
   isETH: boolean
   addTokenUrl?: string
@@ -54,6 +55,7 @@ const StakeAction: React.FC<VaultCardActionsProps> = ({
   lpAddress,
   token,
   pid,
+  isOld,
   addTokenUrl,
   contractAddress,
   isETH,
@@ -70,8 +72,13 @@ const StakeAction: React.FC<VaultCardActionsProps> = ({
   const handleStake = async (amount: string) => {
     const value = new BigNumber(amount).multipliedBy(BIG_TEN.pow(token.decimals))
     await onStake(value.toJSON())
-    dispatch(fetchVaultUserDataAsync({ account, pids: [pid] }))
-    dispatch(fetchVaultsPublicDataAsync([pid]))
+    if (isOld) {
+      dispatch(fetchOldVaultUserDataAsync({ account, pids: [pid] }))
+      dispatch(fetchOldVaultsPublicDataAsync([pid]))
+    } else {
+      dispatch(fetchVaultUserDataAsync({ account, pids: [pid] }))
+      dispatch(fetchVaultsPublicDataAsync([pid]))
+    }
   }
 
   const handleUnstake = async (withdrawType: WithdrawType, amountInLP: string, amountInTken: string) => {
@@ -80,8 +87,13 @@ const StakeAction: React.FC<VaultCardActionsProps> = ({
     } else  {
       await onUnstake(new BigNumber(amountInTken).decimalPlaces(0).toJSON(), withdrawType === WithdrawType.TOKEN)
     }
-    dispatch(fetchVaultUserDataAsync({ account, pids: [pid] }))
-    dispatch(fetchVaultsPublicDataAsync([pid]))
+    if (isOld) {
+      dispatch(fetchOldVaultUserDataAsync({ account, pids: [pid] }))
+      dispatch(fetchOldVaultsPublicDataAsync([pid]))
+    } else {
+      dispatch(fetchVaultUserDataAsync({ account, pids: [pid] }))
+      dispatch(fetchVaultsPublicDataAsync([pid]))
+    }
   }
 
   const displayBalance = useCallback(() => {
@@ -164,6 +176,10 @@ const StakeAction: React.FC<VaultCardActionsProps> = ({
       {renderStakingButtons()}
     </Flex>
   )
+}
+
+StakeAction.defaultProps = {
+  isOld: false
 }
 
 export default StakeAction

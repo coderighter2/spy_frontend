@@ -6,7 +6,7 @@ import BigNumber from 'bignumber.js'
 import { BIG_TEN } from 'utils/bigNumber'
 import { useERC20 } from 'hooks/useContract'
 import { useAppDispatch } from 'state'
-import { fetchVaultsPublicDataAsync, fetchVaultUserDataAsync } from 'state/vaults'
+import { fetchOldVaultsPublicDataAsync, fetchOldVaultUserDataAsync, fetchVaultsPublicDataAsync, fetchVaultUserDataAsync } from 'state/vaults'
 import DepositLPModal from '../DepositLPModal'
 import useStakeVault from '../../hooks/useStakeVault'
 import useApproveVault from '../../hooks/useApproveVault'
@@ -22,6 +22,7 @@ export interface ExpandableSectionProps {
   account?: string
   pid?: number
   disabled?: boolean
+  isOld?: boolean
 }
 
 const Wrapper = styled.div`
@@ -46,6 +47,7 @@ const DetailsSection: React.FC<ExpandableSectionProps> = ({
   isETH,
   account,
   pid,
+  isOld,
   totalValueFormatted,
   lpAddress,
   contractAddress,
@@ -61,15 +63,26 @@ const DetailsSection: React.FC<ExpandableSectionProps> = ({
   const handleStakeLP = async (lpAmount: string) => {
     const value = new BigNumber(lpAmount).multipliedBy(BIG_TEN.pow(18))
     await onStakeLP(value.toJSON())
-    dispatch(fetchVaultUserDataAsync({ account, pids: [pid] }))
-    dispatch(fetchVaultsPublicDataAsync([pid]))
+    if (isOld) {
+      dispatch(fetchOldVaultUserDataAsync({ account, pids: [pid] }))
+      dispatch(fetchOldVaultsPublicDataAsync([pid]))
+    } else {
+      dispatch(fetchVaultUserDataAsync({ account, pids: [pid] }))
+      dispatch(fetchVaultsPublicDataAsync([pid]))
+    }
+    
   }
 
   const handleRequestLPApproval = useCallback(async () => {
     await onApprove(lpContract)
-    dispatch(fetchVaultUserDataAsync({account, pids: [pid]}))
-    dispatch(fetchVaultsPublicDataAsync([pid]))
-  }, [dispatch, onApprove, lpContract, pid, account])
+    if (isOld) {
+      dispatch(fetchOldVaultUserDataAsync({ account, pids: [pid] }))
+      dispatch(fetchOldVaultsPublicDataAsync([pid]))
+    } else {
+      dispatch(fetchVaultUserDataAsync({ account, pids: [pid] }))
+      dispatch(fetchVaultsPublicDataAsync([pid]))
+    }
+  }, [dispatch, onApprove, lpContract, pid, account, isOld])
 
   const [onPresentDepositLP] = useModal(
     <DepositLPModal
@@ -78,6 +91,7 @@ const DetailsSection: React.FC<ExpandableSectionProps> = ({
       pid={pid}
       lpLabel={lpLabel}
       addTokenUrl={addLiquidityUrl}
+      isOld={isOld}
     />,
   )
 
@@ -95,6 +109,10 @@ const DetailsSection: React.FC<ExpandableSectionProps> = ({
       {/* <StyledLinkExternal href={infoAddress}>{t('See Pair Info')}</StyledLinkExternal> */}
     </Wrapper>
   )
+}
+
+DetailsSection.defaultProps = {
+  isOld: false
 }
 
 export default DetailsSection

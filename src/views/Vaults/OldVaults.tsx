@@ -1,8 +1,8 @@
 import React, { useEffect, useCallback, useState, useMemo, useRef } from 'react'
-import { Route, useRouteMatch, useLocation, NavLink, Link } from 'react-router-dom'
+import { Route, useRouteMatch, useLocation, NavLink } from 'react-router-dom'
 import BigNumber from 'bignumber.js'
 import { useWeb3React } from '@web3-react/core'
-import { Image, Heading, RowType, Toggle, Text, Button, ArrowForwardIcon, Flex, Box, Message } from '@pancakeswap/uikit'
+import { Image, Heading, RowType, Toggle, Text, Button, ArrowForwardIcon, Flex, Box } from '@pancakeswap/uikit'
 import styled from 'styled-components'
 import FlexLayout from 'components/Layout/Flex'
 import Page from 'components/Layout/Page'
@@ -19,6 +19,7 @@ import { usePollVaultsWithUserData, useVaults } from 'state/vaults/hooks'
 import VaultCard, { VaultWithStakedValue } from './components/VaultCard/VaultCard'
 import VaultBountyCard from './components/VaultBountyCard'
 import EmptyVaultBountyCard from './components/VaultBountyCard/EmptyVaultBountyCard'
+import HelpButton from './HelpButton'
 
 const HeaderOuter = styled(Box)<{ background?: string }>`
   background: ${({ theme, background }) => background || theme.colors.gradients.bubblegum};
@@ -42,11 +43,11 @@ const getDisplayApr = (cakeRewardsApr?: number, lpRewardsApr?: number) => {
   return null
 }
 
-const Vaults: React.FC = () => {
+const OldVaults: React.FC = () => {
   const { path } = useRouteMatch()
   const { t } = useTranslation()
-  const { data: vaults, userDataLoaded } = useVaults()
-  const { data: farms } = useFarms()
+  const { old: vaults, oldUserDataLoaded: userDataLoaded } = useVaults()
+  const { old: farms } = useFarms()
   const cakePrice = usePriceCakeBusd()
   const { account } = useWeb3React()
 
@@ -111,18 +112,6 @@ const Vaults: React.FC = () => {
     <>
       <HeaderOuter>
         <HeaderInner>
-        <Flex flexDirection="column">
-          <Message variant='warning'>
-            <Flex flexDirection="column" alignItems="flex-start">
-              <Text>
-              {t('V1 Pools will be stopped working since Apr 18th, please withdraw your token from V1 Pools and stake into main pools.')}
-              </Text>
-              <Button variant="text" scale="sm" as={Link} to="/auto-pools-old">
-                {t('V1 Pools >')}
-              </Button>
-            </Flex>
-          </Message>
-        </Flex>
 
           <Flex justifyContent="space-between" flexDirection={['column', null, null, 'row']}>
             <Flex flex="1" flexDirection="column" mr={['8px', 0]}>
@@ -159,4 +148,4 @@ const Vaults: React.FC = () => {
   )
 }
 
-export default Vaults
+export default OldVaults

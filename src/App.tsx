@@ -41,6 +41,7 @@ const Referral = lazy(() => import('./views/Referral'))
 const Farms = lazy(() => import('./views/Farms'))
 const OldFarms = lazy(() => import('./views/Farms/OldFarms'))
 const Vaults = lazy(() => import('./views/Vaults'))
+const OldVaults = lazy(() => import('./views/Vaults/OldVaults'))
 const Governance = lazy(() => import('./views/Governance'))
 const Nfts = lazy(() => import('./views/Nfts'))
 const NftMarketplace = lazy(() => import('./views/NftMarketplace'))
@@ -110,6 +111,9 @@ const App: React.FC = () => {
               </Route>
               <Route path="/auto-pools">
                 <Vaults />
+              </Route>
+              <Route path="/auto-pools-old">
+                <OldVaults />
               </Route>
               <Route path="/pools">
                 <Pools />
