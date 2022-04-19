@@ -115,7 +115,7 @@ const Vaults: React.FC = () => {
           <Message variant='warning'>
             <Flex flexDirection="column" alignItems="flex-start">
               <Text>
-              {t('V1 Pools will be stopped working since Apr 18th, please withdraw your token from V1 Pools and stake into main pools.')}
+              {t('V1 Pools will be stopped working since Apr 19th, please withdraw your token from V1 Pools and stake into main pools.')}
               </Text>
               <Button variant="text" scale="sm" as={Link} to="/auto-pools-old">
                 {t('V1 Pools >')}
