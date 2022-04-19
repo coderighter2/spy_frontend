@@ -82,6 +82,7 @@ const VaultCard: React.FC<VaultCardProps> = ({ vault, displayApr, cakePrice, acc
                                 variant="text-and-button"
                                 harvestInterval={vault.farm?.harvestInterval}
                                 pid={vault.pid}
+                                isOld={vault.isOld}
                                 lpSymbol={vault.lpSymbol}
                                 multiplier={vault.farm ? vault.farm.multiplier : ''}
                                 lpLabel={lpLabel}
@@ -140,6 +141,7 @@ const VaultCard: React.FC<VaultCardProps> = ({ vault, displayApr, cakePrice, acc
                         contractAddress={getAddress(vault.contractAddresses)}
                         lpAddress={getAddress(vault.lpAddresses)}
                         pid={vault.pid}
+                        isOld={vault.isOld}
                         account={account}
                         disabled={expired}
                     />

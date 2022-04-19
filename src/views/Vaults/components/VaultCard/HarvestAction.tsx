@@ -5,7 +5,7 @@ import { Token } from '@pancakeswap/sdk'
 import { useTranslation } from 'contexts/Localization'
 import tokens from 'config/constants/tokens'
 import { useAppDispatch } from 'state'
-import { fetchVaultsPublicDataAsync, fetchVaultUserDataAsync } from 'state/vaults'
+import { fetchOldVaultsPublicDataAsync, fetchOldVaultUserDataAsync, fetchVaultsPublicDataAsync, fetchVaultUserDataAsync } from 'state/vaults'
 import useToast from 'hooks/useToast'
 import useBUSDPrice from 'hooks/useBUSDPrice'
 import { getBalanceAmount } from 'utils/formatBalance'
@@ -22,10 +22,11 @@ interface VaultCardActionsProps {
   contractAddress: string
   isETH: boolean
   pid?: number
+  isOld?: boolean
   disabled?: boolean
 }
 
-const HarvestAction: React.FC<VaultCardActionsProps> = ({ token, earnings, pid, contractAddress, isETH, disabled}) => {
+const HarvestAction: React.FC<VaultCardActionsProps> = ({ token, earnings, pid, isOld, contractAddress, isETH, disabled}) => {
   const { account } = useWeb3React()
   const { t } = useTranslation()
   const { onReward } = useHarvestVault(contractAddress, isETH)
@@ -39,9 +40,14 @@ const HarvestAction: React.FC<VaultCardActionsProps> = ({ token, earnings, pid, 
 
   const handleHarvest = useCallback(async(receiveToken: boolean) => {
     await onReward(receiveToken)
-    dispatch(fetchVaultUserDataAsync({account, pids: [pid]}))
-    dispatch(fetchVaultsPublicDataAsync([pid]))
-  }, [dispatch, onReward, account, pid])
+    if (isOld) {
+      dispatch(fetchOldVaultUserDataAsync({ account, pids: [pid] }))
+      dispatch(fetchOldVaultsPublicDataAsync([pid]))
+    } else {
+      dispatch(fetchVaultUserDataAsync({ account, pids: [pid] }))
+      dispatch(fetchVaultsPublicDataAsync([pid]))
+    }
+  }, [dispatch, onReward, account, pid, isOld])
 
   const [onPresentWithdraw] = useModal(
     <HarvestModal 
@@ -60,13 +66,17 @@ const HarvestAction: React.FC<VaultCardActionsProps> = ({ token, earnings, pid, 
         )}
       </Flex>
       <Button
-        disabled={disabled || !rawEarningsBalanceInSpy || rawEarningsBalanceInSpy.eq(0)}
+        disabled={isOld || disabled || !rawEarningsBalanceInSpy || rawEarningsBalanceInSpy.eq(0)}
         onClick={onPresentWithdraw}
       >
         {t('Harvest')}
       </Button>
     </Flex>
   )
+}
+
+HarvestAction.defaultProps = {
+  isOld: false
 }
 
 export default HarvestAction

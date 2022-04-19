@@ -12,7 +12,7 @@ type PublicVaultData = {
   rewardForCompounder: SerializedBigNumber
 }
 
-const fetchPublicVaultData = async (vault: SerializedVault): Promise<PublicVaultData> => {
+const fetchPublicVaultData = async (vault: SerializedVault, isOld = false): Promise<PublicVaultData> => {
   const { contractAddresses } = vault
   const contractAddres = getAddress(contractAddresses)
 

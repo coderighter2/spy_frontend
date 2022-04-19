@@ -14,6 +14,7 @@ interface DepositLPModalProps {
   max?: BigNumber
   addTokenUrl?: string
   lpLabel?: string
+  isOld?: boolean
   onRequestApproveLP: () => void
   onConfirm: (amount: string) => void
   onDismiss?: () => void
@@ -23,6 +24,7 @@ const DepositLPModal: React.FC<DepositLPModalProps> = ({
   pid,
   addTokenUrl,
   lpLabel,
+  isOld,
   onRequestApproveLP,
   onConfirm,
   onDismiss
@@ -32,7 +34,7 @@ const DepositLPModal: React.FC<DepositLPModalProps> = ({
   const [pendingTx, setPendingTx] = useState(false)
   const [requestedApproval, setRequestedApproval] = useState(false)
   const { t } = useTranslation()
-  const {lpAllowance, lpTokenBalance} = useVaultUser(pid)
+  const {lpAllowance, lpTokenBalance} = useVaultUser(pid, isOld)
   const fullBalance = useMemo(() => {
     return lpTokenBalance ? getFullDisplayBalance(lpTokenBalance) : ''
   }, [lpTokenBalance])
@@ -122,6 +124,10 @@ const DepositLPModal: React.FC<DepositLPModalProps> = ({
       </LinkExternal>
     </Modal>
   )
+}
+
+DepositLPModal.defaultProps = {
+  isOld: false
 }
 
 export default DepositLPModal
