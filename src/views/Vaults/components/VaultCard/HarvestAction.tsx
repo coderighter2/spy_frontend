@@ -66,7 +66,7 @@ const HarvestAction: React.FC<VaultCardActionsProps> = ({ token, earnings, pid, 
         )}
       </Flex>
       <Button
-        disabled={isOld || disabled || !rawEarningsBalanceInSpy || rawEarningsBalanceInSpy.eq(0)}
+        disabled={disabled || !rawEarningsBalanceInSpy || rawEarningsBalanceInSpy.eq(0)}
         onClick={onPresentWithdraw}
       >
         {t('Harvest')}
