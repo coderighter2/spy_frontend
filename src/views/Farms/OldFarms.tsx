@@ -169,7 +169,7 @@ const OldFarms: React.FC = () => {
           ? getFarmApr(new BigNumber(farm.poolWeight), farm.spyPerBlock, cakePrice, totalLiquidity, farm.lpAddresses[parseInt(process.env.REACT_APP_CHAIN_ID, 10)])
           : { cakeRewardsApr: 0, lpRewardsApr: 0 }
 
-        return { ...farm, apr: cakeRewardsApr, lpRewardsApr, liquidity: totalLiquidity }
+        return { ...farm, apr: 1, lpRewardsApr: 0, liquidity: totalLiquidity }
       })
 
       if (query) {
