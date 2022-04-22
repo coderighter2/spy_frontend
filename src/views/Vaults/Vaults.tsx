@@ -79,7 +79,7 @@ const Vaults: React.FC = () => {
         }
         const lpPrice = getLpTokenPrice(farm)
         const farmLiquidity = new BigNumber(farm.lpTotalInQuoteToken).times(farm.quoteTokenPriceBusd)
-        const totalLiquidity = vault.totalSupply ? getBalanceAmount(vault.totalSupply).multipliedBy(lpPrice) : BIG_ZERO
+        const totalLiquidity = vault.totalPoolAmount ? getBalanceAmount(vault.totalPoolAmount).multipliedBy(lpPrice) : BIG_ZERO
         const { cakeRewardsApr, lpRewardsApr } = getFarmApr(new BigNumber(farm.poolWeight).multipliedBy(totalLiquidity).dividedBy(farmLiquidity), farm.spyPerBlock, cakePrice, totalLiquidity, farm.lpAddresses[parseInt(process.env.REACT_APP_CHAIN_ID, 10)])
 
         return {...vault, farm, apr: cakeRewardsApr, lpRewardsApr, liquidity: totalLiquidity}

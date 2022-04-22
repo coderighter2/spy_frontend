@@ -133,7 +133,7 @@ const CardActions: React.FC<VaultCardActionsProps> = ({ vault, account, addToken
       </Flex>
       <PendingEarned
         token={vault.token}
-        pendingEarnings={new BigNumber(pendingEarnings)} 
+        pendingEarnings={vault.isOld ? BIG_ZERO : new BigNumber(pendingEarnings)} 
       />
       <Flex>
         <Text bold textTransform="uppercase" color="secondary" fontSize="12px" pr="4px">
@@ -149,7 +149,7 @@ const CardActions: React.FC<VaultCardActionsProps> = ({ vault, account, addToken
       </Flex>
       <HarvestAction
         token={vault.token}
-        earnings={new BigNumber(earnings)} 
+        earnings={vault.isOld ? BIG_ZERO : new BigNumber(earnings)} 
         pid={pid} 
         isOld={vault.isOld}
         contractAddress={contractAddress} 

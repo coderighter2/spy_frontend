@@ -3,6 +3,7 @@ import styled from 'styled-components'
 import BigNumber from 'bignumber.js'
 import { Button, Flex, Text } from '@pancakeswap/uikit'
 import { getAddress } from 'utils/addressHelpers'
+import { BIG_ZERO } from 'utils/bigNumber'
 import { useAppDispatch } from 'state'
 import { fetchFarmUserDataAsync, fetchOldFarmUserDataAsync } from 'state/farms'
 import { DeserializedFarm } from 'state/types'
@@ -90,7 +91,7 @@ const CardActions: React.FC<FarmCardActionsProps> = ({ farm, account, addLiquidi
           {t('Earned')}
         </Text>
       </Flex>
-      <HarvestAction earnings={new BigNumber(earnings).plus(lockedAmount)} pid={pid} nextHarvestUntil={farm.userData.nextHarvestUntil} isOld={farm.isOld}/>
+      <HarvestAction earnings={farm.isOld ? BIG_ZERO : new BigNumber(earnings).plus(lockedAmount)} pid={pid} nextHarvestUntil={farm.userData.nextHarvestUntil} isOld={farm.isOld}/>
       <Flex>
         <Text bold textTransform="uppercase" color="secondary" fontSize="12px" pr="4px">
           {farm.lpSymbol}
