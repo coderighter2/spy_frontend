@@ -79,7 +79,10 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({ onConfirm, onDismiss, tok
   }, [amountTokenToWithdraw, token])
 
   const handleChangePercent = (sliderPercent: number) => {
-    if (sliderPercent > 0) {
+    if (sliderPercent === 100) {
+      setAmountLPToWithdraw(maxLP)
+      setAmountTokenToWithdraw(maxToken)
+    } else if (sliderPercent > 0) {
       setAmountLPToWithdraw(maxLP.dividedBy(100).multipliedBy(sliderPercent))
       setAmountTokenToWithdraw(maxToken.dividedBy(100).multipliedBy(sliderPercent))
     } else {

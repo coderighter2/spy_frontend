@@ -83,9 +83,9 @@ const StakeAction: React.FC<VaultCardActionsProps> = ({
 
   const handleUnstake = async (withdrawType: WithdrawType, amountInLP: string, amountInTken: string) => {
     if (withdrawType === WithdrawType.LP) {
-      await onUnstakeLP(new BigNumber(amountInLP).decimalPlaces(0).toJSON())
+      await onUnstakeLP(new BigNumber(amountInLP).decimalPlaces(0, BigNumber.ROUND_DOWN).toJSON())
     } else  {
-      await onUnstake(new BigNumber(amountInTken).decimalPlaces(0).toJSON(), withdrawType === WithdrawType.TOKEN)
+      await onUnstake(new BigNumber(amountInTken).decimalPlaces(0, BigNumber.ROUND_DOWN).toJSON(), withdrawType === WithdrawType.TOKEN)
     }
     if (isOld) {
       dispatch(fetchOldVaultUserDataAsync({ account, pids: [pid] }))
