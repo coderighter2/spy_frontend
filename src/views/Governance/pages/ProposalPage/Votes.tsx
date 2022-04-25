@@ -119,7 +119,7 @@ const Votes: React.FC<VotesProps> = ({proposal}) => {
             <Flex flexDirection={["column", null, null, "row"]} alignItems="center">
                 <Flex flex="1" flexDirection="column" width={["100%", null, null, "auto"]}>
                     <VotesGroup 
-                        totalWeight={proposal?.currentYesVote.plus(proposal?.currentNoVote)}
+                        totalWeight={proposal?.currentYesVote}
                         voteAddressCount={proposal?.currentYesVoteCount}
                         isFor
                         votes={forVotes}
@@ -128,7 +128,7 @@ const Votes: React.FC<VotesProps> = ({proposal}) => {
                 </Flex>
                 <Flex flex="1" flexDirection="column" width={["100%", null, null, "auto"]}>
                     <VotesGroup 
-                        totalWeight={proposal?.currentYesVote.plus(proposal?.currentNoVote)}
+                        totalWeight={proposal?.currentNoVote}
                         voteAddressCount={proposal?.currentNoVoteCount}
                         votes={againstVotes}
                         percent={againstPercent}
