@@ -1,16 +1,23 @@
 import React, { useCallback, useMemo, useState } from 'react'
-import styled from 'styled-components'
+import styled, { css } from 'styled-components'
 import { ChevronRightIcon, Flex, Button, Text } from '@pancakeswap/uikit'
 import { nftGrades } from 'config/constants/nft'
 import { useTranslation } from 'contexts/Localization'
 import { DeserializedNFTGego } from 'state/types'
 import { BIG_TEN } from 'utils/bigNumber';
 
-const RowButton = styled(Button)`
+const RowButton = styled(Button)<{selected?: boolean}>`
   margin: 4px 0px;
   padding: 12px;
   border: 1px solid ${({ theme }) => theme.colors.cardBorder};
   border-radius: ${({theme}) => theme.radii.default};
+
+
+  ${(props) =>
+    props.selected &&
+    css`
+    border-color: ${({ theme }) => theme.colors.primary};
+    `}
 `
 
 const RowWrapper = styled(Flex)`
@@ -41,15 +48,16 @@ interface NFTGradeRowProps {
   gego: DeserializedNFTGego
   spyDecimals: number
   selectable?: boolean
-  onSelect: () => void
+  selected?: boolean
+  onSelect?: () => void
 }
 
-const NFTGradeRow: React.FC<NFTGradeRowProps> = ({ gego, selectable, spyDecimals, onSelect }) => {
+const NFTGradeRow: React.FC<NFTGradeRowProps> = ({ gego, selectable, selected, spyDecimals, onSelect }) => {
   const { t } = useTranslation()
   const gradeConfig = nftGrades.find((c) => c.level === gego.grade)
   return (
     <Flex flexDirection="column">
-      <RowButton variant='text' style={{height: 'auto'}} onClick={() => {
+      <RowButton variant='text' style={{height: 'auto'}} selected={selected} onClick={() => {
         if (selectable) {
           onSelect()
         }

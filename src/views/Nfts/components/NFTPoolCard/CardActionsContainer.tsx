@@ -15,6 +15,7 @@ import useApproveGeneralReward from '../../hooks/useApproveGeneralReward'
 import HarvestAction from './HarvestAction'
 import UnstakeNFTModal from '../UnstakeNFTModal'
 import StakeNFTModal from '../StakeNFTModal'
+import StakeNFTsModal from '../StakeNFTsModal'
 
 const Action = styled.div`
   padding-top: 16px;
@@ -63,7 +64,7 @@ const CardActions: React.FC<NFTCardActionsProps> = ({ account, earnings, nextHar
   )
     
   const [onPresentStakeNFTModal] = useModal(
-    <StakeNFTModal gegos={unstakedBalances} account={account}/>
+    <StakeNFTsModal gegos={unstakedBalances} account={account}/>
   )
 
   const handleApprove = useCallback(async () => {
