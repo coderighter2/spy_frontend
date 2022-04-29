@@ -15,6 +15,7 @@ import useApproveGeneralReward from '../../hooks/useApproveGeneralReward'
 import HarvestAction from './HarvestAction'
 import UnstakeNFTModal from '../UnstakeNFTModal'
 import StakeNFTModal from '../StakeNFTModal'
+import ExitNFTModal from '../ExitNFTModal'
 
 const Action = styled.div`
   padding-top: 16px;
@@ -50,6 +51,10 @@ const CardActions: React.FC<NFTCardActionsProps> = ({ account, earnings, nextHar
     <StakeNFTModal gegos={unstakedBalances} account={account} isV2={false}/>
   )
 
+  const [onPresentExitNFTModal] = useModal(
+    <ExitNFTModal gegos={stakedBalances} account={account} isV2={false}/>
+  )
+
   const handleApprove = useCallback(async () => {
     try {
       setRequestedApproval(true)
@@ -65,13 +70,20 @@ const CardActions: React.FC<NFTCardActionsProps> = ({ account, earnings, nextHar
 
   const renderApprovalOrStakeButton = () => {
     return isApproved ? (
-      <Flex>
-        <Button disabled={!stakedBalances || stakedBalances.length === 0} variant="secondary" mr="4px" width="100%" onClick={onPresentUnstkeModal}>
-          {t('Unstake')}
-        </Button>
-        <Button disabled variant="primary" ml="4px" width="100%" onClick={onPresentStakeNFTModal}>
-          {t('Stake')}
-        </Button>
+      <Flex flexDirection="column">
+        <Flex>
+          <Button disabled={!stakedBalances || stakedBalances.length === 0} variant="secondary" mr="4px" width="100%" onClick={onPresentUnstkeModal}>
+            {t('Unstake')}
+          </Button>
+          <Button disabled variant="primary" ml="4px" width="100%" onClick={onPresentStakeNFTModal}>
+            {t('Stake')}
+          </Button>
+        </Flex>
+        <Flex>
+          <Button disabled={!stakedBalances || stakedBalances.length === 0} variant="secondary" mr="4px" mt="8px" width="100%" onClick={onPresentExitNFTModal}>
+            {t('Exit')}
+          </Button>
+        </Flex>
       </Flex>
     ) : (
       <Button mt="8px" width="100%" disabled={requestedApproval} onClick={handleApprove}>

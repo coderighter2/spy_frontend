@@ -1,5 +1,5 @@
 import { useCallback } from 'react'
-import { unstakeNFT } from 'utils/calls'
+import { exitNFT, unstakeNFT } from 'utils/calls'
 import { useOldGeneralNFTReward, useGeneralNFTReward } from 'hooks/useContract'
 
 const useUnstakeNFT = () => {
@@ -11,7 +11,12 @@ const useUnstakeNFT = () => {
     console.info(txHash)
   }, [nftRewardContract, oldNftRewardContract])
 
-  return { onUnstakeNFT: handleUnstakeNFT }
+  const handleExitNFT = useCallback(async (isV2 = true) => {
+    const txHash = isV2 ? await exitNFT(nftRewardContract) : await exitNFT(oldNftRewardContract)
+    console.info(txHash)
+  }, [nftRewardContract, oldNftRewardContract])
+
+  return { onUnstakeNFT: handleUnstakeNFT, onExitNFT: handleExitNFT }
 }
 
 export default useUnstakeNFT

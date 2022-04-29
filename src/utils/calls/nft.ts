@@ -71,11 +71,33 @@ export const stakeNFT = async (nftReward, tokenId) => {
   return receipt.status
 }
 
+export const stakeNFTMulti = async (nftReward, tokenIds) => {
+
+  const gasPrice = getGasPrice()
+
+  const tx = await callWithEstimateGas(nftReward, 'stakeMulti', [tokenIds], {
+    gasPrice,
+  })
+  const receipt = await tx.wait()
+  return receipt.status
+}
+
 export const unstakeNFT = async (nftReward, tokenId) => {
 
   const gasPrice = getGasPrice()
 
   const tx = await callWithEstimateGas(nftReward, 'unstake', [tokenId], {
+    gasPrice,
+  })
+  const receipt = await tx.wait()
+  return receipt.status
+}
+
+export const exitNFT = async (nftReward) => {
+
+  const gasPrice = getGasPrice()
+
+  const tx = await callWithEstimateGas(nftReward, 'exit', [], {
     gasPrice,
   })
   const receipt = await tx.wait()
