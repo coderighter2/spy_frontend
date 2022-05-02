@@ -17,6 +17,7 @@ import useApproveNFTFactory from '../../hooks/useApproveNFTFactory';
 import StakeNFTModal from '../StakeNFTModal';
 import UnstakeNFTModal from '../UnstakeNFTModal';
 import DecomposeNFTModal from '../DecomposeNFTModal';
+import TransferNFTModal from '../TransferNFTModal';
 
 const StyledCard = styled(Card)`
   align-self: baseline;
@@ -109,6 +110,10 @@ const NFTCard: React.FC<NFTCardProps> = ({account, gego, factoryAllowed, general
     <SellNFTModal gego={gego} account={account} />
   )
 
+  const [onPresentTransferNFTModal] = useModal(
+    <TransferNFTModal gego={gego} account={account}/>
+  )
+
   const handleApproveNFTFactory = useCallback(async() => {
     try {
         setRequestedNFTFactoryApproval(true)
@@ -184,6 +189,11 @@ const NFTCard: React.FC<NFTCardProps> = ({account, gego, factoryAllowed, general
           )}
           <Button scale="sm" ml="8px" width="100%" disabled={gego.staked} onClick={onPresentSellNFTModal}>
             {t('Sell')}
+          </Button>
+        </Flex>
+        <Flex mt="8px">
+          <Button scale="sm" width="100%" disabled={gego.staked} onClick={onPresentTransferNFTModal}>
+            {t('Transfer')}
           </Button>
         </Flex>
       </CardInnerContainer>
