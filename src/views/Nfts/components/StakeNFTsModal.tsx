@@ -37,6 +37,11 @@ const StyledModalBody = styled(ModalBody)`
   }
 `
 
+const Scrollable = styled(Flex)`
+  max-height: 400px;
+  overflow-y: scroll;
+`
+
 interface StakeNFTsModalProps {
   gego?: DeserializedNFTGego
   gegos?: DeserializedNFTGego[]
@@ -89,6 +94,20 @@ const StakeNFTsModal: React.FC<InjectedModalProps & StakeNFTsModalProps> = ({ ac
   const selectedGegoIds = useMemo(() => {
     return gegos.filter((item) => !!selectedGegos[item.id]).map((item) => item.id)
   }, [selectedGegos, gegos])
+
+  const handleToggleSelectAll = useCallback(async () => {
+    if (countSelected === gegos.length) {
+      // deselect all
+
+      setSelectedGegos({})
+    } else {
+      const selectedGegos_ = {}
+      gegos.forEach((item) => {
+        selectedGegos_[item.id] = true
+      })
+      setSelectedGegos(selectedGegos_)
+    }
+  }, [gegos, countSelected])
 
   const handleApprove = useCallback(async() => {
     try {
@@ -156,13 +175,20 @@ const StakeNFTsModal: React.FC<InjectedModalProps & StakeNFTsModalProps> = ({ ac
       </ModalHeader>
 
       <StyledModalBody>
-        <Text>{countSelected} {t('NFT(s) selected')}</Text>
+        <Flex justifyContent="space-between" alignItems="center">
+          <Text>{countSelected} {t('NFT(s) selected')}</Text>
+          <Button scale="sm" onClick={handleToggleSelectAll}>
+            {countSelected === gegos.length ? t('Deselect All') : t('Select All')}
+          </Button>
+        </Flex>
+        <Scrollable>
         <Flex flexDirection="column">
           { gegos.map((g) => (
               <NFTGradeRow gego={g} key={g.id} selectable selected={!!selectedGegos[g.id]} onSelect={() => handleSelect(g)} spyDecimals={tokens.spy.decimals}/>
             )
           )}
         </Flex>
+        </Scrollable>
         <ModalActions>
           <Button scale="md" variant="secondary" onClick={onDismiss} width="100%">
             {t('Cancel')}
