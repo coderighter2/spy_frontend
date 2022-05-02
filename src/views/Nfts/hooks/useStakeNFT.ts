@@ -1,5 +1,5 @@
 import { useCallback } from 'react'
-import { stakeNFT } from 'utils/calls'
+import { stakeNFT, stakeNFTMulti } from 'utils/calls'
 import { useGeneralNFTReward, useOldGeneralNFTReward } from 'hooks/useContract'
 
 const useStakeNFT = () => {
@@ -11,7 +11,12 @@ const useStakeNFT = () => {
     console.info(txHash)
   }, [nftRewardContract, oldNftRewardContract])
 
-  return { onStakeNFT: handleStakeNFT }
+  const handleStakeNFTMulti = useCallback(async (tokenIds: string[], isV2 = true) => {
+    const txHash = isV2 ? await stakeNFTMulti(nftRewardContract, tokenIds) : await stakeNFT(oldNftRewardContract, tokenIds[0])
+    console.info(txHash)
+  }, [nftRewardContract, oldNftRewardContract])
+
+  return { onStakeNFT: handleStakeNFT, onStakeNFTMulti: handleStakeNFTMulti }
 }
 
 export default useStakeNFT

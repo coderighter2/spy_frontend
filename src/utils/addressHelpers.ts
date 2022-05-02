@@ -88,10 +88,10 @@ export const getNFTMintroxyAddress = () => {
   return getAddress(addresses.nftMintProxy)
 }
 export const getOldGeneralNFTRewardAddress = () => {
-  return getAddress(addresses.generalNFTRewardV2)
+  return getAddress(addresses.generalNFTRewardV3)
 }
 export const getGeneralNFTRewardAddress = () => {
-  return getAddress(addresses.generalNFTRewardV3)
+  return getAddress(addresses.generalNFTRewardV4)
 }
 export const getNFTMarketplaceAddress = () => {
   return getAddress(addresses.nftMarketplace)
