@@ -106,14 +106,8 @@ const App: React.FC = () => {
               <Route path="/farms">
                 <Farms />
               </Route>
-              <Route path="/farms-old">
-                <OldFarms />
-              </Route>
               <Route path="/auto-pools">
                 <Vaults />
-              </Route>
-              <Route path="/auto-pools-old">
-                <OldVaults />
               </Route>
               <Route path="/pools">
                 <Pools />
