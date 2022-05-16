@@ -111,18 +111,6 @@ const Vaults: React.FC = () => {
     <>
       <HeaderOuter>
         <HeaderInner>
-        <Flex flexDirection="column">
-          <Message variant='warning'>
-            <Flex flexDirection="column" alignItems="flex-start">
-              <Text>
-              {t('V1 Pools will be stopped working since Apr 19th, please withdraw your token from V1 Pools and stake into main pools.')}
-              </Text>
-              <Button variant="text" scale="sm" as={Link} to="/auto-pools-old">
-                {t('V1 Pools >')}
-              </Button>
-            </Flex>
-          </Message>
-        </Flex>
 
           <Flex justifyContent="space-between" flexDirection={['column', null, null, 'row']}>
             <Flex flex="1" flexDirection="column" mr={['8px', 0]}>

@@ -109,9 +109,6 @@ const App: React.FC = () => {
               <Route path="/auto-pools">
                 <Vaults />
               </Route>
-              <Route path="/auto-pools-old">
-                <OldVaults />
-              </Route>
               <Route path="/pools">
                 <Pools />
               </Route>
