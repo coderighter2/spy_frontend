@@ -9,6 +9,8 @@ export const SNAPSHOT_API = `${SNAPSHOT_BASE_URL}/graphql`
 export const SNAPSHOT_HUB_API = `${SNAPSHOT_BASE_URL}/api/message`
 export const BITQUERY_API = 'https://graphql.bitquery.io'
 
+
+export const LAUNCHPAD_CLIENT = 'https://api.thegraph.com/subgraphs/name/pancakeswap/blocks'
 /**
  * V1 will be deprecated but is still used to claim old rounds
  */

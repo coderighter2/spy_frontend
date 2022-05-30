@@ -26,6 +26,23 @@ export interface BigNumberToJson {
 
 export type SerializedBigNumber = string
 
+export interface SerializedLaunchpadState {
+  userDataLoaded: boolean
+
+  totalSaleCount?: number
+  fee?: SerializedBigNumber
+
+  userSaleCount?: number
+}
+
+export interface DeserializedLaunchpadState {
+  userDataLoaded: boolean
+
+  totalSaleCount?: number
+  fee?: BigNumber
+
+  userSaleCount?: number
+}
 
 export interface SerializedGovernance {
   dev?: string
@@ -784,6 +801,7 @@ export interface State {
   lottery: LotteryState
   nftMarket: NftMarketState
   governance: SerializedGovernanceState
+  launchpad: SerializedLaunchpadState
 }
 
 

@@ -58,6 +58,10 @@ const config: (t: ContextApi['t']) => ConfigMenuItemsType[] = (t) => [
         label: t('The Auto'),
         href: '/auto-pools',
       },
+      {
+        label: t('Referral'),
+        href: '/referral',
+      },
       // {
       //   label: t('Pools'),
       //   href: '/pools',
@@ -71,13 +75,13 @@ const config: (t: ContextApi['t']) => ConfigMenuItemsType[] = (t) => [
   //   items: [],
   // },
   {
-    label: t('Referral'),
-    href: '/referral',
-    icon: 'Ticket',
+    label: t('Launchpad'),
+    href: '/sales',
+    icon: 'Launchpad',
     items: [
       {
-        label: t('Referral'),
-        href: '/referral',
+        label: t('Launchpad'),
+        href: '/sales',
       },
   //     {
   //       label: t('Audit'),
