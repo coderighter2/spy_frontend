@@ -40,6 +40,8 @@ import {
   getGovernanceContract,
   getOldMasterchefContract,
   getAdminContract,
+  getSaleContract,
+  getSaleFactoryContract,
 } from 'utils/contractHelpers'
 import { getMulticallAddress } from 'utils/addressHelpers'
 
@@ -325,4 +327,14 @@ export function useMulticallContract(): Contract | null {
 export const useAdminContract = () => {
   const { library } = useActiveWeb3React()
   return useMemo(() => getAdminContract(library.getSigner()), [library])
+}
+
+export const useSaleContract = (address: string) => {
+  const { library } = useActiveWeb3React()
+  return useMemo(() => getSaleContract(address, library.getSigner()), [address, library])
+}
+
+export const useSaleFactoryContract = () => {
+  const { library } = useActiveWeb3React()
+  return useMemo(() => getSaleFactoryContract(library.getSigner()), [library])
 }

@@ -96,6 +96,7 @@ export interface SelectProps extends BoxProps {
   options: OptionProps[]
   onOptionChange?: (option: OptionProps) => void
   defaultOptionIndex?: number
+  textColor?: string
 }
 
 export interface OptionProps {
@@ -105,6 +106,7 @@ export interface OptionProps {
 
 const Select: React.FunctionComponent<SelectProps> = ({
   options,
+  textColor,
   onOptionChange,
   defaultOptionIndex = 0,
   ...props
@@ -141,7 +143,7 @@ const Select: React.FunctionComponent<SelectProps> = ({
   return (
     <DropDownContainer isOpen={isOpen} {...props}>
       <DropDownHeader onClick={toggling}>
-        <Text>{options[selectedOptionIndex].label}</Text>
+        <Text color={textColor}>{options[selectedOptionIndex].label}</Text>
       </DropDownHeader>
       <ArrowDropDownIcon color="text" onClick={toggling} />
       <DropDownListContainer>

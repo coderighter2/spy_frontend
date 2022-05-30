@@ -19,10 +19,6 @@ export const PageBGWrapper = styled.div`
   bottom: 0;
   right: 0;
   left: 0;
-  background-image: url(/images/bg2.jpg);
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center;
   z-index: -1;
 `
 
