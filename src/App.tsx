@@ -33,6 +33,7 @@ import {
 } from './views/AddLiquidity/redirects'
 import RedirectOldRemoveLiquidityPathStructure from './views/RemoveLiquidity/redirects'
 import { RedirectPathToSwapOnly, RedirectToSwap } from './views/Swap/redirects'
+import Sales from './views/Sales'
 
 // Route-based code splitting
 // Only pool is included in the main bundle because of it's the most visited page
@@ -117,6 +118,9 @@ const App: React.FC = () => {
               </Route>
               <Route path="/governance">
                 <Governance />
+              </Route>
+              <Route path="/sales">
+                <Sales />
               </Route>
               <Route path="/lottery">
                 <Lottery />

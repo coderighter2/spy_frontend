@@ -103,3 +103,7 @@ export const getGovernanceAddress = () => {
 export const getAdminAddress = () => {
   return getAddress(addresses.admin)
 }
+
+export const getSaleFactoryAddress = () => {
+  return getAddress(addresses.saleFactory)
+}

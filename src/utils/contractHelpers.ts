@@ -37,6 +37,7 @@ import {
   getGovernanceAddress,
   getAdminAddress,
   getOldMasterChefAddress,
+  getSaleFactoryAddress,
 } from 'utils/addressHelpers'
 
 // ABI
@@ -82,6 +83,8 @@ import bnbSpyVaultAbi from 'config/abi/bnbSpyVault.json'
 import compoundVaultAbi from 'config/abi/compoundVault.json'
 import spyGovernorAbi from 'config/abi/spyGovernor.json'
 import spyAdminAbi from 'config/abi/spyAdmin.json'
+import saleFactoryAbi from 'config/abi/saleFactory.json'
+import saleAbi from 'config/abi/presale.json'
 import { ChainLinkOracleContract, FarmAuctionContract, PancakeProfileContract, PredictionsContract } from './types'
 
 const getContract = (abi: any, address: string, signer?: ethers.Signer | ethers.providers.Provider) => {
@@ -223,4 +226,11 @@ export const getBNBVaultContract = (contractAddress: string, signer?: ethers.Sig
 
 export const getCompoundVaultContract = (contractAddress: string, signer?: ethers.Signer | ethers.providers.Provider) => {
   return getContract(compoundVaultAbi, contractAddress, signer)
+}
+export const getSaleFactoryContract = (signer?: ethers.Signer | ethers.providers.Provider) => {
+  return getContract(saleFactoryAbi, getSaleFactoryAddress(), signer)
+}
+
+export const getSaleContract = (contractAddress: string, signer?: ethers.Signer | ethers.providers.Provider) => {
+  return getContract(saleAbi, contractAddress, signer)
 }
