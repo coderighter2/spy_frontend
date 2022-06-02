@@ -37,10 +37,12 @@ export const useCreateSale = () => {
       const stageTimes = []
       const stagePercents = []
       let totalPercent = 0;
+      let index = 1;
       while (totalPercent < 100) {
-        stageTimes.push(vestingInterval * 3600);
+        stageTimes.push(vestingInterval * 3600 * index);
         stagePercents.push(Math.min(vestingPercent, 100 - totalPercent));
         totalPercent += vestingPercent;
+        index += 1;
       }
       const args = [[rate, rateDecimals, listingRate, listingRateDecimals, liquidityPercent, goal, cap, minContribution, maxContribution, openingTime, closingTime, wallet, ROUTER_ADDRESS, token, baseToken,  whitelistEnabled, title], stageTimes, stagePercents];
       const tx = await callWithEstimateGas(factory, 'createSale', args, { gasPrice}, 1000, feeAmount)
