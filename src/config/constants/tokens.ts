@@ -31,6 +31,7 @@ export const mainnetTokens = {
   babycake: new Token(MAINNET, '0xdB8D30b74bf098aF214e862C90E647bbB1fcC58c', 18, 'BABYCAKE', 'Baby Cake Token', 'https://babycake.app/'),
   spy: new Token(MAINNET, '0x17fd3cAa66502C6F1CbD5600D8448f3aF8f2ABA1', 0, 'SPY', 'Smarty Pay Token', 'https://app.spy-token.io'),
   spynft: new Token(MAINNET, '0xEe7Eb563531703944cb0351901689e35f3DE13a2', 0, 'SPY-NFT', 'SPY NFT', 'http://test.smarty-pay.com'),
+  minitokie: new Token(TESTNET, '0x1B4a723893dC6A5D5396e369484216853aD2cc62', 9, 'TOKIE', 'Mini Tokie', 'https://spy-token.io'),
 }
 export const testnetTokens = {
   wbnb: new Token(TESTNET, '0xf9a7A2b01Bf758776703677719F8aCf018600070', 18, 'WBNB', 'Wrapped BNB', 'https://www.binance.com/'),
@@ -39,6 +40,7 @@ export const testnetTokens = {
   busd: new Token(TESTNET, '0x2aFD1d7DADEfb7fE31364A4f57f704c1558C8Edc', 18, 'BUSD', 'Binance USD', 'https://www.paxos.com/busd/'),
   spynft: new Token(TESTNET, '0xa7aa050D7B6bc477e4a0128BA657380c944b9404', 0, 'SPY-NFT', 'SPY NFT', 'http://test.smarty-pay.com'),
   usdc: new Token(TESTNET, '0x5eC8797235c38A854447c8f21D226c09dC812D70', 18, 'USDC', 'Binance-Peg USD Coin', 'https://www.centre.io/usdc'),
+  minitokie: new Token(TESTNET, '0xD2930C8f9849EECd144493A6B40612d0b79D0A7e', 9, 'TOKIE', 'Mini Tokie', 'https://spy-token.io'),
 }
 
 const tokens = (): TokenList => {
