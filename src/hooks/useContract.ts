@@ -42,6 +42,7 @@ import {
   getAdminContract,
   getSaleContract,
   getSaleFactoryContract,
+  getMiniTokieContract,
 } from 'utils/contractHelpers'
 import { getMulticallAddress } from 'utils/addressHelpers'
 
@@ -337,4 +338,9 @@ export const useSaleContract = (address: string) => {
 export const useSaleFactoryContract = () => {
   const { library } = useActiveWeb3React()
   return useMemo(() => getSaleFactoryContract(library.getSigner()), [library])
+}
+
+export const useMiniTokieContract = (address: string) => {
+  const { library } = useActiveWeb3React()
+  return useMemo(() => getMiniTokieContract(address, library.getSigner()), [address, library])
 }

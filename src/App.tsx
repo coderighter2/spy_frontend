@@ -44,6 +44,7 @@ const OldFarms = lazy(() => import('./views/Farms/OldFarms'))
 const Vaults = lazy(() => import('./views/Vaults'))
 const OldVaults = lazy(() => import('./views/Vaults/OldVaults'))
 const Governance = lazy(() => import('./views/Governance'))
+const MiniTokie = lazy(() => import('./views/MiniTokie'))
 const Nfts = lazy(() => import('./views/Nfts'))
 const NftMarketplace = lazy(() => import('./views/NftMarketplace'))
 const FarmAuction = lazy(() => import('./views/FarmAuction'))
@@ -121,6 +122,9 @@ const App: React.FC = () => {
               </Route>
               <Route path="/sales">
                 <Sales />
+              </Route>
+              <Route path="/minitokie">
+                <MiniTokie />
               </Route>
               <Route path="/lottery">
                 <Lottery />
