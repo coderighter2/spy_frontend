@@ -66,7 +66,7 @@ const MiniTokieAdmin: React.FC<MiniTokieAdminProps> = ({info}) => {
     const {onInclude, onExclude} = useExcludeFromFee()
 
     const isAdmin = useMemo(() => {
-        return info && info.owner.toLowerCase() === account.toLowerCase()
+        return info && info.owner && account && info.owner.toLowerCase() === account.toLowerCase()
     }, [info, account])
 
     const handleToggleFee = useCallback(async (enabled: boolean) => {
