@@ -8,6 +8,7 @@ import Dots from 'components/Loader/Dots'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import { formatBigNumber, getFullDisplayBalance } from 'utils/formatBalance'
 import { SALE_FINALIZE_DEADLINE } from 'config/constants'
+import { useSaleMinVote } from 'state/launchpad/hooks'
 import useInterval from 'hooks/useInterval'
 import useToast from 'hooks/useToast'
 import useTokenBalance, { useGetBnbBalance } from 'hooks/useTokenBalance'
@@ -15,11 +16,11 @@ import { ApprovalState, useApproveCallback } from 'hooks/useApproveCallback'
 import { useToken } from 'hooks/Tokens'
 import { BIG_TEN, BIG_ZERO } from 'utils/bigNumber'
 import { BigNumber} from 'bignumber.js'
+import tokens from 'config/constants/tokens'
 import SaleTimer from './SaleTimer'
 import { PublicSaleData, SaleContractVersion } from '../../types'
-import { useBuySale, useClaimRefundSale, useClaimSale } from '../../hooks/useBuySale'
+import { useBuySale, useClaimRefundSale, useClaimSale, useUnlockSale } from '../../hooks/useBuySale'
 import { getSaleUserData } from '../../hooks/getSales'
-import SaleBaseSection from './SaleBaseSection'
 
 export interface SaleActionSectionProps {
     sale: PublicSaleData
@@ -31,9 +32,12 @@ const SaleActionSection: React.FC<SaleActionSectionProps> = ({account, sale, onR
 
     const { t } = useTranslation()
     const { toastError, toastSuccess } = useToast()
+    const { balance: spyBalance, fetchStatus: spyFetchStatus } = useTokenBalance(tokens.spy.address)
     const [value, setValue] = useState('')
+    const [lockValue, setLockValue] = useState('')
     const [text, setText] = useState('')
     const [pendingTx, setPendingTx] = useState(false)
+    const [unlockingTx, setUnlockingTx] = useState(false)
     const [emergencyWithdrawing, setEmergencyWithdrawing] = useState(false)
     const [claimingRefund, setClaimingRefund] = useState(false)
     const [expired, setExpired] = useState(sale.finalized)
@@ -73,15 +77,35 @@ const SaleActionSection: React.FC<SaleActionSectionProps> = ({account, sale, onR
 
     const [contribution, setContribution] = useState<BigNumber|null>(null)
     const [purchasedAmount, setPurchasedAmount] = useState<BigNumber|null>(null)
-    const [claimableAmount, setClaimableAmount] = useState<BigNumber|null>(null)
+    const [claimableTokenAmount, setClaimableTokenAmount] = useState<BigNumber|null>(null)
+    const [claimableFreeAmount, setClaimableFreeAmount] = useState<BigNumber|null>(null)
+    const [voteAmount, setVoteAmount] = useState<BigNumber|null>(null)
+    const [voteUnlockedAmount, setVoteUnlockedAmount] = useState<BigNumber|null>(null)
+    const [airdropAmount, setAirdropAmount] = useState<BigNumber|null>(null)
     const [claimedAmount, setClaimedAmount] = useState<BigNumber|null>(null)
+    const [airdropClaimedAmount, setAirdropClaimedAmount] = useState<BigNumber|null>(null)
+
+    const minVote = useSaleMinVote()
+
+    const claimableAmount = useMemo(() => {
+        if (!claimableFreeAmount || !claimableTokenAmount) {
+            return null
+        }
+
+        return claimableTokenAmount.plus(claimableFreeAmount)
+    }, [claimableFreeAmount, claimableTokenAmount])
 
     useEffect(() => {
         const fetchContribution = async () =>  {
-            const {contribution:contribution_, purchasedAmount: purchasedAmount_, claimedAmount:claimedAmount_, claimableAmount: claimableAmount_, whitelisted: whitelisted_} = await getSaleUserData(sale.address, account)
+            const {contribution:contribution_, purchasedAmount: purchasedAmount_, claimedAmount:claimedAmount_, claimableTokenAmount: claimableTokenAmount_, airdropClaimedAmount:airdropClaimedAmount_, airdropAmount: airdropAmount_, voteUnlockedAmount: voteUnlockedAmount_, voteAmount: voteAmount_, claimableFreeAmount: claimableFreeAmount_, whitelisted: whitelisted_} = await getSaleUserData(sale.address, account)
             setContribution(contribution_)
             setPurchasedAmount(purchasedAmount_)
-            setClaimableAmount(claimableAmount_)
+            setClaimableTokenAmount(claimableTokenAmount_)
+            setClaimableFreeAmount(claimableFreeAmount_)
+            setAirdropClaimedAmount(airdropClaimedAmount_)
+            setVoteAmount(voteAmount_)
+            setVoteUnlockedAmount(voteUnlockedAmount_)
+            setAirdropAmount(airdropAmount_)
             setClaimedAmount(claimedAmount_)
             setWhitelisted(whitelisted_)
             setLoadContribution(false)
@@ -98,11 +122,15 @@ const SaleActionSection: React.FC<SaleActionSectionProps> = ({account, sale, onR
     }, [sale, contribution])
 
     const valueNumber = baseTokenDecimals < 0 ? BIG_ZERO : new BigNumber(value).multipliedBy(BIG_TEN.pow(baseTokenDecimals))
+    const lockValueNumber = lockValue === '' ? BIG_ZERO : new BigNumber(lockValue).multipliedBy(BIG_TEN.pow(tokens.spy.decimals))
 
     const [approval, approveCallback] = useApproveCallback(baseToken && valueNumber.gt(0) && valueNumber.isFinite() ? new TokenAmount(baseToken, JSBI.BigInt(value)) : undefined, sale.address)
 
+    const [approvalSPY, approveSPYCallback] = useApproveCallback(new TokenAmount(tokens.spy, JSBI.BigInt(100)), sale.address)
+
     const { onBuySale, onBuySaleETH } = useBuySale(sale.address)
     const { onClaimSale } = useClaimSale(sale.address)
+    const { onUnlockVotes } = useUnlockSale(sale.address)
     const { onClaimRefundSale, onEmergencyWithdraw } = useClaimRefundSale(sale.address)
 
 
@@ -133,10 +161,17 @@ const SaleActionSection: React.FC<SaleActionSectionProps> = ({account, sale, onR
         }
     }, [baseTokenDecimals, maxNumber])
 
+
+    const handleClickLockMax = useCallback(() => {
+        if (spyBalance && spyBalance.isFinite()) {
+            setLockValue(getFullDisplayBalance(spyBalance, tokens.spy.decimals))
+        }
+    }, [spyBalance])
+
     const handleBuy = useCallback(async () => {
         try {
             setPendingTx(true)
-            const receipt = sale.useETH ? await onBuySaleETH(account, valueNumber.toString()) : await onBuySale(account, valueNumber.toString())
+            const receipt = sale.useETH ? await onBuySaleETH(account, valueNumber.toString(), lockValueNumber.toString()) : await onBuySale(account, valueNumber.toString(), lockValueNumber.toString())
             onReloadSale()
             setLoadContribution(!loadContribution)
             toastSuccess(
@@ -152,7 +187,7 @@ const SaleActionSection: React.FC<SaleActionSectionProps> = ({account, sale, onR
         } finally {
             setPendingTx(false)
         }
-    }, [toastError, toastSuccess, t, onBuySale, onBuySaleETH, onReloadSale, sale, valueNumber, account, loadContribution, token])
+    }, [toastError, toastSuccess, t, onBuySale, onBuySaleETH, onReloadSale, sale, valueNumber, lockValueNumber, account, loadContribution, token])
 
     const handleClaim = useCallback(async () => {
         try {
@@ -175,6 +210,24 @@ const SaleActionSection: React.FC<SaleActionSectionProps> = ({account, sale, onR
             setPendingTx(false)
         }
     }, [toastError, toastSuccess, t, onClaimSale, onReloadSale, sale, contribution, token, account, loadContribution])
+
+    const handleUnlockVote = useCallback(async () => {
+        try {
+            setUnlockingTx(true)
+            await onUnlockVotes()
+            setLoadContribution(!loadContribution)
+            toastSuccess(
+            `${t('Success')}!`,
+            t('You have unlocked successfully'),
+            )
+        } catch (e) {
+            console.log('e', e)
+            toastError(t('Error'), t('Please try again. Confirm the transaction and make sure you are paying enough gas!'))
+
+        } finally {
+            setUnlockingTx(false)
+        }
+    }, [toastError, toastSuccess, t, onUnlockVotes, loadContribution])
 
     const handleClaimRefund = useCallback(async () => {
         try {
@@ -217,17 +270,59 @@ const SaleActionSection: React.FC<SaleActionSectionProps> = ({account, sale, onR
 
 
     const renderApprovalOrPurchaseButton = () => {
-        return (sale.whitelistEnabled && !whitelisted) || !sale.deposited || !baseToken || approval === ApprovalState.APPROVED ? (
+
+        if (!sale.deposited) {
+            return (
+                <Button scale="sm" disabled>
+                    {t('Incomplete Setup')}
+                </Button>
+            )
+        }
+
+        if (sale.whitelistEnabled && !whitelisted) {
+            return (
+                <Button scale="sm" disabled>
+                    {t('You are not in whitelist')}
+                </Button>
+            )
+        }
+        const showApproveSpy = lockValueNumber.gt(BIG_ZERO) && approvalSPY !== ApprovalState.APPROVED
+        const showApproveToken = baseToken && approval !== ApprovalState.APPROVED
+
+        if (showApproveSpy && showApproveToken) {
+            return (
+                <Flex justifyContent="space-between" mt="8px">
+                    <Button mr="16px" disabled={approval === ApprovalState.PENDING || approval === ApprovalState.UNKNOWN} onClick={approveCallback}>
+                    {approval === ApprovalState.PENDING ? (<Dots>{t('Approving')}</Dots>) : t('Approve BUSD')}
+                    </Button>
+                    <Button disabled={approvalSPY === ApprovalState.PENDING || approvalSPY === ApprovalState.UNKNOWN} onClick={approveSPYCallback}>
+                    {approvalSPY === ApprovalState.PENDING ? (<Dots>{t('Approving')}</Dots>) : t('Approve SPY')}
+                    </Button>
+                </Flex>
+            )
+        }
+        if (showApproveSpy) {
+            return (
+                <Button mt="8px" width="100%" disabled={approvalSPY === ApprovalState.PENDING || approvalSPY === ApprovalState.UNKNOWN} onClick={approveSPYCallback}>
+                {approvalSPY === ApprovalState.PENDING ? (<Dots>{t('Approving')}</Dots>) : t('Approve SPY')}
+                </Button>
+            )
+        }
+        if (showApproveToken) {
+            return (
+                <Button mt="8px" width="100%" disabled={approval === ApprovalState.PENDING || approval === ApprovalState.UNKNOWN} onClick={approveCallback}>
+                {approval === ApprovalState.PENDING ? (<Dots>{t('Approving')}</Dots>) : t('Approve BUSD')}
+                </Button>
+            )
+        }
+
+        return (
             <Button 
                 scale="sm" 
-                disabled={!buyable || pendingTx || !valueNumber || !valueNumber.isFinite() || valueNumber.eq(0) || valueNumber.gt(maxNumber) || (sale.whitelistEnabled && !whitelisted) || !sale.deposited} 
+                disabled={!buyable || pendingTx || !valueNumber || !valueNumber.isFinite() || valueNumber.eq(0) || valueNumber.gt(maxNumber) || !lockValueNumber.isFinite() || (lockValueNumber.gt(BIG_ZERO) && lockValueNumber.lt(minVote))} 
                 onClick={handleBuy}
             >
                 { pendingTx ? (<Dots>{t('Purchasing')}</Dots>) : (sale.whitelistEnabled && !whitelisted) ? t('You are not in whitelist') : !sale.deposited ? t('Incomplete Setup') : t('Purchase')}
-            </Button>
-        ) : (
-            <Button mt="8px" width="100%" disabled={approval === ApprovalState.PENDING || approval === ApprovalState.UNKNOWN} onClick={approveCallback}>
-            {approval === ApprovalState.PENDING ? (<Dots>{t('Approving')}</Dots>) : t('Approve')}
             </Button>
         )
     }
@@ -274,19 +369,45 @@ const SaleActionSection: React.FC<SaleActionSectionProps> = ({account, sale, onR
                     {t('Your Contribution: %amount% %currency%', {amount: getFullDisplayBalance(contribution, baseTokenDecimals), currency:baseTokenSymbol})}
                 </Text>
                 )}
-                { sale.finalized && token && claimedAmount && claimedAmount.isFinite() && (
+                {voteAmount && voteAmount.isFinite() && voteUnlockedAmount && voteUnlockedAmount.isFinite() && (
+                    <>
                     <Text fontSize="14px" fontStyle="bold" mt="8px" textAlign="center">
-                    {t('Claimed : %amount% %currency% / %total% %currency%', {amount: getFullDisplayBalance(claimedAmount, token.decimals), total:getFullDisplayBalance(purchasedAmount, token.decimals), currency:token.symbol})}
-                </Text>
-                )}
-                
-                { sale.finalized && token && claimableAmount && claimableAmount.isFinite() && (
-                    <Text fontSize="14px" fontStyle="bold" mt="8px" textAlign="center">
-                        {t('Claimable Now: %amount% %currency%', {amount: getFullDisplayBalance(claimableAmount, token.decimals), currency:token.symbol})}
+                        {t('Your SPY Locked: %amount% %currency%', {amount: voteAmount ? getFullDisplayBalance(voteAmount, tokens.spy.decimals) : '0', currency:tokens.spy.symbol})}
                     </Text>
+                    <Text fontSize="14px" fontStyle="bold" mt="8px" textAlign="center">
+                        {t('Your SPY Unlocked: %amount% %currency%', {amount: voteUnlockedAmount ? getFullDisplayBalance(voteUnlockedAmount, tokens.spy.decimals) : '0', currency:tokens.spy.symbol})}
+                    </Text>
+                    </>
+                )}
+                { showClaim && (!expired || sale.finalized) && sale.weiRaised.gte(sale.goal) && voteAmount && voteUnlockedAmount && voteAmount.gt(voteUnlockedAmount) && (
+                    <Flex justifyContent="center" mt="8px">
+                        { !account ? (
+                            <ConnectWalletButton mt="8px" width="100%" />
+                        ) : (
+                            <Button scale="sm" disabled={unlockingTx || !sale.finalized } onClick={handleUnlockVote}>
+                                { unlockingTx ? (<Dots>{t('Unlocking')}</Dots>) : t('Unlock SPY')}
+                            </Button>
+                        )
+                        }
+                    </Flex>
+                    )}
+                { sale.finalized && token && (
+                    <>
+                    <Text fontSize="14px" fontStyle="bold" mt="8px" textAlign="center">
+                        {t('Claimed(Purchased) : %amount% %currency% / %total% %currency%', {amount: claimedAmount ? getFullDisplayBalance(claimedAmount, token.decimals) : '', total:purchasedAmount ? getFullDisplayBalance(purchasedAmount, token.decimals) : '', currency:token.symbol})}
+                    </Text>
+
+                    <Text fontSize="14px" fontStyle="bold" mt="8px" textAlign="center">
+                        {t('Claimed(Free Airdrop) : %amount% %currency% / %total% %currency%', {amount: airdropClaimedAmount ? getFullDisplayBalance(airdropClaimedAmount, token.decimals) : '', total:airdropAmount ? getFullDisplayBalance(airdropAmount, token.decimals) : '', currency:token.symbol})}
+                    </Text>
+                    <Text fontSize="14px" fontStyle="bold" mt="8px" textAlign="center">
+                        {t('Claimable Now: %amount% %currency%', {amount: claimableAmount ? getFullDisplayBalance(claimableAmount, token.decimals) : '', currency:token.symbol})}
+                    </Text>
+                    </>
                 )}
 
                 { sale.version !== SaleContractVersion.DEFAULT && !!account && !sale.canceled && showBuy && contribution && contribution.isFinite() && contribution.gt(0) && (
+                    <>
                     <Flex justifyContent="center" mt="8px">
                         <Button 
                             scale="sm" 
@@ -296,6 +417,12 @@ const SaleActionSection: React.FC<SaleActionSectionProps> = ({account, sale, onR
                             { emergencyWithdrawing ? (<Dots>{t('Processing')}</Dots>) : t('Emergency Withdraw')}
                         </Button>
                     </Flex>
+                    {voteAmount && voteAmount.gt(BIG_ZERO) && (
+                        <Text fontSize="12px" fontStyle="bold" mt="4px" color="primary" textAlign="center">
+                            {t('You SPY locked will be sent to you when withdraw your purchase')}
+                        </Text>
+                    )}
+                    </>
                 )}
                 { (sale.canceled || (sale.finalized && sale.weiRaised.lt(sale.goal)) || (!sale.finalized && expired)) && contribution && contribution.isFinite() && contribution.gt(0) && (
                     <Flex justifyContent="center" mt="8px">
@@ -322,7 +449,7 @@ const SaleActionSection: React.FC<SaleActionSectionProps> = ({account, sale, onR
                                 {t('Amount (max: %amount% %currency%)', {amount: getFullDisplayBalance(maxNumber, baseTokenDecimals), currency:baseTokenSymbol})}
                             </Text>
                             <Text fontSize="14px" fontStyle="bold" mt="8px">
-                                {t('Balance: %amount% %currency%', {amount: sale.useETH ? formatBigNumber(BNBBalance) : getFullDisplayBalance(baseTokenBalance, baseTokenDecimals), currency:baseTokenSymbol})}
+                                {t('Balance: %amount% %currency%', {amount: sale.useETH ? formatBigNumber(BNBBalance) : getFullDisplayBalance(baseTokenBalance, baseTokenDecimals, 0), currency:baseTokenSymbol})}
                             </Text>
                         </Flex>
                         
@@ -332,6 +459,25 @@ const SaleActionSection: React.FC<SaleActionSectionProps> = ({account, sale, onR
                                 onUserInput={(val) => setValue(val)} />
                             <Button scale="xs" style={{position: 'absolute', right: '12px', top: '10px'}} onClick={handleClickMax}>{t('MAX')}</Button>
                         </Flex>
+
+                        <Flex justifyContent="space-between">
+                            <Text fontSize="14px" fontStyle="bold" mt="8px">
+                                {t('Lock Amount (min: %amount% %currency% or zero)', {amount: minVote, currency:tokens.spy.symbol})}
+                            </Text>
+                            <Text fontSize="14px" fontStyle="bold" mt="8px">
+                                {t('Balance: %amount% %currency%', {amount: getFullDisplayBalance(spyBalance, tokens.spy.decimals), currency:tokens.spy.symbol})}
+                            </Text>
+                        </Flex>
+                        
+                        <Flex position="relative">
+                            <StyledNumericalInput
+                                value={lockValue}
+                                onUserInput={(val) => setLockValue(val)} />
+                            <Button scale="xs" style={{position: 'absolute', right: '12px', top: '10px'}} onClick={handleClickLockMax}>{t('MAX')}</Button>
+                        </Flex>
+                        <Text fontSize="12px" fontStyle="bold" mt="4px" color="primary">
+                            {t('You will get free tokens based on your SPY locked against others. You can unlock your SPY once the presale ends. This is optional.', {amount: minVote, currency:tokens.spy.symbol})}
+                        </Text>
                         <Flex justifyContent="center" mt="8px">
                         {!account ? <ConnectWalletButton mt="8px" width="100%" /> : renderApprovalOrPurchaseButton()}
                         </Flex>

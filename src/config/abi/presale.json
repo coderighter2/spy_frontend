@@ -32,6 +32,12 @@
         "internalType": "uint256",
         "name": "fee",
         "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "voteAmount",
+        "type": "uint256"
       }
     ],
     "name": "EmergencyWithdrawn",
@@ -89,6 +95,12 @@
         "internalType": "uint256",
         "name": "value",
         "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "voteAmount",
+        "type": "uint256"
       }
     ],
     "name": "Refunded",
@@ -119,7 +131,13 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "amount",
+        "name": "amountToken",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amountAirdrop",
         "type": "uint256"
       }
     ],
@@ -146,9 +164,34 @@
         "internalType": "uint256",
         "name": "amount",
         "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "voteAmount",
+        "type": "uint256"
       }
     ],
     "name": "TokensPurchased",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "beneficiary",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "voteAmount",
+        "type": "uint256"
+      }
+    ],
+    "name": "VotesUnlocked",
     "type": "event"
   },
   {
@@ -211,6 +254,32 @@
   },
   {
     "inputs": [],
+    "name": "VERSION",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "airdropAmount",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "airdropEnabled",
     "outputs": [
       {
@@ -236,7 +305,13 @@
     "type": "function"
   },
   {
-    "inputs": [],
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "voteAmount",
+        "type": "uint256"
+      }
+    ],
     "name": "buyWithETH",
     "outputs": [],
     "stateMutability": "payable",
@@ -247,6 +322,11 @@
       {
         "internalType": "uint256",
         "name": "weiAmount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "voteAmount",
         "type": "uint256"
       }
     ],
@@ -312,6 +392,11 @@
     ],
     "name": "claimableAmount",
     "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      },
       {
         "internalType": "uint256",
         "name": "",
@@ -678,6 +763,28 @@
         "type": "tuple"
       },
       {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "airdropAmount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "minVote",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "voteToken",
+            "type": "address"
+          }
+        ],
+        "internalType": "struct IPresale.InitVoteParams",
+        "name": "voteParams",
+        "type": "tuple"
+      },
+      {
         "internalType": "uint256[]",
         "name": "_stageTimes",
         "type": "uint256[]"
@@ -804,6 +911,19 @@
   {
     "inputs": [],
     "name": "minContribution",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "minVote",
     "outputs": [
       {
         "internalType": "uint256",
@@ -977,6 +1097,19 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "totalVotes",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "address",
@@ -1000,6 +1133,13 @@
       }
     ],
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "unlockVotes",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -1058,6 +1198,44 @@
     "name": "updateMeta",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      }
+    ],
+    "name": "userAirdropAmount",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "userAirdropClaimed",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -1136,6 +1314,57 @@
         "internalType": "uint256",
         "name": "",
         "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "userVotes",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "userVotesUnlocked",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "voteToken",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
       }
     ],
     "stateMutability": "view",

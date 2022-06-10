@@ -199,6 +199,28 @@
         "type": "tuple"
       },
       {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "airdropAmount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "minVote",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "voteToken",
+            "type": "address"
+          }
+        ],
+        "internalType": "struct IPresale.InitVoteParams",
+        "name": "voteParams",
+        "type": "tuple"
+      },
+      {
         "internalType": "uint256[]",
         "name": "_stageTimes",
         "type": "uint256[]"
@@ -369,6 +391,32 @@
   },
   {
     "inputs": [],
+    "name": "minAirdropAmount",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "minVote",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "owner",
     "outputs": [
       {
@@ -422,6 +470,32 @@
       }
     ],
     "name": "setImplementation",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "minAirdropAmount_",
+        "type": "uint256"
+      }
+    ],
+    "name": "setMinAirdropAmount",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "minVote_",
+        "type": "uint256"
+      }
+    ],
+    "name": "setMinVote",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

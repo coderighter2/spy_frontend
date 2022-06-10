@@ -9,7 +9,7 @@ import styled from 'styled-components'
 import BigNumber from 'bignumber.js'
 import tokens from 'config/constants/tokens'
 import { useAppDispatch } from 'state'
-import { useSaleDeployFee } from 'state/launchpad/hooks'
+import { useSaleDeployFee, useSaleMinAirdrop, useSaleMinVote } from 'state/launchpad/hooks'
 import { fetchLaunchpadPublicDataAsync, fetchLaunchpadUserDataAsync } from 'state/launchpad'
 import { StyledAddressInput, StyledNumericalInput, StyledTextInput, StyledWrapperWithTooltip } from 'components/StyledControls'
 import RadioWithText from 'components/RadioWithText'
@@ -39,7 +39,7 @@ const RadioGroup = styled(Flex)`
 
 const StyledList = styled.ul`
     margin-top: 16px;
-    color: ${({ theme }) => theme.colors.secondary};
+    color: ${({ theme }) => theme.colors.text};
     list-style: none;
     font-size: 14px;
     line-height: 1.2;
@@ -71,6 +71,7 @@ interface FormErrors {
     vestingPercent?: string
     vestingInterval?: string
     logo?: string
+    airdropAmount?: string
 }
 
 enum ContributionType {
@@ -106,6 +107,7 @@ const CreateSale: React.FC<CreateProps> = ({routeAddress}) => {
     const [ vestingEnabled, setVestingEnabled ] = useState<boolean>(true)
     const [ vestingInterval, setVestingInterval ] = useState<string>('168')
     const [ vestingPercent, setVestingPercent ] = useState<string>('10')
+    const [ airdropAmount, setAirdropAmount ] = useState<string>('')
     const [startDate, setStartDate] = useState<Date|null>(null)
     const [endDate, setEndDate] = useState<Date|null>(null)
     const [wallet, setWallet] = useState<string|null>(null)
@@ -126,6 +128,8 @@ const CreateSale: React.FC<CreateProps> = ({routeAddress}) => {
         placement: 'bottom',
     })
     const deployFee = useSaleDeployFee()
+    const minVote = useSaleMinVote()
+    const minAirdrop = useSaleMinAirdrop()
     const deployFeeNumber = new BigNumber(deployFee)
     const baseTokenDecimals = useMemo(() => {
         if (contributionType === ContributionType.ETH) {
@@ -149,6 +153,15 @@ const CreateSale: React.FC<CreateProps> = ({routeAddress}) => {
     const [tokenAddress, setTokenAddress] = useState<string>('')
     const searchToken: Token = useToken(tokenAddress)
     const {balance} = useTokenBalance(searchToken ? searchToken.address : undefined)
+
+    const airdropAmountNumber = useMemo(() => {
+        const res = new BigNumber(airdropAmount)
+        if (!searchToken || !res || !res.isFinite() || res.eq(0)) {
+            return BIG_ZERO
+        }
+
+        return res.multipliedBy(BIG_TEN.pow(searchToken.decimals))
+    }, [searchToken, airdropAmount])
 
     const rateDecimalsNumber = useMemo(() => {
         const res = new BigNumber(rate)
@@ -234,8 +247,8 @@ const CreateSale: React.FC<CreateProps> = ({routeAddress}) => {
         if (presaleAmountNumber.eq(0)) {
             return BIG_ZERO
         }
-        return presaleAmountNumber.plus(liquidityAmountNumber)
-    }, [presaleAmountNumber, liquidityAmountNumber])
+        return presaleAmountNumber.plus(liquidityAmountNumber).plus(airdropAmountNumber)
+    }, [presaleAmountNumber, liquidityAmountNumber, airdropAmountNumber])
 
     const [onPresentDesclaimer] = useModal(
         <DesclaimerModal onAgree={() => {
@@ -393,9 +406,19 @@ const CreateSale: React.FC<CreateProps> = ({routeAddress}) => {
             error.vestingInterval = undefined
             error.vestingPercent = undefined
         }
+
+        if (airdropAmountNumber.eq(0)) {
+            error.airdropAmount = "Airdrop amount is required";
+            valid = false
+        } else if (airdropAmountNumber.dividedBy(BIG_TEN.pow(searchToken.decimals)).lt(minAirdrop)) {
+            error.airdropAmount = `Airdrop amount should be bigger than ${minAirdrop.toJSON()}`
+            valid = false
+        } else {
+            error.airdropAmount = undefined
+        }
         setFormError(error)
         return valid
-    }, [wallet, searchToken, rateNumber, rateDecimalsNumber, listingRateNumber, listingRateDecimalsNumber, liquidityPercentNumber, softCapNumber, hardCapNumber, startDate, endDate, minContributionNumer, maxContributionNumer, depositAmountNumber, tokenAddress, vestingInterval, vestingPercent, vestingEnabled, title])
+    }, [wallet, searchToken, rateNumber, rateDecimalsNumber, listingRateNumber, listingRateDecimalsNumber, liquidityPercentNumber, softCapNumber, hardCapNumber, startDate, endDate, minContributionNumer, maxContributionNumer, depositAmountNumber, tokenAddress, vestingInterval, vestingPercent, vestingEnabled, title, airdropAmountNumber, minAirdrop])
 
 
     const handleCreate = useCallback(async () => {
@@ -428,7 +451,8 @@ const CreateSale: React.FC<CreateProps> = ({routeAddress}) => {
                 vestingPercent: vestingEnabled ? parseInt(vestingPercent) : 100,
                 vestingInterval: vestingEnabled ? parseInt(vestingInterval) : 0,
                 whitelistEnabled,
-                
+                airdropAmount: airdropAmountNumber.toJSON(),
+                minVote
             })
             dispatch(fetchLaunchpadPublicDataAsync())
             dispatch(fetchLaunchpadUserDataAsync({account}))
@@ -440,7 +464,7 @@ const CreateSale: React.FC<CreateProps> = ({routeAddress}) => {
         } finally {
           setPendingTx(false)
         }
-    }, [onCreateSale, dispatch, toastError, t, validateInputs, history, account, deployFee, wallet, searchToken, rateNumber, rateDecimalsNumber, listingRateNumber, listingRateDecimalsNumber, liquidityPercentNumber, softCapNumber, hardCapNumber, startDate, endDate, minContributionNumer, maxContributionNumer, whitelistEnabled, contributionType, busdToken, vestingInterval, vestingPercent, vestingEnabled, title])
+    }, [onCreateSale, dispatch, toastError, t, validateInputs, history, account, deployFee, wallet, searchToken, rateNumber, rateDecimalsNumber, listingRateNumber, listingRateDecimalsNumber, liquidityPercentNumber, softCapNumber, hardCapNumber, startDate, endDate, minContributionNumer, maxContributionNumer, whitelistEnabled, contributionType, busdToken, vestingInterval, vestingPercent, vestingEnabled, title, airdropAmountNumber, minVote])
 
     const renderApprovalOrCreateButton = () => {
         return  (
@@ -639,6 +663,17 @@ const CreateSale: React.FC<CreateProps> = ({routeAddress}) => {
                             </InputWrap>
                             <InputWrap>
                                 <StyledWrapperWithTooltip
+                                    tooltip={t('How much tokens do you want to airdrop to SPY holders? Minimum is 10000', {symbol: baseTokenSymbol})}
+                                    error={formError.airdropAmount}
+                                        >
+                                    <StyledNumericalInput placeholder={t('Tokens to airdrop for free')} value={airdropAmount} onUserInput={(value) => {
+                                        setAirdropAmount(value)
+                                        setFormError({...formError, airdropAmount: null})
+                                    }}/>
+                                </StyledWrapperWithTooltip>
+                            </InputWrap>
+                            <InputWrap>
+                                <StyledWrapperWithTooltip
                                     tooltip={t('Enter the presale start time in your local time.')}
                                     error={formError.presaleStartTime}
                                     >
@@ -761,7 +796,7 @@ const CreateSale: React.FC<CreateProps> = ({routeAddress}) => {
                             </Heading>
                             <StyledList>
                                 <li style={{display:'flex'}}>
-                                    <Text fontSize="14px" color="secondary" mr="16px">
+                                    <Text fontSize="14px" color="text" mr="16px">
                                         {t('Estimated Funds Raised')}:
                                     </Text>
                                     <Text fontSize="14px" color="primary">
@@ -769,7 +804,7 @@ const CreateSale: React.FC<CreateProps> = ({routeAddress}) => {
                                     </Text>
                                 </li>
                                 <li style={{display:'flex'}}>
-                                    <Text fontSize="14px" color="secondary" mr="16px">
+                                    <Text fontSize="14px" color="text" mr="16px">
                                         {t('Total Tokens Used')}:
                                     </Text>
                                     <Text fontSize="14px" color="primary">
@@ -777,7 +812,7 @@ const CreateSale: React.FC<CreateProps> = ({routeAddress}) => {
                                     </Text>
                                 </li>
                                 <li style={{display:'flex'}}>
-                                    <Text fontSize="14px" color="secondary" mr="16px">
+                                    <Text fontSize="14px" color="text" mr="16px">
                                         {t('Tokens For Pre Sale')}:
                                     </Text>
                                     <Text fontSize="14px" color="primary">
@@ -785,7 +820,23 @@ const CreateSale: React.FC<CreateProps> = ({routeAddress}) => {
                                     </Text>
                                 </li>
                                 <li style={{display:'flex'}}>
-                                    <Text fontSize="14px" color="secondary" mr="16px">
+                                    <Text fontSize="14px" color="text" mr="16px">
+                                        {t('Tokens For Liquidity')}:
+                                    </Text>
+                                    <Text fontSize="14px" color="primary">
+                                        {liquidityAmountNumber && searchToken? getFullDisplayBalance(liquidityAmountNumber, searchToken.decimals) : ''} {searchToken ? searchToken.symbol : ''}
+                                    </Text>
+                                </li>
+                                <li style={{display:'flex'}}>
+                                    <Text fontSize="14px" color="text" mr="16px">
+                                        {t('Tokens For Free Airdrop')}:
+                                    </Text>
+                                    <Text fontSize="14px" color="primary">
+                                        {airdropAmountNumber && searchToken? getFullDisplayBalance(airdropAmountNumber, searchToken.decimals) : ''} {searchToken ? searchToken.symbol : ''}
+                                    </Text>
+                                </li>
+                                <li style={{display:'flex'}}>
+                                    <Text fontSize="14px" color="text" mr="16px">
                                         {t('Pre Sale Rate Per Token')}:
                                     </Text>
                                     <Text fontSize="14px" color="primary">
@@ -793,7 +844,7 @@ const CreateSale: React.FC<CreateProps> = ({routeAddress}) => {
                                     </Text>
                                 </li>
                                 <li style={{display:'flex'}}>
-                                    <Text fontSize="14px" color="secondary" mr="16px">
+                                    <Text fontSize="14px" color="text" mr="16px">
                                         {t('Listing Price Per Token')}:
                                     </Text>
                                     <Text fontSize="14px" color="primary">
@@ -801,7 +852,7 @@ const CreateSale: React.FC<CreateProps> = ({routeAddress}) => {
                                     </Text>
                                 </li>
                                 <li style={{display:'flex'}}>
-                                    <Text fontSize="14px" color="secondary" mr="16px">
+                                    <Text fontSize="14px" color="text" mr="16px">
                                         {t('% of Funds Raised To LP')}:
                                     </Text>
                                     <Text fontSize="14px" color="primary">
@@ -809,7 +860,7 @@ const CreateSale: React.FC<CreateProps> = ({routeAddress}) => {
                                     </Text>
                                 </li>
                                 <li style={{display:'flex'}}>
-                                    <Text fontSize="14px" color="secondary" mr="16px">
+                                    <Text fontSize="14px" color="text" mr="16px">
                                         {t('Vesting')}:
                                     </Text>
                                     {vestingEnabled ? (

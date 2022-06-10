@@ -31,6 +31,8 @@ export interface SerializedLaunchpadState {
 
   totalSaleCount?: number
   fee?: SerializedBigNumber
+  minAirdropAmount?: SerializedBigNumber
+  minVote?: SerializedBigNumber
 
   userSaleCount?: number
 }
@@ -40,6 +42,8 @@ export interface DeserializedLaunchpadState {
 
   totalSaleCount?: number
   fee?: BigNumber
+  minAirdropAmount: BigNumber
+  minVote: BigNumber
 
   userSaleCount?: number
 }

@@ -43,6 +43,10 @@ export interface PublicSaleData {
     logo?: string
     whitelistEnabled?: boolean
 
+    airdropAmount?: BigNumber
+    minVote?: BigNumber
+    totalVotes?: BigNumber
+
     vestingEnabled?: boolean
     vestingPercent?: number
     vestingInterval?: number

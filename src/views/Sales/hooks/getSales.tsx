@@ -29,6 +29,19 @@ interface SaleConfigParams {
     description: string
 }
 
+interface SaleUserData {
+    contribution: BigNumber
+    purchasedAmount: BigNumber
+    claimedAmount: BigNumber
+    airdropClaimedAmount: BigNumber
+    airdropAmount: BigNumber
+    voteAmount: BigNumber
+    voteUnlockedAmount: BigNumber
+    claimableTokenAmount: BigNumber
+    claimableFreeAmount:BigNumber
+    whitelisted: boolean
+}
+
 
 export const getSales = async (start: number, count: number) : Promise<PublicSaleData[]> => {
     if (count === 0) {
@@ -88,9 +101,9 @@ export const getSales = async (start: number, count: number) : Promise<PublicSal
     return res
 }
 
-export const getSaleUserData = async (address?: string, account?: string) : Promise<{contribution: BigNumber , purchasedAmount: BigNumber, claimedAmount: BigNumber, claimableAmount: BigNumber, whitelisted: boolean}> => {
+export const getSaleUserData = async (address?: string, account?: string) : Promise<SaleUserData> => {
     if (!address || !account) {
-        return {contribution: null, purchasedAmount: null, claimedAmount: null, claimableAmount: null, whitelisted: false}
+        return {contribution: null, purchasedAmount: null, claimedAmount: null, airdropClaimedAmount: null, airdropAmount: null, voteAmount: null, voteUnlockedAmount: null, claimableTokenAmount: null, claimableFreeAmount:null, whitelisted: false}
     }
     
     const calls = [
@@ -111,6 +124,26 @@ export const getSaleUserData = async (address?: string, account?: string) : Prom
         },
         {
             address,
+            name: 'userAirdropAmount',
+            params:[account]
+        },
+        {
+            address,
+            name: 'userAirdropClaimed',
+            params: [account]
+        },
+        {
+            address,
+            name: 'userVotes',
+            params: [account]
+        },
+        {
+            address,
+            name: 'userVotesUnlocked',
+            params: [account]
+        },
+        {
+            address,
             name: 'claimableAmount',
             params: [account]
         },
@@ -125,19 +158,28 @@ export const getSaleUserData = async (address?: string, account?: string) : Prom
         [contribution_], 
         [purchasedAmount_],
         [claimedAmount_],
-        [claimableAmount_],
+        [airdropAmount_],
+        [airdropClaimedAmount_],
+        [voteAmount_],
+        [voteUnlockedAmount_],
+        [claimableTokenAmount_, claimableFreeAmount_],
         [whitelisted]
     ] = await multicall(presaleABI, calls)
     
     const contribution = contribution_ ? new BigNumber(contribution_._hex) : BIG_ZERO;
     const purchasedAmount = purchasedAmount_ ? new BigNumber(purchasedAmount_._hex) : BIG_ZERO;
     const claimedAmount = claimedAmount_ ? new BigNumber(claimedAmount_._hex) : BIG_ZERO;
-    const claimableAmount = claimableAmount_ ? new BigNumber(claimableAmount_._hex) : BIG_ZERO;
-    return {contribution, purchasedAmount, claimedAmount, claimableAmount, whitelisted}
+    const voteAmount = voteAmount_ ? new BigNumber(voteAmount_._hex) : BIG_ZERO;
+    const voteUnlockedAmount = voteUnlockedAmount_ ? new BigNumber(voteUnlockedAmount_._hex) : BIG_ZERO;
+    const airdropAmount = airdropAmount_ ? new BigNumber(airdropAmount_._hex) : BIG_ZERO;
+    const airdropClaimedAmount = airdropClaimedAmount_ ? new BigNumber(airdropClaimedAmount_._hex) : BIG_ZERO;
+    const claimableTokenAmount = claimableTokenAmount_ ? new BigNumber(claimableTokenAmount_._hex) : BIG_ZERO;
+    const claimableFreeAmount = claimableFreeAmount_ ? new BigNumber(claimableFreeAmount_._hex) : BIG_ZERO;
+    return {contribution, purchasedAmount, claimedAmount, airdropClaimedAmount, airdropAmount, voteAmount, voteUnlockedAmount, claimableTokenAmount, claimableFreeAmount, whitelisted}
 }
 
 export const getSale = async (address: string) : Promise<PublicSaleData> => {
-    const fields = ['name', 'getConfiguration', 'getStages', 'owner', 'weiRaised', 'finalized', 'canceled', 'deposited', 'airdropEnabled']
+    const fields = ['name', 'getConfiguration', 'getStages', 'owner', 'weiRaised', 'finalized', 'canceled', 'deposited', 'airdropEnabled', 'airdropAmount', 'minVote', 'totalVotes']
 
     const calls = fields.map((field) =>  {
         return {
@@ -156,12 +198,18 @@ export const getSale = async (address: string) : Promise<PublicSaleData> => {
         [finalized],
         [canceled],
         [deposited],
-        [airdropEnabled]
+        [airdropEnabled],
+        [airdropAmount_],
+        [minVote_],
+        [totalVotes_]
     ] = await multicall(presaleABI, calls)
 
     const vestingInterval = new BigNumber(stageTimes[0]._hex).toNumber()
     const vestingPercent = new BigNumber(stagePercents[0]._hex).toNumber()
     const vestingEnabled = vestingInterval !== 0 || vestingPercent !== 100
+    const airdropAmount = new BigNumber(airdropAmount_._hex)
+    const minVote = new BigNumber(minVote_._hex)
+    const totalVotes = new BigNumber(totalVotes_._hex)
 
     const config: SaleConfigParams = config_
     
@@ -192,6 +240,9 @@ export const getSale = async (address: string) : Promise<PublicSaleData> => {
         vestingPercent,
         vestingEnabled,
         deposited,
+        airdropAmount,
+        minVote,
+        totalVotes,
         airdropEnabled
     }
 }
