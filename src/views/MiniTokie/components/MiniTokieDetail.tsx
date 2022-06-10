@@ -58,6 +58,12 @@ const MiniTokieDetail: React.FC<MiniTokieDetailProps> = ({ info}) => {
             <Flex flexDirection="column">
                 <Row>
                     <Label>
+                        {t('Address')}
+                    </Label>
+                    <ValueLink href={getBscScanLink(tokens.minitokie.address, 'address')}>{truncateHash(tokens.minitokie.address)}</ValueLink>
+                </Row>
+                <Row>
+                    <Label>
                         {t('Fee Enabled')}
                     </Label>
                     { info && (
