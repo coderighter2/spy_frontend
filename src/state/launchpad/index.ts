@@ -36,6 +36,8 @@ export const lockerSlices = createSlice({
       builder.addCase(fetchLaunchpadPublicDataAsync.fulfilled, (state, action) => {
         state.fee = action.payload.fee
         state.totalSaleCount = action.payload.totalSaleCount
+        state.minAirdropAmount = action.payload.minAirdropAmount
+        state.minVote = action.payload.minVote
       })
 
       builder.addCase(fetchLaunchpadUserDataAsync.fulfilled, (state, action) => {

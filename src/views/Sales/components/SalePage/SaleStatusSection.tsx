@@ -4,6 +4,7 @@ import { Flex, Skeleton } from '@pancakeswap/uikit'
 import { SALE_FINALIZE_DEADLINE } from 'config/constants'
 import { getFullDisplayBalance } from 'utils/formatBalance'
 import { useToken } from 'hooks/Tokens'
+import tokens from 'config/constants/tokens'
 import { InfoRow, InfoLabel, InfoValue } from './styled'
 import { PaymentType, PublicSaleData } from '../../types'
 
@@ -93,6 +94,10 @@ const SaleStatusSection: React.FC<SaleStatusSectionProps> = ({sale}) => {
                         ) : (
                             <Skeleton width="40px" height="30px"/>
                         )}
+                    </InfoRow>
+                    <InfoRow>
+                        <InfoLabel>{t('Total SPY Locked')}</InfoLabel>
+                        <InfoValue>{getFullDisplayBalance(sale.totalVotes, tokens.spy.decimals)} {tokens.spy.symbol}</InfoValue>
                     </InfoRow>
                 </Flex>
             </Flex>

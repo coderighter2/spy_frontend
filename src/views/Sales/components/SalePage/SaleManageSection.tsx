@@ -63,7 +63,8 @@ const SaleManageSection: React.FC<SaleActionSectionProps> = ({account, sale, onR
     const balanceTokenNumber = balanceAmount && token ? new BigNumber(balanceAmount.toExact()).multipliedBy(BIG_TEN.pow(token.decimals)) : null;
     const capTokenNumber = sale.cap.multipliedBy(sale.rate).div(BIG_TEN.pow(sale.rateDecimals))
     const liquidityTokenNumber = sale.cap.multipliedBy(sale.liquidity).div(100).multipliedBy(sale.listingRate).div(BIG_TEN.pow(sale.listingRateDecimals))
-    const requiredTokenNumber = capTokenNumber.plus(liquidityTokenNumber)
+    const airdropAmount = sale.airdropAmount
+    const requiredTokenNumber = capTokenNumber.plus(liquidityTokenNumber).plus(airdropAmount)
 
     const [approval, approveCallback] = useApproveCallback(token ? new TokenAmount(token, JSBI.BigInt(requiredTokenNumber)) : undefined, sale.address)
 

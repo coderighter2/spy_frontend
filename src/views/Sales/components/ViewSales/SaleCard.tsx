@@ -102,7 +102,7 @@ const SaleCard: React.FC<SaleCardProps> = ({sale}) => {
                </Text>
              </Flex>
            </Flex>
-            { !sale.canceled && sale.openingTime > new Date().getTime() / 1000 ? (
+            { !sale.finalized && !sale.canceled && sale.openingTime > new Date().getTime() / 1000 ? (
               <>
               <Flex flexDirection="column" justifyContent="center" alignItems="center" mt="16px">
                 <Text color="secondary" fontSize="12px" mb="12px">
@@ -111,7 +111,7 @@ const SaleCard: React.FC<SaleCardProps> = ({sale}) => {
                 <Timer target={sale.openingTime} />
               </Flex>
               </>
-            ) : !sale.canceled && sale.closingTime > new Date().getTime() / 1000 && (
+            ) : !sale.finalized && !sale.canceled && sale.closingTime > new Date().getTime() / 1000 && (
               <>
               <Flex flexDirection="column" justifyContent="center" alignItems="center" mt="16px">
                 <Text color="secondary" fontSize="12px" mb="12px">

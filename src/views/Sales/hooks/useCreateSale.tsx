@@ -4,6 +4,7 @@ import { ROUTER_ADDRESS } from 'config/constants'
 import getGasPrice from 'utils/getGasPrice'
 import { callWithEstimateGas } from 'utils/calls'
 import BigNumber from 'bignumber.js'
+import tokens from 'config/constants/tokens'
 
 interface CreateSaleParams {
   title: string
@@ -25,6 +26,8 @@ interface CreateSaleParams {
   whitelistEnabled: boolean
   vestingInterval: number
   vestingPercent: number
+  airdropAmount: string
+  minVote: string
 }
 
 export const useCreateSale = () => {
@@ -32,7 +35,7 @@ export const useCreateSale = () => {
 
   const handleCreateSale = useCallback(
     async (params: CreateSaleParams) => {
-      const {title, feeAmount, wallet, token, baseToken, rate, rateDecimals, listingRate, listingRateDecimals, liquidityPercent, goal, cap, openingTime, closingTime, minContribution, maxContribution, whitelistEnabled, vestingInterval, vestingPercent} = params;
+      const {title, feeAmount, wallet, token, baseToken, rate, rateDecimals, listingRate, listingRateDecimals, liquidityPercent, goal, cap, openingTime, closingTime, minContribution, maxContribution, whitelistEnabled, vestingInterval, vestingPercent, airdropAmount, minVote} = params;
       const gasPrice = getGasPrice()
       const stageTimes = []
       const stagePercents = []
@@ -44,7 +47,7 @@ export const useCreateSale = () => {
         totalPercent += vestingPercent;
         index += 1;
       }
-      const args = [[rate, rateDecimals, listingRate, listingRateDecimals, liquidityPercent, goal, cap, minContribution, maxContribution, openingTime, closingTime, wallet, ROUTER_ADDRESS, token, baseToken,  whitelistEnabled, title], stageTimes, stagePercents];
+      const args = [[rate, rateDecimals, listingRate, listingRateDecimals, liquidityPercent, goal, cap, minContribution, maxContribution, openingTime, closingTime, wallet, ROUTER_ADDRESS, token, baseToken,  whitelistEnabled, title], [airdropAmount, minVote, tokens.spy.address], stageTimes, stagePercents];
       const tx = await callWithEstimateGas(factory, 'createSale', args, { gasPrice}, 1000, feeAmount)
       const receipt = await tx.wait()
       if (receipt.status === 1) {

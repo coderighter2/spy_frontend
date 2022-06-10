@@ -31,6 +31,7 @@ const DesclaimerModal: React.FC<DesclaimerModalProps> = ({
   const desclaimers = [
     t('My token has a function to disable special transfers or has no special transfers'),
     t('My token is not already listed on Pancakeswp and I have not given out any tokens to users'),
+    t('I understand that I have to airdrop my token for free to the contributors with SPY locked to my presale'),
     t('I understand tokens deposited to the PRESALE contract are non-recoverable (Regardless of success or failure)'),
     t('I understand fees paid to launch a PRESALE are non-recoverable'),
     t('I understand that I have to finalize my PreSale within 7 days of hitting the hardcap!'),

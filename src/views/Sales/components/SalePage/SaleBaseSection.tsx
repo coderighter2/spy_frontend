@@ -245,6 +245,14 @@ const SaleBaseSection: React.FC<SaleBaseSectionProps> = ({account, sale, onEditM
                         )}
                     </InfoRow>
                     <InfoRow>
+                        <InfoLabel>{t('Free Airdrop')}</InfoLabel>
+                        { token ? (
+                            <InfoValue>{getFullDisplayBalance(sale.airdropAmount, token.decimals)} {token.symbol}</InfoValue>
+                        ) : (
+                            <Skeleton width="40px" height="30px"/>
+                        )}
+                    </InfoRow>
+                    <InfoRow>
                         <InfoLabel>{t('Presale Start Time')}</InfoLabel>
                         <InfoValue>{ format(sale.openingTime * 1000, 'yyyy/MM/dd hh:mm aa')}</InfoValue>
                     </InfoRow>

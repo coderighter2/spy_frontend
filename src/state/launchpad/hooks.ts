@@ -3,6 +3,8 @@ import { useSelector } from 'react-redux'
 import { useAppDispatch } from 'state'
 import useRefresh from 'hooks/useRefresh'
 import { useWeb3React } from '@web3-react/core'
+import BigNumber from 'bignumber.js'
+import { BIG_ZERO } from 'utils/bigNumber'
 import { State } from '../types'
 import { fetchLaunchpadPublicDataAsync, fetchLaunchpadUserDataAsync } from '.'
 
@@ -27,5 +29,12 @@ export const useUserSaleCount = () =>  {
   return useSelector((state: State) => state.launchpad.userSaleCount)
 }
 export const useSaleDeployFee = () =>  {
-  return useSelector((state: State) => state.launchpad.fee)
+  return useSelector((state: State) => state.launchpad.fee ?? '0')
+}
+export const useSaleMinVote = () =>  {
+  return useSelector((state: State) => state.launchpad.minVote ?? '100')
+}
+export const useSaleMinAirdrop = () =>  {
+  const minAirdropAmount = useSelector((state: State) => state.launchpad.minAirdropAmount)
+  return minAirdropAmount ? new BigNumber(minAirdropAmount) : new BigNumber(10000)
 }

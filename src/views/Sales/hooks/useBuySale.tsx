@@ -6,18 +6,18 @@ import getGasPrice from 'utils/getGasPrice'
 export const useBuySale = (address: string) => {
   const saleContract = useSaleContract(address)
 
-  const handleBuyETH = useCallback(async (account: string, amount: string) => {
+  const handleBuyETH = useCallback(async (account: string, amount: string, lockAmount: string) => {
 
     const gasPrice = getGasPrice()
-    const tx = await callWithEstimateGas(saleContract, 'buyWithETH', [], {gasPrice}, 1000, amount)
+    const tx = await callWithEstimateGas(saleContract, 'buyWithETH', [lockAmount], {gasPrice}, 1000, amount)
     const receipt = await tx.wait()
     return receipt.status
   }, [saleContract])
 
-  const handleBuy = useCallback(async (account: string, amount: string) => {
+  const handleBuy = useCallback(async (account: string, amount: string, lockAmount: string) => {
 
     const gasPrice = getGasPrice()
-    const tx = await callWithEstimateGas(saleContract, 'buyWithToken', [amount], {gasPrice})
+    const tx = await callWithEstimateGas(saleContract, 'buyWithToken', [amount, lockAmount], {gasPrice})
     const receipt = await tx.wait()
     return receipt.status
   }, [saleContract])
@@ -36,6 +36,19 @@ export const useClaimSale = (address: string) => {
   }, [saleContract])
 
   return { onClaimSale: handleClaim }
+}
+
+export const useUnlockSale = (address: string) => {
+  const saleContract = useSaleContract(address)
+
+  const handleUnlock = useCallback(async () => {
+    const gasPrice = getGasPrice()
+    const tx = await callWithEstimateGas(saleContract, 'unlockVotes', [], {gasPrice})
+    const receipt = await tx.wait()
+    return receipt.status
+  }, [saleContract])
+
+  return { onUnlockVotes: handleUnlock }
 }
 
 export const useClaimRefundSale = (address: string) => {
