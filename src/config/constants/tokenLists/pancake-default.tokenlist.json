@@ -29,7 +29,7 @@
     {
       "name": "Mini Tokie",
       "symbol": "TOKIE",
-      "address": "0x71a0Ffe70cdEaBe758C64EB49eb261cCfb051E31",
+      "address": "0xe378225E1ccFFccEaE6bc7E32C6b716a434b4e81",
       "chainId": 97,
       "decimals": 9,
       "logoURI": "http://test.smarty-pay.com/images/tokens/0x6F25144001Ce324E745c3FF25a646A292883feD5.png"
@@ -37,7 +37,7 @@
     {
       "name": "Mini Tokie",
       "symbol": "TOKIE",
-      "address": "0xc6C3Ef889614aF49962Fd56A390e67A0A26c3591",
+      "address": "0x97688301ed1219aADEF73a8D87B9A21B189CF652",
       "chainId": 56,
       "decimals": 9,
       "logoURI": "http://test.smarty-pay.com/images/tokens/0x6F25144001Ce324E745c3FF25a646A292883feD5.png"
