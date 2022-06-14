@@ -1,10 +1,11 @@
 import BigNumber from 'bignumber.js'
 import React, { useCallback, useMemo, useState } from 'react'
-import { Button, Modal } from '@pancakeswap/uikit'
+import { Button, Modal, Text } from '@pancakeswap/uikit'
 import { ModalActions, ModalInput } from 'components/Modal'
 import { useTranslation } from 'contexts/Localization'
 import { getFullDisplayBalance } from 'utils/formatBalance'
 import useToast from 'hooks/useToast'
+import { LP_LOCK_TIMEOUT } from 'config/constants'
 
 interface WithdrawModalProps {
   max: BigNumber
@@ -48,12 +49,13 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({ onConfirm, onDismiss, max
         symbol={tokenName}
         inputTitle={t('Unstake')}
       />
+      <Text color="secondary" fontSize="12px">{t('LP is locked till Jan 1st, 2023')}</Text>
       <ModalActions>
         <Button variant="secondary" onClick={onDismiss} width="100%" disabled={pendingTx}>
           {t('Cancel')}
         </Button>
         <Button
-          disabled={pendingTx || !valNumber.isFinite() || valNumber.eq(0) || valNumber.gt(fullBalanceNumber)}
+          disabled={pendingTx || !valNumber.isFinite() || valNumber.eq(0) || valNumber.gt(fullBalanceNumber) || new Date().getTime() / 1000 < LP_LOCK_TIMEOUT}
           onClick={async () => {
             setPendingTx(true)
             try {

@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { useHistory } from 'react-router-dom';
 import BigNumber from 'bignumber.js'
 import styled from 'styled-components'
 import { Box, Button, Flex, Heading, HelpIcon, useTooltip } from '@pancakeswap/uikit'
@@ -25,6 +26,7 @@ interface FarmCardActionsProps {
 
 const HarvestAction: React.FC<FarmCardActionsProps> = ({ isOld, earnings, pid, nextHarvestUntil }) => {
   const { account } = useWeb3React()
+  const history = useHistory()
   const { toastSuccess, toastError } = useToast()
   const { t } = useTranslation()
   const [pendingTx, setPendingTx] = useState(false)
@@ -71,6 +73,7 @@ const HarvestAction: React.FC<FarmCardActionsProps> = ({ isOld, earnings, pid, n
           } else {
             dispatch(fetchFarmUserDataAsync({ account, pids: [pid] }))
           }
+          history.push('/nfts')
         }}
       >
         <Flex justifyContent="center" alignItems="center">

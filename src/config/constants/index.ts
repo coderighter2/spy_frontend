@@ -62,6 +62,7 @@ export const PINNED_PAIRS: { readonly [chainId in ChainId]?: [Token, Token][] } 
 
 export const NetworkContextName = 'NETWORK'
 
+export const LP_LOCK_TIMEOUT = 1672531200
 // default allowed slippage, in bips
 export const INITIAL_ALLOWED_SLIPPAGE = 50
 // 20 minutes, denominated in seconds

@@ -6,6 +6,7 @@ import tokens from 'config/constants/tokens';
 import { useAppDispatch } from 'state';
 import { DeserializedNFTGego } from 'state/types';
 import { fetchNFTAllowancesAsync } from 'state/nft';
+import { LP_LOCK_TIMEOUT } from 'config/constants';
 import { useTranslation } from 'contexts/Localization';
 import { getFullDisplayBalance } from 'utils/formatBalance';
 import { BIG_TEN } from 'utils/bigNumber';
@@ -131,7 +132,7 @@ const NFTCard: React.FC<NFTCardProps> = ({account, gego, factoryAllowed, general
     return isNFTFactoryApproved ? (
       <Button
         scale="sm"
-        disabled={gego.staked || gego.createdTime + gego.lockedDays * 86400 > Date.now() / 1000}
+        disabled={gego.staked || gego.createdTime + gego.lockedDays * 86400 > Date.now() / 1000 || new Date().getTime() / 1000 < LP_LOCK_TIMEOUT}
         width="100%"
         onClick={onPresentDecomposeNFTModal}
       >
