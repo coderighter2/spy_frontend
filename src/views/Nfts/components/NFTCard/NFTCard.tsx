@@ -132,7 +132,7 @@ const NFTCard: React.FC<NFTCardProps> = ({account, gego, factoryAllowed, general
     return isNFTFactoryApproved ? (
       <Button
         scale="sm"
-        disabled={gego.staked || gego.createdTime + gego.lockedDays * 86400 > Date.now() / 1000 || new Date().getTime() / 1000 < LP_LOCK_TIMEOUT}
+        disabled={gego.staked || gego.createdTime + gego.lockedDays * 86400 > Date.now() / 1000}
         width="100%"
         onClick={onPresentDecomposeNFTModal}
       >
