@@ -19,6 +19,7 @@ const ApyLabelContainer = styled(Flex)`
 export interface ApyButtonProps {
   variant: 'text' | 'text-and-button'
   pid: number
+  isOld?: boolean
   lpSymbol: string
   lpLabel?: string
   multiplier: string
@@ -32,6 +33,7 @@ export interface ApyButtonProps {
 const ApyButton: React.FC<ApyButtonProps> = ({
   variant,
   pid,
+  isOld,
   lpLabel,
   lpSymbol,
   cakePrice,
@@ -43,7 +45,7 @@ const ApyButton: React.FC<ApyButtonProps> = ({
 }) => {
   const { t } = useTranslation()
   const lpPrice = useLpTokenPrice(lpSymbol)
-  const { lpTokenBalance, stakedBalance } = useVaultUser(pid)
+  const { lpTokenBalance, stakedBalance } = useVaultUser(pid, isOld)
   const [onPresentApyModal] = useModal(
     <RoiCalculatorModal
       linkLabel={t('Get %symbol%', { symbol: lpLabel })}
@@ -74,6 +76,10 @@ const ApyButton: React.FC<ApyButtonProps> = ({
       )}
     </ApyLabelContainer>
   )
+}
+
+ApyButton.defaultProps = {
+  isOld: false
 }
 
 export default ApyButton

@@ -71,6 +71,7 @@ const CardActions: React.FC<FarmCardActionsProps> = ({ farm, account, addLiquidi
         lpLabel={lpLabel}
         cakePrice={cakePrice}
         addLiquidityUrl={addLiquidityUrl}
+        lockUntil={farm.lockUntil}
         isOld={farm.isOld}
       />
     ) : (

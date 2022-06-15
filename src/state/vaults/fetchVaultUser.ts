@@ -44,11 +44,8 @@ export const fetchVaultUserDatas = async (account: string, vaultsToFetch: Serial
     return accum
   }, [])
 
-  console.log('here')
   const res1 = await multicallv2(erc20ABI, calls1, {requireSuccess:false})
-  console.log('here1')
   const res2 = await multicallv2(baseVaultABI, calls2, {requireSuccess:false})
-  console.log('here2')
 
   const ercResponses = res1.reduce((accum: any[][], item, index) => {
     const chunkIdx = Math.floor(index / 3)

@@ -21,7 +21,7 @@ const CastConfirmModal: React.FC<CastConfirmModalProps> = ({ onConfirm, onDismis
 
   return (
     <Modal title={t('Confirm NFT Casting')} onDismiss={onDismiss}>
-      <Text>{t('Your par value will be locked randomly from 30-90 days')}</Text>
+      <Text>{t('Your par value (%amount% SPY) will be locked randomly from 30-90 days', {amount: value})}</Text>
       <ModalActions>
         <Button variant="secondary" onClick={onDismiss} width="100%" disabled={pendingTx}>
           {t('Cancel')}

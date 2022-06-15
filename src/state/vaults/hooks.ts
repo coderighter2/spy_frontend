@@ -8,7 +8,7 @@ import { getBalanceAmount } from 'utils/formatBalance'
 import { vaultsConfig } from 'config/constants'
 import useRefresh from 'hooks/useRefresh'
 import { deserializeToken } from 'state/user/hooks/helpers'
-import { fetchVaultsPublicDataAsync, fetchVaultUserDataAsync } from '.'
+import { fetchOldVaultsPublicDataAsync, fetchOldVaultUserDataAsync, fetchVaultsPublicDataAsync, fetchVaultUserDataAsync } from '.'
 import { State, SerializedVault, DeserializedVaultUserData, DeserializedVault, DeserializedVaultsState } from '../types'
 
 const deserializeVaultUserData = (vault: SerializedVault): DeserializedVaultUserData => {
@@ -24,9 +24,10 @@ const deserializeVaultUserData = (vault: SerializedVault): DeserializedVaultUser
 }
 
 const deserializeVault = (vault: SerializedVault): DeserializedVault => {
-  const { lpAddresses, symbol, lpSymbol, pid, contractAddresses, isETH, nearestCompoundingTime } = vault
+  const { lpAddresses, symbol, lpSymbol, pid, contractAddresses, isETH, nearestCompoundingTime, isOld } = vault
 
   return {
+    isOld,
     lpAddresses,
     contractAddresses,
     isETH,
@@ -51,6 +52,7 @@ export const usePollVaultsPublicData = () => {
     const pids = vaultsConfig.map((vaultToFetch) => vaultToFetch.pid)
 
     dispatch(fetchVaultsPublicDataAsync(pids))
+    dispatch(fetchOldVaultsPublicDataAsync(pids))
   }, [dispatch, slowRefresh])
 }
 
@@ -63,9 +65,11 @@ export const usePollVaultsWithUserData = () => {
     const pids = vaultsConfig.map((vaultToFetch) => vaultToFetch.pid)
 
     dispatch(fetchVaultsPublicDataAsync(pids))
+    dispatch(fetchOldVaultsPublicDataAsync(pids))
 
     if (account) {
       dispatch(fetchVaultUserDataAsync({ account, pids }))
+      dispatch(fetchOldVaultUserDataAsync({ account, pids }))
     }
   }, [dispatch, slowRefresh, account])
 }
@@ -73,11 +77,14 @@ export const usePollVaultsWithUserData = () => {
 export const useVaults = (): DeserializedVaultsState => {
   const vaults = useSelector((state: State) => state.vaults)
   const deserializedVaultsData = vaults.data.map(deserializeVault)
-  const { loadArchivedVaultsData, userDataLoaded } = vaults
+  const deserializedOldVaultsData = vaults.old.map(deserializeVault)
+  const { loadArchivedVaultsData, userDataLoaded, oldUserDataLoaded } = vaults
   return {
     loadArchivedVaultsData,
     userDataLoaded,
+    oldUserDataLoaded,
     data: deserializedVaultsData,
+    old: deserializedOldVaultsData
   }
 }
 
@@ -86,8 +93,36 @@ export const useVaultFromPid = (pid: number): DeserializedVault => {
   return deserializeVault(vault)
 }
 
-export const useVaultUser = (pid): DeserializedVaultUserData => {
-  const { userData } = useVaultFromPid(pid)
+export const useVaultsFromPid = (pid: number) => {
+  const vault = useSelector((state: State) => state.vaults.data.find((f) => f.pid === pid))
+  const oldVault = useSelector((state: State) => state.vaults.old.find((f) => f.pid === pid))
+  return {
+    vault: deserializeVault(vault),
+    old: deserializeVault(oldVault)
+  }
+}
+
+export const useOldVaultFromPid = (pid: number): DeserializedVault => {
+  const vault = useSelector((state: State) => state.vaults.old.find((f) => f.pid === pid))
+  return deserializeVault(vault)
+}
+
+export const useVaultUser = (pid, isOld = false): DeserializedVaultUserData => {
+  const { vault, old } = useVaultsFromPid(pid)
+  const { tokenAllowance, lpAllowance, lpTokenBalance, tokenBalanceInVault, stakedBalance, earnings, pendingEarnings } = isOld ? old.userData : vault.userData
+  return {
+    tokenAllowance,
+    lpAllowance,
+    lpTokenBalance,
+    tokenBalanceInVault,
+    stakedBalance,
+    earnings,
+    pendingEarnings
+  }
+}
+
+export const useOldVaultUser = (pid): DeserializedVaultUserData => {
+  const { userData } = useOldVaultFromPid(pid)
   const { tokenAllowance, lpAllowance, lpTokenBalance, tokenBalanceInVault, stakedBalance, earnings, pendingEarnings } = userData
   return {
     tokenAllowance,

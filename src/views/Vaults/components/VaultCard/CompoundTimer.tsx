@@ -22,7 +22,7 @@ const CompoundTimer: React.FC<CompoundTimerProps & TextProps> = ({ target, onCha
             const diffTime = target - now;
             if (diffTime > 0) {
                 const duration = diffTime;
-                const hour = Math.floor((duration % 86400) / 3600);
+                const hour = Math.floor(duration / 3600);
                 const min = Math.floor((duration % 3600) / 60);
                 const sec = duration % 60;
 

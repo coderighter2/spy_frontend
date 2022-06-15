@@ -6,7 +6,7 @@ import tokens from 'config/constants/tokens'
 import { useTranslation } from 'contexts/Localization'
 import { useAppDispatch } from 'state'
 import { DeserializedVault } from 'state/types'
-import { fetchVaultsPublicDataAsync } from 'state/vaults'
+import { fetchOldVaultsPublicDataAsync, fetchVaultsPublicDataAsync } from 'state/vaults'
 import { getBscScanLink } from 'utils'
 import { getAddress } from 'utils/addressHelpers'
 import { getApy } from 'utils/apr'
@@ -66,7 +66,7 @@ const VaultBountyCard: React.FC<VaultBountyCardProps> = ({ vault, cakePrice }) =
             const diffTime = target - now;
             if (diffTime > 0) {
                 const duration = diffTime;
-                const hour = Math.floor((duration % 86400) / 3600);
+                const hour = Math.floor(duration / 3600);
                 const min = Math.floor((duration % 3600) / 60);
                 const sec = duration % 60;
 
@@ -86,7 +86,12 @@ const VaultBountyCard: React.FC<VaultBountyCardProps> = ({ vault, cakePrice }) =
         try {
             setPendingTx(true)
             await onCompound()
-            dispatch(fetchVaultsPublicDataAsync([vault.pid]))
+            if (vault.isOld) {
+                dispatch(fetchOldVaultsPublicDataAsync([vault.pid]))
+            } else {
+                dispatch(fetchVaultsPublicDataAsync([vault.pid]))
+            }
+            
             toastSuccess(t('SPY Bounty'), t('You have claimed the bounty reward successfully'))
         } catch (e) {
             setPendingTx(false)

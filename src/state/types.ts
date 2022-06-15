@@ -97,6 +97,7 @@ export interface SerializedVault extends SerializedVaultConfig {
   totalPoolAmount?: SerializedBigNumber
   nearestCompoundingTime?: SerializedBigNumber
   rewardForCompounder?: SerializedBigNumber
+  isOld?: boolean
 }
 
 export interface DeserializedVault extends DeserializedVaultConfig {
@@ -108,18 +109,23 @@ export interface DeserializedVault extends DeserializedVaultConfig {
   totalPoolAmount?: BigNumber
   nearestCompoundingTime?: BigNumber
   rewardForCompounder?: BigNumber
+  isOld?: boolean
 }
 
 export interface SerializedVaultsState {
   data: SerializedVault[]
+  old: SerializedVault[]
   loadArchivedVaultsData: boolean
   userDataLoaded: boolean
+  oldUserDataLoaded: boolean
 }
 
 export interface DeserializedVaultsState {
   data: DeserializedVault[]
+  old: DeserializedVault[]
   loadArchivedVaultsData: boolean
   userDataLoaded: boolean
+  oldUserDataLoaded: boolean
 }
 
 interface SerializedFarmUserData {
@@ -151,6 +157,7 @@ export interface SerializedFarm extends SerializedFarmConfig {
   harvestInterval?: SerializedBigNumber
   spyPerBlock?: SerializedBigNumber
   userData?: SerializedFarmUserData
+  lockUntil?: number
   isOld?: boolean
 }
 
@@ -165,6 +172,7 @@ export interface DeserializedFarm extends DeserializedFarmConfig {
   harvestInterval?: BigNumber
   spyPerBlock?: BigNumber
   userData?: DeserializedFarmUserData
+  lockUntil?: number
   isOld?: boolean
 }
 
