@@ -1,4 +1,5 @@
 import React, { useCallback, useState } from 'react'
+import { useHistory } from 'react-router-dom';
 import BigNumber from 'bignumber.js'
 import { Button, Flex, Heading, useModal } from '@pancakeswap/uikit'
 import { Token } from '@pancakeswap/sdk'
@@ -28,6 +29,7 @@ interface VaultCardActionsProps {
 
 const HarvestAction: React.FC<VaultCardActionsProps> = ({ token, earnings, pid, isOld, contractAddress, isETH, disabled}) => {
   const { account } = useWeb3React()
+  const history = useHistory()
   const { t } = useTranslation()
   const { onReward } = useHarvestVault(contractAddress, isETH)
   const cakePrice = usePriceCakeBusd()
@@ -47,7 +49,10 @@ const HarvestAction: React.FC<VaultCardActionsProps> = ({ token, earnings, pid, 
       dispatch(fetchVaultUserDataAsync({ account, pids: [pid] }))
       dispatch(fetchVaultsPublicDataAsync([pid]))
     }
-  }, [dispatch, onReward, account, pid, isOld])
+    if (!receiveToken) {
+      history.push('/nfts?amount=-1')
+    }
+  }, [dispatch, onReward, account, pid, isOld, history])
 
   const [onPresentWithdraw] = useModal(
     <HarvestModal 
@@ -66,7 +71,7 @@ const HarvestAction: React.FC<VaultCardActionsProps> = ({ token, earnings, pid, 
         )}
       </Flex>
       <Button
-        disabled={isOld || disabled || !rawEarningsBalanceInSpy || rawEarningsBalanceInSpy.eq(0)}
+        disabled={disabled || !rawEarningsBalanceInSpy || rawEarningsBalanceInSpy.eq(0)}
         onClick={onPresentWithdraw}
       >
         {t('Harvest')}

@@ -5,10 +5,18 @@ import { Button, Modal, Heading, Flex, Text, InjectedModalProps } from '@pancake
 import { nftGrades } from 'config/constants/nft';
 import tokens from 'config/constants/tokens';
 import { ModalActions } from 'components/Modal'
+import Dots from 'components/Loader/Dots';
 import { useTranslation } from 'contexts/Localization'
 import { getFullDisplayBalance } from 'utils/formatBalance'
 import { DeserializedNFTGego } from 'state/types'
 import { BIG_TEN } from 'utils/bigNumber';
+import { useAppDispatch } from 'state';
+import { fetchNFTAllowancesAsync, fetchNFTUserBalanceDataAsync } from 'state/nft';
+import { useNFTRewardAllowance, useOldNFTRewardAllowance } from 'state/nft/hooks';
+import { useSpyNFT } from 'hooks/useContract';
+import useToast from 'hooks/useToast';
+import useApproveGeneralReward from '../../hooks/useApproveGeneralReward';
+import useStakeNFT from '../../hooks/useStakeNFT';
 
 
 const ModalInnerContainer = styled(Flex)`
@@ -38,12 +46,22 @@ const GradeImageWrapper = styled.div`
 
 interface CastedModalProps {
   gego: DeserializedNFTGego
+  account: string
   customOnDismiss?: () => void
 }
 
-const CastedModal: React.FC<InjectedModalProps & CastedModalProps> = ({ gego, customOnDismiss, onDismiss }) => {
+const CastedModal: React.FC<InjectedModalProps & CastedModalProps> = ({ gego, account, customOnDismiss, onDismiss }) => {
   const { t } = useTranslation()
+  const dispatch = useAppDispatch()
   const gradeConfig = nftGrades.find((c) => c.level === gego.grade)
+  const nftContract = useSpyNFT(tokens.spynft.address)
+  const { toastError, toastSuccess } = useToast()
+  const [pendingTx, setPendingTx] = useState(false)
+  const [requestedApproval, setRequestedApproval] = useState(false)
+  const { onApproveGeneralReward: onApprove } = useApproveGeneralReward(nftContract)
+  const { onStakeNFTMulti } = useStakeNFT()
+  const allowance = useNFTRewardAllowance()
+  const isApproved = account && allowance;
 
   const handleDismiss = useCallback(() => {
     if (customOnDismiss) {
@@ -52,8 +70,60 @@ const CastedModal: React.FC<InjectedModalProps & CastedModalProps> = ({ gego, cu
     onDismiss()
   }, [customOnDismiss, onDismiss])
 
+  const handleApprove = useCallback(async() => {
+    try {
+        setRequestedApproval(true)
+        await onApprove(true)
+        dispatch(fetchNFTAllowancesAsync({account}))
+      } catch (e) {
+        toastError(t('Error'), t('Please try again. Confirm the transaction and make sure you are paying enough gas!'))
+        console.error(e)
+      } finally {
+        setRequestedApproval(false)
+      }
+  }, [onApprove, toastError, t, dispatch, account])
+
+  const handleStakeNFT = useCallback(async() => {
+
+    try {
+      setPendingTx(true)
+      await onStakeNFTMulti([gego.id], true)
+      dispatch(fetchNFTUserBalanceDataAsync({account}))
+      toastSuccess(t('Success'), t('Your NFT(s) have been staked'))
+      onDismiss()
+    } catch (e) {
+      if (typeof e === 'object' && 'message' in e) {
+        const err: any = e;
+        toastError(t('Error'), err.message)
+      } else {
+        toastError(t('Error'), t('Please try again. Confirm the transaction and make sure you are paying enough gas!'))
+      }
+      console.error(e)
+    } finally {
+      setPendingTx(false)
+    }
+  }, [onStakeNFTMulti, onDismiss, toastError, toastSuccess, t, dispatch, account, gego])
+
+  const renderApprovalOrStakeButton = () => {
+    return isApproved ? (
+      <Button
+        scale="md" variant="primary" width="100%"
+        onClick={handleStakeNFT}
+        disabled={pendingTx}
+      >
+        {pendingTx ? (
+          <Dots>{t('Processing')}</Dots>
+        ) : t('Stake')}
+      </Button>
+    ) : (
+      <Button scale="md" variant="primary" width="100%" disabled={requestedApproval} onClick={handleApprove}>
+        {t('Approve For Staking')}
+      </Button>
+    )
+  }
+
   return (
-    <Modal title={t('Casted NFTs Completed')} onDismiss={handleDismiss}>
+    <Modal title={t('Casted NFT(s) Completed')} onDismiss={handleDismiss}>
 
       <ModalInnerContainer>
 
@@ -83,9 +153,10 @@ const CastedModal: React.FC<InjectedModalProps & CastedModalProps> = ({ gego, cu
           <Text color="primary">{gego.efficiency.div(1000).toFixed(2)}</Text>
         </Flex>
       <ModalActions>
-        <Button variant="primary" onClick={handleDismiss} width="100%">
+        {/* <Button variant="primary" onClick={handleDismiss} width="100%">
           {t('OK')}
-        </Button>
+        </Button> */}
+        {renderApprovalOrStakeButton()}
       </ModalActions>
       </ModalInnerContainer>
     </Modal>

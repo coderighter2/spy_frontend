@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { useHistory } from 'react-router-dom';
 import BigNumber from 'bignumber.js'
 import { Button, Flex, Heading } from '@pancakeswap/uikit'
 import { useTranslation } from 'contexts/Localization'
@@ -21,6 +22,7 @@ interface FarmCardActionsProps {
 
 const HarvestAction: React.FC<FarmCardActionsProps> = ({ isOld, earnings, pid, nextHarvestUntil }) => {
   const { account } = useWeb3React()
+  const history = useHistory()
   const { toastSuccess, toastError } = useToast()
   const { t } = useTranslation()
   const [pendingTx, setPendingTx] = useState(false)
@@ -44,11 +46,19 @@ const HarvestAction: React.FC<FarmCardActionsProps> = ({ isOld, earnings, pid, n
         onClick={async () => {
           setPendingTx(true)
           try {
-            await onReward()
-            toastSuccess(
-              `${t('Harvested')}!`,
-              t('Your %symbol% earnings have been sent to your wallet!', { symbol: 'SPY' }),
-            )
+            const amount = await onReward()
+            if (amount) {
+              history.push(`/nfts?amount=${amount.toJSON()}`)
+              toastSuccess(
+                `${t('Harvested')}!`,
+                t('Your %symbol% earnings have been sent to your wallet!', { symbol: 'SPY' }),
+              )
+            } else {
+              toastSuccess(
+                `${t('Harvested')}!`,
+                t('Your %symbol% earnings have been sent to your wallet!', { symbol: 'SPY' }),
+              )
+            }
           } catch (e) {
             toastError(
               t('Error'),

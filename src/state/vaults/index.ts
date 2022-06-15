@@ -96,9 +96,9 @@ export const fetchOldVaultUserDataAsync = createAsyncThunk<VaultUserDataResponse
   'vaults/fetchOldVaultUserDataAsync',
   async ({ account, pids }) => {
     const vaultsToFetch = oldVaults.filter((vaultConfig) => pids.includes(vaultConfig.pid))
-    console.log('fetching user data')
+    console.log('fetching old user data')
     const datas = await fetchVaultUserDatas(account, vaultsToFetch)
-    console.log('user data', datas)
+    console.log('old user data', datas)
     return datas.map((data, index) => {
       return {
         ...data,

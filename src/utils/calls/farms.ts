@@ -36,12 +36,24 @@ export const unstakeFarm = async (masterChefContract, pid, amount) => {
   return receipt.status
 }
 
-export const harvestFarm = async (masterChefContract, pid) => {
+export const harvestFarm = async (masterChefContract, pid) : Promise<BigNumber|null> => {
   const gasPrice = getGasPrice()
 
   const tx = await callWithEstimateGas(masterChefContract, 'deposit', [pid, 0, AddressZero], {
     gasPrice,
   })
   const receipt = await tx.wait()
-  return receipt.status
+  if (receipt.status === 1) {
+    /* eslint-disable dot-notation */
+    const ev = Array.from(receipt["events"]).filter((v) =>  {
+        return v["event"] === "RewardHarvested"
+    });
+
+    if (ev.length > 0) {
+        const args = ev[0]["args"];
+        return new BigNumber(args["amountHarvested"]._hex)
+    }
+    /* eslint-enable dot-notation */
+  }
+  return null
 }
