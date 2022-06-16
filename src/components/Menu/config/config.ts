@@ -52,6 +52,10 @@ const config: (t: ContextApi['t']) => ConfigMenuItemsType[] = (t) => [
     items: [
       {
         label: t('Farms'),
+        href: '/farms-old',
+      },
+      {
+        label: t('New Farms'),
         href: '/farms',
       },
       {
