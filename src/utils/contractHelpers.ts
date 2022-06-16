@@ -37,6 +37,7 @@ import {
   getGovernanceAddress,
   getAdminAddress,
   getOldMasterChefAddress,
+  getAdminV2Address,
 } from 'utils/addressHelpers'
 
 // ABI
@@ -166,6 +167,9 @@ export const getGovernanceContract = (signer?: ethers.Signer | ethers.providers.
 }
 export const getAdminContract = (signer?: ethers.Signer | ethers.providers.Provider) => {
   return getContract(spyAdminAbi, getAdminAddress(), signer)
+}
+export const getAdminV2Contract = (signer?: ethers.Signer | ethers.providers.Provider) => {
+  return getContract(spyAdminAbi, getAdminV2Address(), signer)
 }
 export const getClaimRefundContract = (signer?: ethers.Signer | ethers.providers.Provider) => {
   return getContract(claimRefundAbi, getClaimRefundAddress(), signer)

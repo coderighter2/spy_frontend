@@ -1,10 +1,10 @@
 import { useCallback } from 'react'
 import BigNumber from 'bignumber.js'
-import { getAdminAddress, getNFTFactoryAddress } from 'utils/addressHelpers'
+import { getAdminAddress, getAdminV2Address, getNFTFactoryAddress } from 'utils/addressHelpers'
 import getGasPrice from 'utils/getGasPrice'
 import { callWithEstimateGas } from 'utils/calls'
-import { useAdminContract, useGovernanceContract } from 'hooks/useContract'
-import { getAdminContract } from 'utils/contractHelpers'
+import { useAdminContract, useAdminV2Contract, useGovernanceContract } from 'hooks/useContract'
+import { getAdminContract, getAdminV2Contract } from 'utils/contractHelpers'
 import { ProposalCommand } from '../types'
 
 export interface CreateProposalParams {
@@ -22,6 +22,7 @@ export interface CreateProposalParams {
 
 export const useInstantExecuteProposal = (account) => {
   const adminContract = useAdminContract()
+  const adminV2Contract = useAdminV2Contract()
   
   const handleExecute = useCallback(async (params: CreateProposalParams) => {
 
@@ -31,6 +32,19 @@ export const useInstantExecuteProposal = (account) => {
 
     const gasPrice = getGasPrice()
     if (command === ProposalCommand.ADJUST_FARM_APY) {
+      const tx = await callWithEstimateGas(
+        adminV2Contract, 
+        'adjustMasterchefApy', 
+        [spyPerBlock, baseAllocPoint, pids, allocPoints], 
+        {gasPrice}, 
+        1000, 
+        0, 
+        account)
+      const receipt = await tx.wait();
+      return receipt.transactionHash
+    }
+
+    if (command === ProposalCommand.ADJUST_FARM_APY_OLD) {
       const tx = await callWithEstimateGas(
         adminContract, 
         'adjustMasterchefApy', 
@@ -46,14 +60,16 @@ export const useInstantExecuteProposal = (account) => {
     const tx = await callWithEstimateGas(adminContract, 'notifyNftReward', [nftRefillAmount], {gasPrice}, 1000, 0, account)
     const receipt = await tx.wait();
     return receipt.transactionHash
-  }, [adminContract, account])
+  }, [adminContract, adminV2Contract, account])
 
   return { onInstantExecuteProposal: handleExecute }
 }
 
 const useCreateProposal = () => {
   const adminContract = getAdminContract()
+  const adminV2Contract = getAdminV2Contract()
   const adminContractAddress = getAdminAddress()
+  const adminV2ContractAddress = getAdminV2Address()
   const governorContract = useGovernanceContract()
   
   const handleCreateProposal = useCallback(async (params: CreateProposalParams) => {
@@ -61,14 +77,18 @@ const useCreateProposal = () => {
     const {command, spyPerBlock, baseAllocPoint, pids, allocPoints, nftRefillAmount, title, description} = params;
 
     let callData: string
+    let contractAddress = adminContractAddress
     if (command === ProposalCommand.ADJUST_FARM_APY) {
+      callData = adminV2Contract.interface.encodeFunctionData('adjustMasterchefApy', [spyPerBlock, baseAllocPoint, pids, allocPoints])
+      contractAddress = adminV2ContractAddress
+    } else if (command === ProposalCommand.ADJUST_FARM_APY_OLD) {
       callData = adminContract.interface.encodeFunctionData('adjustMasterchefApy', [spyPerBlock, baseAllocPoint, pids, allocPoints])
     } else {
       callData = adminContract.interface.encodeFunctionData('notifyNftReward', [nftRefillAmount])
     }
     const gasPrice = getGasPrice()
     const tx = await callWithEstimateGas(governorContract, 'propose(address[],uint256[],bytes[],string)', [
-      [adminContractAddress],
+      [contractAddress],
       [0],
       [callData],
       `${title}:::${description}`
@@ -89,7 +109,7 @@ const useCreateProposal = () => {
   }
   return null
     return receipt.status
-  }, [governorContract, adminContract, adminContractAddress])
+  }, [governorContract, adminContract, adminContractAddress, adminV2Contract, adminV2ContractAddress])
 
   return { onCreateProposal: handleCreateProposal }
 }
