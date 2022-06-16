@@ -54,11 +54,19 @@ const HarvestAction: React.FC<FarmCardActionsProps> = ({ isOld, earnings, pid, n
         onClick={async () => {
           setPendingTx(true)
           try {
-            await onReward()
-            toastSuccess(
-              `${t('Harvested')}!`,
-              t('Your %symbol% earnings have been sent to your wallet!', { symbol: 'SPY' }),
-            )
+            const amount = await onReward()
+            if (amount) {
+              history.push(`/nfts?amount=${amount.toJSON()}`)
+              toastSuccess(
+                `${t('Harvested')}!`,
+                t('Your %symbol% earnings have been sent to your wallet!', { symbol: 'SPY' }),
+              )
+            } else {
+              toastSuccess(
+                `${t('Harvested')}!`,
+                t('Your %symbol% earnings have been sent to your wallet!', { symbol: 'SPY' }),
+              )
+            }
           } catch (e) {
             toastError(
               t('Error'),

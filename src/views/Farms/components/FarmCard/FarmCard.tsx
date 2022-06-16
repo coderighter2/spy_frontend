@@ -28,7 +28,7 @@ const StyledCard = styled(Card)`
 const FarmCardInnerContainer = styled(Flex)`
   flex-direction: column;
   justify-content: space-around;
-  padding: 24px;
+  padding: 24px 24px 12px 24px;
 `
 
 const ExpandingWrapper = styled.div`

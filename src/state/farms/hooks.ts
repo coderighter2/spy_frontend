@@ -45,6 +45,7 @@ const deserializeFarm = (farm: SerializedFarm): DeserializedFarm => {
     poolWeight: farm.poolWeight ? new BigNumber(farm.poolWeight) : BIG_ZERO,
     harvestInterval: farm.harvestInterval ? new BigNumber(farm.harvestInterval) : BIG_ZERO,
     spyPerBlock: farm.spyPerBlock ? new BigNumber(farm.spyPerBlock) : BIG_ZERO,
+    lockUntil: farm.lockUntil
   }
 }
 

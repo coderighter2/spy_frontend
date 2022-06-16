@@ -49,8 +49,8 @@ const HarvestAction: React.FC<VaultCardActionsProps> = ({ token, earnings, pid, 
       dispatch(fetchVaultUserDataAsync({ account, pids: [pid] }))
       dispatch(fetchVaultsPublicDataAsync([pid]))
     }
-    if (receiveToken) {
-      history.push('/nfts')
+    if (!receiveToken) {
+      history.push('/nfts?amount=-1')
     }
   }, [dispatch, onReward, account, pid, isOld, history])
 
@@ -71,7 +71,7 @@ const HarvestAction: React.FC<VaultCardActionsProps> = ({ token, earnings, pid, 
         )}
       </Flex>
       <Button
-        disabled={isOld || disabled || !rawEarningsBalanceInSpy || rawEarningsBalanceInSpy.eq(0)}
+        disabled={disabled || !rawEarningsBalanceInSpy || rawEarningsBalanceInSpy.eq(0)}
         onClick={onPresentWithdraw}
       >
         {t('Harvest')}

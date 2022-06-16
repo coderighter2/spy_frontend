@@ -140,6 +140,7 @@ export interface SerializedFarm extends SerializedFarmConfig {
   harvestInterval?: SerializedBigNumber
   spyPerBlock?: SerializedBigNumber
   userData?: SerializedFarmUserData
+  lockUntil?: number
   isOld?: boolean
 }
 
@@ -154,6 +155,7 @@ export interface DeserializedFarm extends DeserializedFarmConfig {
   harvestInterval?: BigNumber
   spyPerBlock?: BigNumber
   userData?: DeserializedFarmUserData
+  lockUntil?: number
   isOld?: boolean
 }
 

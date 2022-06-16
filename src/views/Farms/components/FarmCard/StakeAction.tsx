@@ -26,6 +26,7 @@ interface FarmCardActionsProps {
   addLiquidityUrl?: string
   cakePrice?: BigNumber
   lpLabel?: string,
+  lockUntil?: number
   isOld?: boolean
 }
 
@@ -47,6 +48,7 @@ const StakeAction: React.FC<FarmCardActionsProps> = ({
   addLiquidityUrl,
   cakePrice,
   lpLabel,
+  lockUntil,
   isOld
 }) => {
   const { t } = useTranslation()
@@ -102,7 +104,7 @@ const StakeAction: React.FC<FarmCardActionsProps> = ({
     />,
   )
   const [onPresentWithdraw] = useModal(
-    <WithdrawModal max={stakedBalance} onConfirm={handleUnstake} tokenName={tokenName} />,
+    <WithdrawModal max={stakedBalance} onConfirm={handleUnstake} tokenName={tokenName} lockUntil={lockUntil}/>,
   )
 
   const renderStakingButtons = () => {

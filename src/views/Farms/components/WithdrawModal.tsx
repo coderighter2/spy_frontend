@@ -5,16 +5,17 @@ import { ModalActions, ModalInput } from 'components/Modal'
 import { useTranslation } from 'contexts/Localization'
 import { getFullDisplayBalance } from 'utils/formatBalance'
 import useToast from 'hooks/useToast'
-import { LP_LOCK_TIMEOUT } from 'config/constants'
+import { format } from 'date-fns'
 
 interface WithdrawModalProps {
   max: BigNumber
+  lockUntil?: number
   onConfirm: (amount: string) => void
   onDismiss?: () => void
   tokenName?: string
 }
 
-const WithdrawModal: React.FC<WithdrawModalProps> = ({ onConfirm, onDismiss, max, tokenName = '' }) => {
+const WithdrawModal: React.FC<WithdrawModalProps> = ({ onConfirm, onDismiss, lockUntil, max, tokenName = '' }) => {
   const [val, setVal] = useState('')
   const { toastSuccess, toastError } = useToast()
   const [pendingTx, setPendingTx] = useState(false)
@@ -49,13 +50,17 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({ onConfirm, onDismiss, max
         symbol={tokenName}
         inputTitle={t('Unstake')}
       />
-      <Text color="secondary" fontSize="12px">{t('LP is locked till Jan 1st, 2023')}</Text>
+      {lockUntil ? (
+      <Text color="secondary" fontSize="12px">{t('LP is locked till %date%', {date: format(lockUntil*1000, 'MMM dd yyyy')})}</Text>
+      ) : (
+        <Text color="secondary" fontSize="12px">{lockUntil}a</Text>
+      )}
       <ModalActions>
         <Button variant="secondary" onClick={onDismiss} width="100%" disabled={pendingTx}>
           {t('Cancel')}
         </Button>
         <Button
-          disabled={pendingTx || !valNumber.isFinite() || valNumber.eq(0) || valNumber.gt(fullBalanceNumber) || new Date().getTime() / 1000 < LP_LOCK_TIMEOUT}
+          disabled={pendingTx || !valNumber.isFinite() || valNumber.eq(0) || valNumber.gt(fullBalanceNumber) || new Date().getTime() / 1000 < lockUntil}
           onClick={async () => {
             setPendingTx(true)
             try {

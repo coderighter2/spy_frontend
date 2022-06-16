@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import styled from 'styled-components'
 import BigNumber from 'bignumber.js'
 import { Flex, Heading, Text, Button, useModal } from '@pancakeswap/uikit'
@@ -15,9 +15,11 @@ import { useNFTCastAllowance } from 'state/nft/hooks'
 import { fetchNFTUserBalanceDataAsync, fetchNFTUserDataAsync } from 'state/nft'
 import { getFullDisplayBalance } from 'utils/formatBalance'
 import { getNFTMintroxyAddress } from 'utils/addressHelpers'
+import { BIG_ZERO } from 'utils/bigNumber'
 import SPYInput from '../SPYInput'
 import useApproveCastNFT from '../../hooks/useApproveCastNFT'
 import useCastNFT from '../../hooks/useCastNFT'
+import { useDefaultsFromURLSearch } from '../../hooks/useDefaultsFromURLSearch'
 import CastConfirmModal from './CastConfirmModal'
 import CastedModal from './CastedModal'
 
@@ -69,9 +71,12 @@ const CastNFT: React.FC<CastNFTProps> = ({account}) => {
     const [pendingTx, setPendingTx] = useState(false)
     const { balance: userBalance, fetchStatus: userBalanceFetchStatus } = useTokenBalance(tokens.spy.address)
     const castNFTAllowance = useNFTCastAllowance()
+    const [presentedCasting, setPresentedCasting] = useState(false)
     const { balance: spyBalance, fetchStatus: spyFetchStatus } = useTokenBalance(tokens.spy.address)
 
     const isApproved = account && castNFTAllowance && castNFTAllowance.isGreaterThan(0);
+    const parsedUrlParams = useDefaultsFromURLSearch()
+    const didMount = useRef(false);
 
     const valNumber = useMemo(() => {
         return new BigNumber(val)
@@ -133,11 +138,36 @@ const CastNFT: React.FC<CastNFTProps> = ({account}) => {
     )
     
     const [onPresentCastedModal] = useModal(
-      <CastedModal gego={castedNFT} customOnDismiss={handleCastedModalDismiss}/>,
+      <CastedModal gego={castedNFT} customOnDismiss={handleCastedModalDismiss} account={account}/>,
       false,
       true,
       "CastedNFTModal"
     )
+
+    useEffect(() => {
+      if (parsedUrlParams) {
+        if (!userBalance || userBalance.lte(BIG_ZERO)) {
+          return
+        }
+
+        if ( !didMount.current ) {
+          
+
+          if (parseFloat(parsedUrlParams.amount) <= 0) {
+            setVal(userBalance.toJSON())
+          } else {
+            setVal(parsedUrlParams.amount)
+          }
+          didMount.current = true;
+          return
+        }
+
+        if (!presentedCasting && !pendingTx && isApproved) {
+          setPresentedCasting(true)
+          onPresentCastConfrimModal()
+        }
+      }
+    }, [parsedUrlParams, presentedCasting, pendingTx, isApproved, userBalance, onPresentCastConfrimModal])
 
     useEffect(() => {
       if (castedNFT) {
@@ -193,8 +223,8 @@ const CastNFT: React.FC<CastNFTProps> = ({account}) => {
                     <SPYInput
                         enabled
                         value={val}
-                        max="277777"
-                        symbol="CROW"
+                        symbol="SPY"
+                        max={userBalance.toJSON()}
                         onChange={handleChange}
                     />
                     <ModalActions>
