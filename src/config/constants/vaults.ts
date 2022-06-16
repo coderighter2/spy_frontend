@@ -64,7 +64,7 @@ const vaults: SerializedVaultConfig[] = [
         },
         contractAddresses: {
             97: '0xbCc31CF440f0829BBe9D575CB6f8430B15d8fac4',
-            56: '0x329fE6435c26B21BBBA8B53656dd2edCc324B134',
+            56: '0xb8e9bDC67b6Ed1529036FaD3803E10768329FFed',
         },
         isETH: false,
         token: serializedTokens.busd,
@@ -79,7 +79,7 @@ const vaults: SerializedVaultConfig[] = [
         },
         contractAddresses: {
             97: '0xDc9C215B718a2f5B1eb8EB0330ce0BFfB4A76bA6',
-            56: '0xfCeeACC920b7F0b68Df6e67c9bfE4C09bC7895c9',
+            56: '0xC811f4892ca842c894BE52C41ca24DE2c5c6668F',
         },
         isETH: true,
         token: serializedTokens.wbnb,
@@ -94,7 +94,7 @@ const vaults: SerializedVaultConfig[] = [
         },
         contractAddresses: {
             97: '0x3e3830f5EC508Af8aa971aCd47670ba8c3612b81',
-            56: '0xfb958E80D1e68a85c1c7BF20AA073fe496400EeB',
+            56: '0x4a3B744e0F6D0BC82461B3B0D9D9B028B625e510',
         },
         isETH: false,
         token: serializedTokens.usdc,

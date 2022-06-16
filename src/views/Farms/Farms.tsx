@@ -384,18 +384,6 @@ const Farms: React.FC = () => {
         </Heading>
       </PageHeader> */}
       <Page>
-        <Flex flexDirection="column">
-          <Message variant='warning'>
-            <Flex flexDirection="column" alignItems="flex-start">
-              <Text>
-              {t('V2 Farms will be stopped working since July 17th, please withdraw your LP token from V2 Farms and stake into main farms.')}
-              </Text>
-              <Button variant="text" scale="sm" as={Link} to="/farms-old">
-                {t('V2 Farms >')}
-              </Button>
-            </Flex>
-          </Message>
-        </Flex>
         <ControlContainer>
           <ViewControls>
             <ToggleView viewMode={viewMode} onToggle={(mode: ViewMode) => setViewMode(mode)} />

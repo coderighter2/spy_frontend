@@ -110,11 +110,11 @@ const App: React.FC = () => {
                 <OldFarms />
               </Route>
               <Route path="/auto-pools">
-                <Vaults />
-              </Route>
-              <Route path="/auto-pools-old">
                 <OldVaults />
               </Route>
+              {/* <Route path="/auto-pools-old">
+                <OldVaults />
+              </Route> */}
               <Route path="/pools">
                 <Pools />
               </Route>
