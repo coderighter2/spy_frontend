@@ -50,7 +50,7 @@ const HarvestAction: React.FC<FarmCardActionsProps> = ({ isOld, earnings, pid, n
         )}
       </Flex>
       <Button
-        disabled={isOld || rawEarningsBalance.eq(0) || pendingTx || !nextHarvestUntil || nextHarvestUntil === 0  || nextHarvestUntil > Math.floor(Date.now() / 1000) }
+        disabled={rawEarningsBalance.eq(0) || pendingTx || !nextHarvestUntil || nextHarvestUntil === 0  || nextHarvestUntil > Math.floor(Date.now() / 1000) }
         onClick={async () => {
           setPendingTx(true)
           try {
