@@ -7,4 +7,5 @@ export interface FormState {
     targetApy?: string
     command: ProposalCommand
     nftRefillAmount?: string
+    apyHarvestInterval?: string
 }

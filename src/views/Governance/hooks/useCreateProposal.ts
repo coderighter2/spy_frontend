@@ -14,6 +14,7 @@ export interface CreateProposalParams {
 
   nftRefillAmount?: string
 
+  harvestInterval?: string
   spyPerBlock?: string
   baseAllocPoint?: string
   pids?: string[]
@@ -26,7 +27,7 @@ export const useInstantExecuteProposal = (account) => {
   
   const handleExecute = useCallback(async (params: CreateProposalParams) => {
 
-    const {command, spyPerBlock, baseAllocPoint, pids, allocPoints, nftRefillAmount, title, description} = params;
+    const {command, spyPerBlock, baseAllocPoint, pids, allocPoints, nftRefillAmount, harvestInterval, title, description} = params;
 
     console.log('command', command, adminContract.address)
 
@@ -35,7 +36,7 @@ export const useInstantExecuteProposal = (account) => {
       const tx = await callWithEstimateGas(
         adminV2Contract, 
         'adjustMasterchefApy', 
-        [spyPerBlock, baseAllocPoint, pids, allocPoints], 
+        [spyPerBlock, baseAllocPoint, harvestInterval, pids, allocPoints], 
         {gasPrice}, 
         1000, 
         0, 
@@ -48,7 +49,7 @@ export const useInstantExecuteProposal = (account) => {
       const tx = await callWithEstimateGas(
         adminContract, 
         'adjustMasterchefApy', 
-        [spyPerBlock, baseAllocPoint, pids, allocPoints], 
+        [spyPerBlock, baseAllocPoint, harvestInterval, pids, allocPoints], 
         {gasPrice}, 
         1000, 
         0, 
@@ -74,15 +75,15 @@ const useCreateProposal = () => {
   
   const handleCreateProposal = useCallback(async (params: CreateProposalParams) => {
 
-    const {command, spyPerBlock, baseAllocPoint, pids, allocPoints, nftRefillAmount, title, description} = params;
+    const {command, spyPerBlock, baseAllocPoint, pids, allocPoints, nftRefillAmount, harvestInterval, title, description} = params;
 
     let callData: string
     let contractAddress = adminContractAddress
     if (command === ProposalCommand.ADJUST_FARM_APY) {
-      callData = adminV2Contract.interface.encodeFunctionData('adjustMasterchefApy', [spyPerBlock, baseAllocPoint, pids, allocPoints])
+      callData = adminV2Contract.interface.encodeFunctionData('adjustMasterchefApy', [spyPerBlock, baseAllocPoint, harvestInterval, pids, allocPoints])
       contractAddress = adminV2ContractAddress
     } else if (command === ProposalCommand.ADJUST_FARM_APY_OLD) {
-      callData = adminContract.interface.encodeFunctionData('adjustMasterchefApy', [spyPerBlock, baseAllocPoint, pids, allocPoints])
+      callData = adminContract.interface.encodeFunctionData('adjustMasterchefApy', [spyPerBlock, baseAllocPoint, harvestInterval, pids, allocPoints])
     } else {
       callData = adminContract.interface.encodeFunctionData('notifyNftReward', [nftRefillAmount])
     }

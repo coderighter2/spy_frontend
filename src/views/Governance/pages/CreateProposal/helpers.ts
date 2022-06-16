@@ -21,7 +21,7 @@ export const combineDateAndTime = (date: Date, time: Date) => {
 }
 
 export const getFormErrors = (formData: FormState, t: ContextApi['t']) => {
-  const { name, body, nftRefillAmount, targetApy } = formData
+  const { name, body, nftRefillAmount, targetApy, apyHarvestInterval } = formData
   const errors: { [key: string]: string[] } = {}
 
   if (!name) {
@@ -46,6 +46,10 @@ export const getFormErrors = (formData: FormState, t: ContextApi['t']) => {
 
   if (parseInt(nftRefillAmount) < 1) {
     errors.nftRefillAmount = [t('%field% is invalid', { field: 'SPY Amount' })]
+  }
+
+  if (isNaN(parseInt(apyHarvestInterval)) || parseInt(apyHarvestInterval) < 1) {
+    errors.nftRefillAmount = [t('%field% is invalid', { field: 'APY Harvest Interval' })]
   }
 
   return errors
