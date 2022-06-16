@@ -16,6 +16,12 @@
       },
       {
         "indexed": false,
+        "internalType": "uint256",
+        "name": "harvestInterval",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
         "internalType": "uint256[]",
         "name": "pids",
         "type": "uint256[]"
@@ -153,6 +159,11 @@
         "type": "uint256"
       },
       {
+        "internalType": "uint256",
+        "name": "harvestInterval",
+        "type": "uint256"
+      },
+      {
         "internalType": "uint256[]",
         "name": "pids",
         "type": "uint256[]"
@@ -196,7 +207,7 @@
     "name": "masterchef",
     "outputs": [
       {
-        "internalType": "contract IMasterChef2",
+        "internalType": "contract IMasterChef3",
         "name": "",
         "type": "address"
       }

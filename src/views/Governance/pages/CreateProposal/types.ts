@@ -8,4 +8,5 @@ export interface FormState {
     apyMultiplier?: string
     command: ProposalCommand
     nftRefillAmount?: string
+    apyHarvestInterval?: string
 }

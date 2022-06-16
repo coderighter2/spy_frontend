@@ -45,10 +45,11 @@ const CreateProposal: React.FC = () => {
       targetApy: '1000',
       apyMultiplier: '1',
       command: ProposalCommand.ADJUST_FARM_APY,
-      nftRefillAmount: '60000'
+      nftRefillAmount: '60000',
+      apyHarvestInterval: '1166400'
     })
     const [fieldsState, setFieldsState] = useState<{ [key: string]: boolean }>({})
-    const { name, body, command, targetApy, apyMultiplier, nftRefillAmount } = state
+    const { name, body, command, targetApy, apyMultiplier, apyHarvestInterval, nftRefillAmount } = state
     const formErrors = getFormErrors(state, t)
     const [checkingAdmin, isAdmin] = useProposalAdmin()
 
@@ -139,6 +140,7 @@ const CreateProposal: React.FC = () => {
                 nftRefillAmount,
                 spyPerBlock: apyParams_.spyPerBlock,
                 baseAllocPoint: apyParams_.baseAllocPoint,
+                harvestInterval: apyHarvestInterval,
                 pids: ['0', '1', '4'],
                 allocPoints: [apyParams_.busdAllocPoint, apyParams_.bnbAllocPoint, apyParams_.usdcAllocPoint]
             })
@@ -154,7 +156,7 @@ const CreateProposal: React.FC = () => {
         } finally {
             setExecuting(false)
         }
-    }, [onInstantExecuteProposal, toastError, toastSuccess, t, command, name, body, nftRefillAmount, apyParams, oldApyParams])
+    }, [onInstantExecuteProposal, toastError, toastSuccess, t, command, name, body, nftRefillAmount, apyParams, oldApyParams, apyHarvestInterval])
 
     const handleCreate = useCallback(async () => {
         try {
@@ -167,6 +169,7 @@ const CreateProposal: React.FC = () => {
                 nftRefillAmount,
                 spyPerBlock: apyParams_.spyPerBlock,
                 baseAllocPoint: apyParams_.baseAllocPoint,
+                harvestInterval: apyHarvestInterval,
                 pids: ['0', '1', '4'],
                 allocPoints: [apyParams_.busdAllocPoint, apyParams_.bnbAllocPoint, apyParams_.usdcAllocPoint]
             })
@@ -182,7 +185,7 @@ const CreateProposal: React.FC = () => {
         } finally {
             setIsLoading(false)
         }
-    }, [onCreateProposal, toastError, toastSuccess, history, t, command, name, body, nftRefillAmount, apyParams, oldApyParams])
+    }, [onCreateProposal, toastError, toastSuccess, history, t, command, name, body, nftRefillAmount, apyParams, oldApyParams, apyHarvestInterval])
 
     if (checkingAdmin) {
         return (
@@ -276,6 +279,11 @@ const CreateProposal: React.FC = () => {
                                         {formErrors.apyMultiplier && fieldsState.apyMultiplier && <FormErrors errors={formErrors.apyMultiplier} />}
                                     </Box>
                                     <Box mb="24px">
+                                        <Label htmlFor="targetApy">{t('Harvest Interval in seconds. e.g. 1166400')}</Label>
+                                        <Input id="apyHarvestInterval" name="apyHarvestInterval" value={apyHarvestInterval} scale="lg" onChange={handleChange} required />
+                                        {formErrors.apyHarvestInterval && fieldsState.apyHarvestInterval && <FormErrors errors={formErrors.apyHarvestInterval} />}
+                                    </Box>
+                                    <Box mb="24px">
                                         <Text color="warning">{t('The following parameters are calculated based on the current state of the farming pools. So actual APY won\'t be exactly same as "Target APY"')}</Text>
                                         <Text fontSize="14px">spyPerBlock: {apyParams.spyPerBlock}</Text>
                                         <Text fontSize="14px">baseAllocPoint: {apyParams.baseAllocPoint}</Text>
@@ -296,6 +304,11 @@ const CreateProposal: React.FC = () => {
                                         <Label htmlFor="targetApy">{t('APY Multiplier e.g. 100')}</Label>
                                         <Input id="apyMultiplier" name="apyMultiplier" value={apyMultiplier} scale="lg" onChange={handleChange} required />
                                         {formErrors.apyMultiplier && fieldsState.apyMultiplier && <FormErrors errors={formErrors.apyMultiplier} />}
+                                    </Box>
+                                    <Box mb="24px">
+                                        <Label htmlFor="targetApy">{t('Harvest Interval in seconds. e.g. 1166400')}</Label>
+                                        <Input id="apyHarvestInterval" name="apyHarvestInterval" value={apyHarvestInterval} scale="lg" onChange={handleChange} required />
+                                        {formErrors.apyHarvestInterval && fieldsState.apyHarvestInterval && <FormErrors errors={formErrors.apyHarvestInterval} />}
                                     </Box>
                                     <Box mb="24px">
                                         <Text color="warning">{t('The following parameters are calculated based on the current state of the farming pools. So actual APY won\'t be exactly same as "Target APY"')}</Text>
