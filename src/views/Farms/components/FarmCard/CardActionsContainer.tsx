@@ -92,7 +92,7 @@ const CardActions: React.FC<FarmCardActionsProps> = ({ farm, account, addLiquidi
           {t('Earned')}
         </Text>
       </Flex>
-      <HarvestAction earnings={farm.isOld ? BIG_ZERO : new BigNumber(earnings).plus(lockedAmount)} pid={pid} nextHarvestUntil={farm.userData.nextHarvestUntil} isOld={farm.isOld}/>
+      <HarvestAction earnings={new BigNumber(earnings).plus(lockedAmount)} pid={pid} nextHarvestUntil={farm.userData.nextHarvestUntil} isOld={farm.isOld}/>
       <Flex>
         <Text bold textTransform="uppercase" color="secondary" fontSize="12px" pr="4px">
           {farm.lpSymbol}
