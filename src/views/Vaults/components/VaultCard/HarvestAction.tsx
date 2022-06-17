@@ -49,9 +49,6 @@ const HarvestAction: React.FC<VaultCardActionsProps> = ({ token, earnings, pid, 
       dispatch(fetchVaultUserDataAsync({ account, pids: [pid] }))
       dispatch(fetchVaultsPublicDataAsync([pid]))
     }
-    if (!receiveToken) {
-      history.push('/nfts?amount=-1')
-    }
   }, [dispatch, onReward, account, pid, isOld, history])
 
   const [onPresentWithdraw] = useModal(

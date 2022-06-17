@@ -60,7 +60,6 @@ const HarvestAction: React.FC<NFTPoolCardActionsProps> = ({ earnings, nextHarves
             setPendingTx(false)
           }
           dispatch(fetchNFTPoolUserDataAsync({account}))
-          history.push('/nfts?amount=-1')
         }}
       >
         {pendingTx ? t('Harvesting') : t('Harvest')}

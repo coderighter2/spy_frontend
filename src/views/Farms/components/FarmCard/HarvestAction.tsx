@@ -56,7 +56,9 @@ const HarvestAction: React.FC<FarmCardActionsProps> = ({ isOld, earnings, pid, n
           try {
             const amount = await onReward()
             if (amount) {
-              history.push(`/nfts?amount=${amount.toJSON()}`)
+              if (!isOld) {
+                history.push(`/nfts?amount=${amount.toJSON()}`)
+              }
               toastSuccess(
                 `${t('Harvested')}!`,
                 t('Your %symbol% earnings have been sent to your wallet!', { symbol: 'SPY' }),
@@ -81,7 +83,6 @@ const HarvestAction: React.FC<FarmCardActionsProps> = ({ isOld, earnings, pid, n
           } else {
             dispatch(fetchFarmUserDataAsync({ account, pids: [pid] }))
           }
-          history.push('/nfts')
         }}
       >
         <Flex justifyContent="center" alignItems="center">
