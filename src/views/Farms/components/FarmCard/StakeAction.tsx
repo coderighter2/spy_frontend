@@ -111,7 +111,7 @@ const StakeAction: React.FC<FarmCardActionsProps> = ({
     return stakedBalance.eq(0) ? (
       <Button
         onClick={onPresentDeposit}
-        disabled={isOld || ['history', 'archived'].some((item) => location.pathname.includes(item))}
+        disabled={['history', 'archived'].some((item) => location.pathname.includes(item))}
       >
         {t('Stake LP')}
       </Button>
@@ -123,7 +123,7 @@ const StakeAction: React.FC<FarmCardActionsProps> = ({
         <IconButton
           variant="tertiary"
           onClick={onPresentDeposit}
-          disabled={isOld || ['history', 'archived'].some((item) => location.pathname.includes(item))}
+          disabled={['history', 'archived'].some((item) => location.pathname.includes(item))}
         >
           <AddIcon color="primary" width="14px" />
         </IconButton>
