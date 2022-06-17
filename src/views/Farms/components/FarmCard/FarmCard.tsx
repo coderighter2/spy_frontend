@@ -14,6 +14,7 @@ import DetailsSection from './DetailsSection'
 import CardHeading from './CardHeading'
 import CardActionsContainer from './CardActionsContainer'
 import ApyButton from './ApyButton'
+import HarvestTimer from './HarvestTimer'
 
 export interface FarmWithStakedValue extends DeserializedFarm {
   apr?: number
@@ -49,6 +50,7 @@ const FarmCard: React.FC<FarmCardProps> = ({ farm, displayApr, removed, cakePric
   const { t } = useTranslation()
 
   const [showExpandableSection, setShowExpandableSection] = useState(false)
+  const [expired, setExpired] = useState(false)
 
   const totalValueFormatted =
     farm.liquidity && farm.liquidity.gt(0)
@@ -113,6 +115,14 @@ const FarmCard: React.FC<FarmCardProps> = ({ farm, displayApr, removed, cakePric
             <Text bold>{harvestIntervalInHours} Hour (s)</Text>
           </Flex>
         }
+        <Flex justifyContent="space-between" mt="4px">
+            <Text>{t('Next Harvest In')}:</Text>
+            <HarvestTimer 
+                onChangeExpiration={(expired_) => setExpired(expired_)}
+                target={farm.userData?.nextHarvestUntil ?? 0} 
+                bold
+            />
+        </Flex>
 
         <CardActionsContainer
           farm={farm}

@@ -86,12 +86,6 @@ const HarvestAction: React.FC<FarmCardActionsProps> = ({ isOld, earnings, pid, n
       >
         <Flex justifyContent="center" alignItems="center">
           <span>{pendingTx ? t('Harvesting') : t('Harvest')}</span>
-          {isOld && (
-            <Box ref={targetRef} ml="8px">
-              <HelpIcon 
-                color="textSubtle" />
-            </Box>
-          )}
         </Flex>
       </Button>
       {tooltipVisible && tooltip}
