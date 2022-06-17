@@ -49,7 +49,7 @@ const HarvestAction: React.FC<VaultCardActionsProps> = ({ token, earnings, pid, 
       dispatch(fetchVaultUserDataAsync({ account, pids: [pid] }))
       dispatch(fetchVaultsPublicDataAsync([pid]))
     }
-  }, [dispatch, onReward, account, pid, isOld, history])
+  }, [dispatch, onReward, account, pid, isOld])
 
   const [onPresentWithdraw] = useModal(
     <HarvestModal 
