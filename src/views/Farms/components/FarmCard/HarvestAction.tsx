@@ -75,7 +75,9 @@ const HarvestAction: React.FC<FarmCardActionsProps> = ({ isOld, earnings, pid, n
           }
         }}
       >
-        {pendingTx ? t('Harvesting') : t('Harvest')}
+        <Flex justifyContent="center" alignItems="center">
+          <span>{pendingTx ? t('Harvesting') : t('Harvest')}</span>
+        </Flex>
       </Button>
     </Flex>
   )
