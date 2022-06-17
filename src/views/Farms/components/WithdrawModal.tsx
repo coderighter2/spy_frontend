@@ -6,6 +6,7 @@ import { useTranslation } from 'contexts/Localization'
 import { getFullDisplayBalance } from 'utils/formatBalance'
 import useToast from 'hooks/useToast'
 import { format } from 'date-fns'
+import { useBlock } from 'state/block/hooks'
 
 interface WithdrawModalProps {
   max: BigNumber
@@ -20,6 +21,7 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({ onConfirm, onDismiss, loc
   const { toastSuccess, toastError } = useToast()
   const [pendingTx, setPendingTx] = useState(false)
   const { t } = useTranslation()
+  const { currentBlock } = useBlock()
   const fullBalance = useMemo(() => {
     return getFullDisplayBalance(max)
   }, [max])
@@ -39,6 +41,13 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({ onConfirm, onDismiss, loc
   const handleSelectMax = useCallback(() => {
     setVal(fullBalance)
   }, [fullBalance, setVal])
+
+  const isLocked = useMemo(() => {
+    const baseBlock = parseInt(process.env.REACT_APP_FARM_LOCK_BASE_BLOCK)
+    const baseBlockTimestamp = parseInt(process.env.REACT_APP_FARM_LOCK_BASE_BLOCK_TIMESTAMP)
+    const targetBlock = Math.floor((lockUntil - baseBlockTimestamp) / 3) + baseBlock
+    return currentBlock < targetBlock
+  }, [currentBlock, lockUntil])
 
   return (
     <Modal title={t('Unstake LP tokens')} onDismiss={onDismiss}>
@@ -60,7 +69,7 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({ onConfirm, onDismiss, loc
           {t('Cancel')}
         </Button>
         <Button
-          disabled={pendingTx || !valNumber.isFinite() || valNumber.eq(0) || valNumber.gt(fullBalanceNumber) || new Date().getTime() / 1000 < lockUntil}
+          disabled={pendingTx || !valNumber.isFinite() || valNumber.eq(0) || valNumber.gt(fullBalanceNumber) || isLocked}
           onClick={async () => {
             setPendingTx(true)
             try {
