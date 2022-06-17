@@ -136,7 +136,7 @@ const StakeAction: React.FC<VaultCardActionsProps> = ({
   const renderStakingButtons = () => {
     return stakedLPBalance.eq(0) ? (
       <Button
-        disabled={isOld || disabled}
+        disabled={disabled}
         onClick={onPresentDeposit}
       >
         {t('Stake')}
@@ -149,7 +149,7 @@ const StakeAction: React.FC<VaultCardActionsProps> = ({
         </IconButton>
         <IconButton
           variant="tertiary"
-          disabled={isOld || disabled}
+          disabled={disabled}
           onClick={onPresentDeposit}
         >
           <AddIcon color="primary" width="14px" />
