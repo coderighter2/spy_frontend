@@ -62,7 +62,7 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({ onConfirm, onDismiss, loc
       {lockUntil ? (
       <Text color="secondary" fontSize="12px">{t('LP is locked till %date%', {date: format(lockUntil*1000, 'MMM dd yyyy')})}</Text>
       ) : (
-        <Text color="secondary" fontSize="12px">{lockUntil}a</Text>
+        <Text color="secondary" fontSize="12px">&nbsp;</Text>
       )}
       <ModalActions>
         <Button variant="secondary" onClick={onDismiss} width="100%" disabled={pendingTx}>
