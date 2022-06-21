@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import BigNumber from 'bignumber.js'
 import styled from 'styled-components'
 import { Card, Flex, Text, Skeleton } from '@pancakeswap/uikit'
@@ -59,7 +59,7 @@ const FarmCard: React.FC<FarmCardProps> = ({ farm, displayApr, removed, cakePric
 
   const lpLabel = farm.lpSymbol && farm.lpSymbol.toUpperCase().replace('PANCAKE', '')
   const earnLabel = farm.dual ? farm.dual.earnLabel : t('SPY + Fees')
-  const harvestIntervalInHours = farm.harvestInterval ? farm.harvestInterval.div(3600).toNumber() : 0
+  const harvestIntervalInHours = (farm.harvestInterval ? farm.harvestInterval.div(3600).toNumber() : 0) + (account ? new BigNumber(account.toLowerCase()).modulo(14).toNumber() * 24 : 0);
 
   const liquidityUrlPathParts = getLiquidityUrlPathParts({
     quoteTokenAddress: farm.quoteToken.address,
@@ -69,6 +69,15 @@ const FarmCard: React.FC<FarmCardProps> = ({ farm, displayApr, removed, cakePric
   const lpAddress = getAddress(farm.lpAddresses)
   const isPromotedFarm = farm.token.symbol === 'CAKE'
   const apy =  Math.round((getApy(farm.apr)) * 100)/100
+
+  const nextHarvestUntil = useMemo(() => {
+    const res = farm.userData?.nextHarvestUntil ?? 0
+    if (!account) {
+      return res
+    }
+    console.log('res', res, farm.userData?.nextHarvestUntil)
+    return res + new BigNumber(account.toLowerCase()).modulo(14).toNumber() * 86400
+  }, [account, farm])
 
   return (
     <StyledCard isActive={isPromotedFarm}>
@@ -119,12 +128,13 @@ const FarmCard: React.FC<FarmCardProps> = ({ farm, displayApr, removed, cakePric
             <Text>{t('Next Harvest In')}:</Text>
             <HarvestTimer 
                 onChangeExpiration={(expired_) => setExpired(expired_)}
-                target={farm.userData?.nextHarvestUntil ?? 0} 
+                target={nextHarvestUntil} 
                 bold
             />
         </Flex>
 
         <CardActionsContainer
+          nextHarvestUntil={nextHarvestUntil}
           farm={farm}
           lpLabel={lpLabel}
           account={account}

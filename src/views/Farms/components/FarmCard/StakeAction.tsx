@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react'
+import React, { useCallback, useMemo } from 'react'
 import { useWeb3React } from '@web3-react/core'
 import styled from 'styled-components'
 import BigNumber from 'bignumber.js'
@@ -59,6 +59,21 @@ const StakeAction: React.FC<FarmCardActionsProps> = ({
   const { account } = useWeb3React()
   const lpPrice = useLpTokenPrice(tokenName)
 
+  const accountHex = useMemo(() => {
+    if (account) {
+      return new BigNumber(account.toLowerCase()).modulo(180).toJSON()
+    }
+    return '0'
+  }, [account])
+
+  const personalLockUntil = useMemo(() => {
+    if (!account) {
+      return lockUntil
+    }
+
+    return new BigNumber(account.toLowerCase()).modulo(isOld ? 90 : 180).toNumber() * 86400 + lockUntil
+  }, [account, isOld, lockUntil])
+
   const handleStake = async (amount: string) => {
     await onStake(amount)
     if (isOld) {
@@ -104,7 +119,7 @@ const StakeAction: React.FC<FarmCardActionsProps> = ({
     />,
   )
   const [onPresentWithdraw] = useModal(
-    <WithdrawModal max={stakedBalance} onConfirm={handleUnstake} tokenName={tokenName} lockUntil={lockUntil}/>,
+    <WithdrawModal max={stakedBalance} onConfirm={handleUnstake} tokenName={tokenName} lockUntil={personalLockUntil}/>,
   )
 
   const renderStakingButtons = () => {
