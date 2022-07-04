@@ -1,14 +1,18 @@
 import React, { useState } from 'react'
 import { Text, TextProps } from '@pancakeswap/uikit'
 import useInterval from 'hooks/useInterval'
+import styled from 'styled-components'
 
 
-interface CompoundTimerProps {
+const StyledText = styled(Text)`
+`
+
+interface HarvestTimerProps {
     target: number
     onChangeExpiration: (expired: boolean) => void
 }
 
-const CompoundTimer: React.FC<CompoundTimerProps & TextProps> = ({ target, onChangeExpiration, ...props }) => {
+const HarvestTimer: React.FC<HarvestTimerProps & TextProps> = ({ target, onChangeExpiration, ...props }) => {
     
     const [countdown, setCountdown] = useState('')
     const [expired, setExpired] = useState(false)
@@ -41,15 +45,15 @@ const CompoundTimer: React.FC<CompoundTimerProps & TextProps> = ({ target, onCha
                 onChangeExpiration(_expired)
             }
         } else {
-            setCountdown('00:00:00');
+            setCountdown('--:--:--');
         }
     }, 1000)
 
     return (
-        <Text {...props}>
+        <StyledText {...props}>
             {countdown}
-        </Text>
+        </StyledText>
     )
 }
 
-export default CompoundTimer
+export default HarvestTimer

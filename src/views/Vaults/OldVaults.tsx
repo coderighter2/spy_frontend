@@ -83,7 +83,7 @@ const OldVaults: React.FC = () => {
         const totalLiquidity = vault.totalPoolAmount ? getBalanceAmount(vault.totalPoolAmount).multipliedBy(lpPrice) : BIG_ZERO
         const { cakeRewardsApr, lpRewardsApr } = getFarmApr(new BigNumber(farm.poolWeight).multipliedBy(totalLiquidity).dividedBy(farmLiquidity), farm.spyPerBlock, cakePrice, totalLiquidity, farm.lpAddresses[parseInt(process.env.REACT_APP_CHAIN_ID, 10)])
 
-        return {...vault, farm, apr: 1, lpRewardsApr: 0, liquidity: totalLiquidity}
+        return {...vault, farm, apr: cakeRewardsApr, lpRewardsApr, liquidity: totalLiquidity}
       })
       return vaultsToDisplayWithAPR
     },

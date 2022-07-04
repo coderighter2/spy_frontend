@@ -1,5 +1,6 @@
 import BigNumber from 'bignumber.js'
 import masterchefABI from 'config/abi/masterchef.json'
+import masterchefOldABI from 'config/abi/masterchefOld.json'
 import erc20 from 'config/abi/erc20.json'
 import { getAddress, getMasterChefAddress, getOldMasterChefAddress } from 'utils/addressHelpers'
 import { BIG_TEN, BIG_ZERO } from 'utils/bigNumber'
@@ -15,6 +16,7 @@ type PublicFarmData = {
   multiplier: string
   spyPerBlock: SerializedBigNumber
   harvestInterval: SerializedBigNumber
+  lockUntil: number
 }
 
 const fetchFarm = async (farm: SerializedFarm, isOld = false): Promise<PublicFarmData> => {
@@ -75,7 +77,7 @@ const fetchFarm = async (farm: SerializedFarm, isOld = false): Promise<PublicFar
   // Only make masterchef calls if farm has pid
   const [info, totalAllocPoint, spyPerBlock] =
     pid || pid === 0
-      ? await multicall(masterchefABI, [
+      ? await multicall(isOld? masterchefOldABI : masterchefABI, [
           {
             address: isOld ? getOldMasterChefAddress() : getMasterChefAddress(),
             name: 'poolInfo',
@@ -105,7 +107,8 @@ const fetchFarm = async (farm: SerializedFarm, isOld = false): Promise<PublicFar
     poolWeight: poolWeight.toJSON(),
     multiplier: `${allocPoint.div(100).toString()}X`,
     harvestInterval: harvestInterval.toJSON(),
-    spyPerBlock: spyPerBlockBN.toJSON()
+    spyPerBlock: spyPerBlockBN.toJSON(),
+    lockUntil: isOld ? 1663329600 : info ? new BigNumber(info.lpLockUntil?._hex).toNumber() : 1672574400
   }
 }
 

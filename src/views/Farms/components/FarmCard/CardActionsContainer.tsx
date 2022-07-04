@@ -28,9 +28,10 @@ interface FarmCardActionsProps {
   addLiquidityUrl?: string
   cakePrice?: BigNumber
   lpLabel?: string
+  nextHarvestUntil: number
 }
 
-const CardActions: React.FC<FarmCardActionsProps> = ({ farm, account, addLiquidityUrl, cakePrice, lpLabel }) => {
+const CardActions: React.FC<FarmCardActionsProps> = ({ farm, account, addLiquidityUrl, cakePrice, lpLabel, nextHarvestUntil }) => {
   const { t } = useTranslation()
   const { toastError } = useToast()
   const [requestedApproval, setRequestedApproval] = useState(false)
@@ -72,6 +73,7 @@ const CardActions: React.FC<FarmCardActionsProps> = ({ farm, account, addLiquidi
         lpLabel={lpLabel}
         cakePrice={cakePrice}
         addLiquidityUrl={addLiquidityUrl}
+        lockUntil={farm.lockUntil}
         isOld={farm.isOld}
       />
     ) : (
@@ -91,7 +93,7 @@ const CardActions: React.FC<FarmCardActionsProps> = ({ farm, account, addLiquidi
           {t('Earned')}
         </Text>
       </Flex>
-      <HarvestAction earnings={farm.isOld ? BIG_ZERO : new BigNumber(earnings).plus(lockedAmount)} pid={pid} nextHarvestUntil={farm.userData.nextHarvestUntil} isOld={farm.isOld}/>
+      <HarvestAction earnings={new BigNumber(earnings).plus(lockedAmount)} pid={pid} nextHarvestUntil={nextHarvestUntil} isOld={farm.isOld}/>
       <Flex>
         <Text bold textTransform="uppercase" color="secondary" fontSize="12px" pr="4px">
           {farm.lpSymbol}

@@ -2,7 +2,8 @@ import BigNumber from "bignumber.js";
 
 export enum ProposalCommand {
   ADJUST_FARM_APY = 0,
-  REFILL_NFT = 1
+  REFILL_NFT = 1,
+  ADJUST_FARM_APY_OLD = 2,
 }
 
 export enum VoteType {

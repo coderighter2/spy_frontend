@@ -8,6 +8,7 @@ import { usePollNFTPublicData } from 'state/nft/hooks'
 import NFTCharacters from './components/NFTCharacters'
 import CastNFT from './components/CastNFT'
 import MyNFTs from './components/MyNFTs/MyNFTs'
+import { useDefaultsFromURLSearch } from './hooks/useDefaultsFromURLSearch'
 
 const Nfts: React.FC = () => {
     const { path } = useRouteMatch()

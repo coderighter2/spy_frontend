@@ -513,11 +513,6 @@
         "internalType": "uint256",
         "name": "harvestInterval",
         "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "lpLockUntil",
-        "type": "uint256"
       }
     ],
     "stateMutability": "view",

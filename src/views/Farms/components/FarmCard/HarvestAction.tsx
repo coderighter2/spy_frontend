@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { useHistory } from 'react-router-dom';
 import BigNumber from 'bignumber.js'
 import styled from 'styled-components'
 import { Box, Button, Flex, Heading, HelpIcon, useTooltip } from '@pancakeswap/uikit'
@@ -25,6 +26,7 @@ interface FarmCardActionsProps {
 
 const HarvestAction: React.FC<FarmCardActionsProps> = ({ isOld, earnings, pid, nextHarvestUntil }) => {
   const { account } = useWeb3React()
+  const history = useHistory()
   const { toastSuccess, toastError } = useToast()
   const { t } = useTranslation()
   const [pendingTx, setPendingTx] = useState(false)
@@ -48,15 +50,25 @@ const HarvestAction: React.FC<FarmCardActionsProps> = ({ isOld, earnings, pid, n
         )}
       </Flex>
       <Button
-        disabled={isOld || rawEarningsBalance.eq(0) || pendingTx || !nextHarvestUntil || nextHarvestUntil === 0  || nextHarvestUntil > Math.floor(Date.now() / 1000) }
+        disabled={rawEarningsBalance.eq(0) || pendingTx || !nextHarvestUntil || nextHarvestUntil === 0  || nextHarvestUntil > Math.floor(Date.now() / 1000) }
         onClick={async () => {
           setPendingTx(true)
           try {
-            await onReward()
-            toastSuccess(
-              `${t('Harvested')}!`,
-              t('Your %symbol% earnings have been sent to your wallet!', { symbol: 'SPY' }),
-            )
+            const amount = await onReward()
+            if (amount) {
+              if (!isOld) {
+                history.push(`/nfts?amount=${amount.toJSON()}`)
+              }
+              toastSuccess(
+                `${t('Harvested')}!`,
+                t('Your %symbol% earnings have been sent to your wallet!', { symbol: 'SPY' }),
+              )
+            } else {
+              toastSuccess(
+                `${t('Harvested')}!`,
+                t('Your %symbol% earnings have been sent to your wallet!', { symbol: 'SPY' }),
+              )
+            }
           } catch (e) {
             toastError(
               t('Error'),
@@ -75,12 +87,6 @@ const HarvestAction: React.FC<FarmCardActionsProps> = ({ isOld, earnings, pid, n
       >
         <Flex justifyContent="center" alignItems="center">
           <span>{pendingTx ? t('Harvesting') : t('Harvest')}</span>
-          {isOld && (
-            <Box ref={targetRef} ml="8px">
-              <HelpIcon 
-                color="textSubtle" />
-            </Box>
-          )}
         </Flex>
       </Button>
       {tooltipVisible && tooltip}

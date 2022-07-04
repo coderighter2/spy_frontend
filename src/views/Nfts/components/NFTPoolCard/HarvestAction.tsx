@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { useHistory } from 'react-router-dom';
 import BigNumber from 'bignumber.js'
 import { Button, Flex, Heading, Text, useTooltip } from '@pancakeswap/uikit'
 import { useTranslation } from 'contexts/Localization'
@@ -20,6 +21,7 @@ interface NFTPoolCardActionsProps {
 
 const HarvestAction: React.FC<NFTPoolCardActionsProps> = ({ earnings, nextHarvestUntil }) => {
   const { account } = useWeb3React()
+  const history = useHistory()
   const { toastSuccess, toastError } = useToast()
   const { t } = useTranslation()
   const [pendingTx, setPendingTx] = useState(false)

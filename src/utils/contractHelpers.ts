@@ -38,6 +38,7 @@ import {
   getAdminAddress,
   getOldMasterChefAddress,
   getSaleFactoryAddress,
+  getAdminV2Address,
 } from 'utils/addressHelpers'
 
 // ABI
@@ -54,6 +55,7 @@ import ifoV2Abi from 'config/abi/ifoV2.json'
 import pointCenterIfo from 'config/abi/pointCenterIfo.json'
 import lotteryV2Abi from 'config/abi/lotteryV2.json'
 import masterChef from 'config/abi/masterchef.json'
+import masterChefOld from 'config/abi/masterchefOld.json'
 import sousChef from 'config/abi/sousChef.json'
 import sousChefV2 from 'config/abi/sousChefV2.json'
 import sousChefBnb from 'config/abi/sousChefBnb.json'
@@ -143,7 +145,7 @@ export const getMasterchefContract = (signer?: ethers.Signer | ethers.providers.
   return getContract(masterChef, getMasterChefAddress(), signer)
 }
 export const getOldMasterchefContract = (signer?: ethers.Signer | ethers.providers.Provider) => {
-  return getContract(masterChef, getOldMasterChefAddress(), signer)
+  return getContract(masterChefOld, getOldMasterChefAddress(), signer)
 }
 
 export const getNFTMarketplaceContract = (signer?: ethers.Signer | ethers.providers.Provider) => {
@@ -169,6 +171,9 @@ export const getGovernanceContract = (signer?: ethers.Signer | ethers.providers.
 }
 export const getAdminContract = (signer?: ethers.Signer | ethers.providers.Provider) => {
   return getContract(spyAdminAbi, getAdminAddress(), signer)
+}
+export const getAdminV2Contract = (signer?: ethers.Signer | ethers.providers.Provider) => {
+  return getContract(spyAdminAbi, getAdminV2Address(), signer)
 }
 export const getClaimRefundContract = (signer?: ethers.Signer | ethers.providers.Provider) => {
   return getContract(claimRefundAbi, getClaimRefundAddress(), signer)
