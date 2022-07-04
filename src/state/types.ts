@@ -26,6 +26,15 @@ export interface BigNumberToJson {
 
 export type SerializedBigNumber = string
 
+export interface SerializedSwapPoolState {
+  userDataLoaded: boolean
+
+  totalSaleCount?: number
+  fee?: SerializedBigNumber
+
+  userSaleCount?: number
+}
+
 export interface SerializedLaunchpadState {
   userDataLoaded: boolean
 
@@ -814,6 +823,7 @@ export interface State {
   nftMarket: NftMarketState
   governance: SerializedGovernanceState
   launchpad: SerializedLaunchpadState
+  swapPool: SerializedSwapPoolState
 }
 
 

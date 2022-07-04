@@ -25,6 +25,7 @@ import nftReducer from './nft'
 import nftmarketplace from './nftMarketplace/reducer'
 import governanceReducer from './governance'
 import launchpadReducer from './launchpad'
+import swapPoolReducer from './swapPool'
 
 const PERSISTED_KEYS: string[] = ['user', 'transactions', 'lists', 'profile']
 
@@ -47,6 +48,7 @@ const store = configureStore({
     nftmarketplace,
     governance: governanceReducer,
     launchpad: launchpadReducer,
+    swapPool: swapPoolReducer,
     // Exchange
     user,
     transactions,

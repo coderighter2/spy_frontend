@@ -111,3 +111,7 @@ export const getAdminV2Address = () => {
   return getAddress(addresses.adminV2)
 }
 
+
+export const getSwapPoolFactoryAddress = () => {
+  return getAddress(addresses.swapPoolFactory)
+}
