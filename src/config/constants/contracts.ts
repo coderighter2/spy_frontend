@@ -49,7 +49,7 @@ export default {
   },
   saleFactory: {
     97: '0xc774f3b3Fd07A9678988aB739022f2625F142890',
-    56: '0xA1D0cc096D848bd1bEb78caaC3DA1AfFA86Bc499',
+    56: '0x61396b62b9aA4EC24e2ddb081011714a01B3FA7e',
   },
   adminV2: {
     97: '0xb0EC0dC41FBC077aC7A10Ff2d95caC4b965dEeeD',

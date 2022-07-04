@@ -31,7 +31,7 @@ export const mainnetTokens = {
   babycake: new Token(MAINNET, '0xdB8D30b74bf098aF214e862C90E647bbB1fcC58c', 18, 'BABYCAKE', 'Baby Cake Token', 'https://babycake.app/'),
   spy: new Token(MAINNET, '0x17fd3cAa66502C6F1CbD5600D8448f3aF8f2ABA1', 0, 'SPY', 'Smarty Pay Token', 'https://app.spy-token.io'),
   spynft: new Token(MAINNET, '0xEe7Eb563531703944cb0351901689e35f3DE13a2', 0, 'SPY-NFT', 'SPY NFT', 'http://test.smarty-pay.com'),
-  minitokie: new Token(MAINNET, '0x97688301ed1219aADEF73a8D87B9A21B189CF652', 9, 'TOKIE', 'Mini Tokie', 'https://spy-token.io'),
+  minitokie: new Token(MAINNET, '0x85966D9B57C81767eb5dAB7A63Bf97D54b6A355A', 9, 'TOKIE', 'Mini Tokie', 'https://spy-token.io'),
 }
 export const testnetTokens = {
   wbnb: new Token(TESTNET, '0xf9a7A2b01Bf758776703677719F8aCf018600070', 18, 'WBNB', 'Wrapped BNB', 'https://www.binance.com/'),
