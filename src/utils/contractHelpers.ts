@@ -38,6 +38,7 @@ import {
   getAdminAddress,
   getOldMasterChefAddress,
   getSaleFactoryAddress,
+  getSwapPoolFactoryAddress,
 } from 'utils/addressHelpers'
 
 // ABI
@@ -86,6 +87,8 @@ import spyAdminAbi from 'config/abi/spyAdmin.json'
 import saleFactoryAbi from 'config/abi/saleFactory.json'
 import saleAbi from 'config/abi/presale.json'
 import minitokieAbi from 'config/abi/minitokie.json'
+import swapPoolFactoryAbi from 'config/abi/swapPoolFactory.json'
+import swapPoolAbi from 'config/abi/swapPool.json'
 import { ChainLinkOracleContract, FarmAuctionContract, PancakeProfileContract, PredictionsContract } from './types'
 
 const getContract = (abi: any, address: string, signer?: ethers.Signer | ethers.providers.Provider) => {
@@ -234,6 +237,13 @@ export const getSaleFactoryContract = (signer?: ethers.Signer | ethers.providers
 
 export const getSaleContract = (contractAddress: string, signer?: ethers.Signer | ethers.providers.Provider) => {
   return getContract(saleAbi, contractAddress, signer)
+}
+export const getSwapPoolFactoryContract = (signer?: ethers.Signer | ethers.providers.Provider) => {
+  return getContract(swapPoolFactoryAbi, getSwapPoolFactoryAddress(), signer)
+}
+
+export const getSwapPoolContract = (contractAddress: string, signer?: ethers.Signer | ethers.providers.Provider) => {
+  return getContract(swapPoolAbi, contractAddress, signer)
 }
 
 export const getMiniTokieContract = (contractAddress: string, signer?: ethers.Signer | ethers.providers.Provider) => {

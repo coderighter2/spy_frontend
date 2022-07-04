@@ -42,6 +42,7 @@ const Referral = lazy(() => import('./views/Referral'))
 const Farms = lazy(() => import('./views/Farms'))
 const OldFarms = lazy(() => import('./views/Farms/OldFarms'))
 const Vaults = lazy(() => import('./views/Vaults'))
+const SwapPools = lazy(() => import('./views/SwapPool'))
 const OldVaults = lazy(() => import('./views/Vaults/OldVaults'))
 const Governance = lazy(() => import('./views/Governance'))
 const MiniTokie = lazy(() => import('./views/MiniTokie'))
@@ -122,6 +123,9 @@ const App: React.FC = () => {
               </Route>
               <Route path="/sales">
                 <Sales />
+              </Route>
+              <Route path="/swap-pools">
+                <SwapPools />
               </Route>
               <Route path="/minitokie">
                 <MiniTokie />

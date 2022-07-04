@@ -43,6 +43,8 @@ import {
   getSaleContract,
   getSaleFactoryContract,
   getMiniTokieContract,
+  getSwapPoolFactoryContract,
+  getSwapPoolContract,
 } from 'utils/contractHelpers'
 import { getMulticallAddress } from 'utils/addressHelpers'
 
@@ -339,6 +341,17 @@ export const useSaleFactoryContract = () => {
   const { library } = useActiveWeb3React()
   return useMemo(() => getSaleFactoryContract(library.getSigner()), [library])
 }
+
+export const useSwapPoolContract = (address: string) => {
+  const { library } = useActiveWeb3React()
+  return useMemo(() => getSwapPoolContract(address, library.getSigner()), [address, library])
+}
+
+export const useSwapPoolFactoryContract = () => {
+  const { library } = useActiveWeb3React()
+  return useMemo(() => getSwapPoolFactoryContract(library.getSigner()), [library])
+}
+
 
 export const useMiniTokieContract = (address: string) => {
   const { library } = useActiveWeb3React()

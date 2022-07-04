@@ -107,3 +107,7 @@ export const getAdminAddress = () => {
 export const getSaleFactoryAddress = () => {
   return getAddress(addresses.saleFactory)
 }
+
+export const getSwapPoolFactoryAddress = () => {
+  return getAddress(addresses.swapPoolFactory)
+}
