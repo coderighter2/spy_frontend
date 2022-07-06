@@ -24,7 +24,7 @@
       "address": "0x6F25144001Ce324E745c3FF25a646A292883feD5",
       "chainId": 97,
       "decimals": 0,
-      "logoURI": "http://test.smarty-pay.com/images/tokens/0x6F25144001Ce324E745c3FF25a646A292883feD5.png"
+      "logoURI": "http://app.spy-token.io/images/tokens/0x6F25144001Ce324E745c3FF25a646A292883feD5.png"
     },
     {
       "name": "BUSD Token",
@@ -32,7 +32,7 @@
       "address": "0x2aFD1d7DADEfb7fE31364A4f57f704c1558C8Edc",
       "chainId": 97,
       "decimals": 18,
-      "logoURI": "http://test.smarty-pay.com/images/tokens/0x2aFD1d7DADEfb7fE31364A4f57f704c1558C8Edc.png"
+      "logoURI": "http://app.spy-token.io/images/tokens/0x2aFD1d7DADEfb7fE31364A4f57f704c1558C8Edc.png"
     },
     {
       "name": "Binance-Peg USD Coin",
