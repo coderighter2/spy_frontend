@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react'
-import { Facebook, GitHub, Globe, Instagram, Send, Twitter } from 'react-feather'
+import { Book, BookOpen, Facebook, FileText, GitHub, Globe, Instagram, Send, Twitter } from 'react-feather'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'contexts/Localization'
 import { format } from 'date-fns'
@@ -8,6 +8,7 @@ import { Flex, Text, Button, Heading, TwitterIcon, IconButton, GithubIcon, Teleg
 import TokenAddress from 'components/TokenAddress'
 import { getBscScanLink } from 'utils'
 import { BIG_TEN } from 'utils/bigNumber'
+import tokens from 'config/constants/tokens'
 import truncateHash from 'utils/truncateHash'
 import { getFullDisplayBalance } from 'utils/formatBalance'
 import { LinkWrapper } from 'components/StyledControls'
@@ -112,6 +113,21 @@ const SaleBaseSection: React.FC<SaleBaseSectionProps> = ({account, sale, onEditM
                             )}
                             </Flex>
                             <Flex flexDirection="row">
+                                {sale.token.toLowerCase() === tokens.minitokie.address.toLowerCase() && (
+                                    <>
+                                    <LinkWrapper style={{marginRight: "16px"}} as="a" href="https://tokiefarm.io/info" target="_blank">
+                                        <Globe width="16px" color="#084B83   " />
+                                    </LinkWrapper>
+    
+                                    <LinkWrapper style={{marginRight: "16px"}} as="a" href="https://tokiefarm.io/assets/pitchdeck/PitchDeck_Tokie.pdf" target="_blank">
+                                        <BookOpen width="16px" color="#084B83" />
+                                    </LinkWrapper>
+    
+                                    <LinkWrapper style={{marginRight: "16px"}} as="a" href="https://tokiefarm.io/assets/litepaper/TOKIE_litepaper.pdf" target="_blank">
+                                        <FileText width="16px" color="#084B83   " />
+                                    </LinkWrapper>
+                                    </>
+                                )}
                                 { sale.meta && sale.meta.website && (
                                     <LinkWrapper style={{marginRight: "16px"}} as="a" href={sale.meta.website} target="_blank">
                                     {/* <LanguageIcon width="16px" color="primary" /> */}
