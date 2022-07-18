@@ -26,6 +26,7 @@ export interface PublicSaleData {
     wallet?: string
     openingTime: number
     closingTime: number
+    claimStartTime?: number
     rate: BigNumber
     rateDecimals: number
     listingRate: BigNumber
