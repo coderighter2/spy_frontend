@@ -52,7 +52,7 @@ export const getSales = async (start: number, count: number) : Promise<PublicSal
     const saleAddresses: string[] = await saleFactoryContract.getSales(start, start+count)
     const fields = ['getConfiguration', 'owner', 'weiRaised', 'finalized', 'canceled', 'deposited', 'name']
 
-    const calls = saleAddresses.reduce((accum, address, index) => {
+    const calls = saleAddresses.filter((address) => address !== AddressZero).reduce((accum, address, index) => {
         fields.forEach((field) => {
             accum.push({
                 address,
