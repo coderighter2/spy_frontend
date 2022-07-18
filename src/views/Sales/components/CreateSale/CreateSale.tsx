@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { AddressZero } from '@ethersproject/constants'
 import { useHistory } from 'react-router-dom'
 import { useWeb3React } from '@web3-react/core'
+import { format } from 'date-fns'
 import { Text, Flex, Box, Input, Heading, Button, Radio, useModal, useTooltip, HelpIcon } from '@pancakeswap/uikit'
 import { JSBI, Token, TokenAmount } from '@pancakeswap/sdk'
 import { useTranslation } from 'contexts/Localization'
@@ -68,6 +69,7 @@ interface FormErrors {
     maxContribution?: string,
     presaleStartTime?: string,
     presaleEndTime?: string,
+    vestingStartTime?: string,
     vestingPercent?: string
     vestingInterval?: string
     logo?: string
@@ -110,6 +112,7 @@ const CreateSale: React.FC<CreateProps> = ({routeAddress}) => {
     const [ airdropAmount, setAirdropAmount ] = useState<string>('')
     const [startDate, setStartDate] = useState<Date|null>(null)
     const [endDate, setEndDate] = useState<Date|null>(null)
+    const [vestingStartDate, setVestingStartDate] = useState<Date|null>(null)
     const [wallet, setWallet] = useState<string|null>(null)
     const [formError, setFormError] = useState<FormErrors>({})
     const [whitelistEnabled, setWhitelistEnabled] = useState<boolean>(false)
@@ -284,6 +287,11 @@ const CreateSale: React.FC<CreateProps> = ({routeAddress}) => {
         setFormError({...formError, presaleEndTime: null})
     }
 
+    const handleVestingStartDateChange = (date: Date, event) => {
+        setVestingStartDate(date)
+        setFormError({...formError, vestingStartTime: null})
+    }
+
     const validateInputs = useCallback(() => {
         let valid = true
         const error: FormErrors = {}
@@ -390,6 +398,16 @@ const CreateSale: React.FC<CreateProps> = ({routeAddress}) => {
         }
 
         if (vestingEnabled) {
+
+            if (!vestingStartDate) {
+                valid = false;
+                error.vestingStartTime = "Vesting start date is required.";
+            }
+
+            if (vestingStartDate && endDate && endDate >= vestingStartDate) {
+                valid = false;
+                error.vestingStartTime = "Vesting start date should be later than presale end date.";
+            }
             if (!vestingInterval || parseInt(vestingInterval) <= 0) {
                 valid = false;
                 error.vestingInterval = "Vesting Interval is required";
@@ -403,6 +421,7 @@ const CreateSale: React.FC<CreateProps> = ({routeAddress}) => {
                 error.vestingPercent = "Vesting Percent must be equal or less than 100";
             }
         } else {
+            error.vestingStartTime = undefined
             error.vestingInterval = undefined
             error.vestingPercent = undefined
         }
@@ -418,7 +437,7 @@ const CreateSale: React.FC<CreateProps> = ({routeAddress}) => {
         }
         setFormError(error)
         return valid
-    }, [wallet, searchToken, rateNumber, rateDecimalsNumber, listingRateNumber, listingRateDecimalsNumber, liquidityPercentNumber, softCapNumber, hardCapNumber, startDate, endDate, minContributionNumer, maxContributionNumer, depositAmountNumber, tokenAddress, vestingInterval, vestingPercent, vestingEnabled, title, airdropAmountNumber, minAirdrop])
+    }, [wallet, searchToken, rateNumber, rateDecimalsNumber, listingRateNumber, listingRateDecimalsNumber, liquidityPercentNumber, softCapNumber, hardCapNumber, startDate, endDate, minContributionNumer, maxContributionNumer, depositAmountNumber, tokenAddress, vestingInterval, vestingPercent, vestingEnabled, title, airdropAmountNumber, minAirdrop, vestingStartDate])
 
 
     const handleCreate = useCallback(async () => {
@@ -452,7 +471,8 @@ const CreateSale: React.FC<CreateProps> = ({routeAddress}) => {
                 vestingInterval: vestingEnabled ? parseInt(vestingInterval) : 0,
                 whitelistEnabled,
                 airdropAmount: airdropAmountNumber.toJSON(),
-                minVote
+                minVote,
+                vestingStartTime:vestingEnabled ? Math.floor(vestingStartDate.getTime() / 1000) : Math.floor(startDate.getTime() / 1000)
             })
             dispatch(fetchLaunchpadPublicDataAsync())
             dispatch(fetchLaunchpadUserDataAsync({account}))
@@ -464,7 +484,7 @@ const CreateSale: React.FC<CreateProps> = ({routeAddress}) => {
         } finally {
           setPendingTx(false)
         }
-    }, [onCreateSale, dispatch, toastError, t, validateInputs, history, account, deployFee, wallet, searchToken, rateNumber, rateDecimalsNumber, listingRateNumber, listingRateDecimalsNumber, liquidityPercentNumber, softCapNumber, hardCapNumber, startDate, endDate, minContributionNumer, maxContributionNumer, whitelistEnabled, contributionType, busdToken, vestingInterval, vestingPercent, vestingEnabled, title, airdropAmountNumber, minVote])
+    }, [onCreateSale, dispatch, toastError, t, validateInputs, history, account, deployFee, wallet, searchToken, rateNumber, rateDecimalsNumber, listingRateNumber, listingRateDecimalsNumber, liquidityPercentNumber, softCapNumber, hardCapNumber, startDate, endDate, minContributionNumer, maxContributionNumer, whitelistEnabled, contributionType, busdToken, vestingInterval, vestingPercent, vestingEnabled, title, airdropAmountNumber, minVote, vestingStartDate])
 
     const renderApprovalOrCreateButton = () => {
         return  (
@@ -476,6 +496,38 @@ const CreateSale: React.FC<CreateProps> = ({routeAddress}) => {
             {pendingTx ? (<Dots>{t('Creating')}</Dots>) : t('Create')}
             </Button>
         )
+    }
+
+    const vestingDecription = () => {
+        if (!vestingStartDate) {
+            return (<></>)
+        }
+        let totalPercent = 0;
+        let index = 0;
+        const vestings: any[] = [];
+        while (totalPercent < 100) {
+            vestings.push({
+                time: vestingStartDate.getTime() / 1000 + parseInt(vestingInterval) * 3600 * index,
+                percent: Math.min(100 - totalPercent, parseInt(vestingPercent))
+            })
+            totalPercent += parseInt(vestingPercent);
+            index += 1;
+        }
+
+        return (
+            <>
+            {
+                vestings.map((vesting) => {
+                    return (
+                    <Text>
+                        {vesting.percent}% at { format(vesting.time * 1000, 'yyyy/MM/dd hh:mm aa')}
+                    </Text>
+                    )
+                })
+            }
+            </>
+        )
+        
     }
 
     return (
@@ -750,6 +802,18 @@ const CreateSale: React.FC<CreateProps> = ({routeAddress}) => {
                                 <>
                                 <InputWrap>
                                     <StyledWrapperWithTooltip
+                                        tooltip={t('Enter the vesting start time in your local time.')}
+                                        error={formError.vestingStartTime}
+                                        >
+                                        <DateTimePicker 
+                                        onChange={handleVestingStartDateChange}
+                                        selected={vestingStartDate}
+                                        timeIntervals={1}
+                                        placeholderText="Vesting Start Time"/>
+                                    </StyledWrapperWithTooltip>
+                                </InputWrap>
+                                <InputWrap>
+                                    <StyledWrapperWithTooltip
                                         tooltip={t('Enter the vesting interval in hours. e.g. customers can claim 10% tokens every 2 weeks = 168 hours')}
                                         error={formError.vestingInterval}
                                             >
@@ -864,9 +928,9 @@ const CreateSale: React.FC<CreateProps> = ({routeAddress}) => {
                                         {t('Vesting')}:
                                     </Text>
                                     {vestingEnabled ? (
-                                        <Text fontSize="14px" color="primary">
-                                            {vestingPercent}% per {vestingInterval} hours
-                                        </Text>
+                                        <Flex flexDirection="column">
+                                        {vestingDecription()}
+                                        </Flex>
                                     ) : (
                                         <Text fontSize="14px" color="primary">
                                             {t('Disabled')}

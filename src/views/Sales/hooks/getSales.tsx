@@ -179,7 +179,7 @@ export const getSaleUserData = async (address?: string, account?: string) : Prom
 }
 
 export const getSale = async (address: string) : Promise<PublicSaleData> => {
-    const fields = ['name', 'getConfiguration', 'getStages', 'owner', 'weiRaised', 'finalized', 'canceled', 'deposited', 'airdropEnabled', 'airdropAmount', 'minVote', 'totalVotes']
+    const fields = ['name', 'getConfiguration', 'getStages', 'owner', 'weiRaised', 'finalized', 'canceled', 'deposited', 'airdropEnabled', 'airdropAmount', 'minVote', 'totalVotes', 'claimStartTime']
 
     const calls = fields.map((field) =>  {
         return {
@@ -201,10 +201,11 @@ export const getSale = async (address: string) : Promise<PublicSaleData> => {
         [airdropEnabled],
         [airdropAmount_],
         [minVote_],
-        [totalVotes_]
+        [totalVotes_],
+        [claimStartTime_]
     ] = await multicall(presaleABI, calls)
 
-    const vestingInterval = new BigNumber(stageTimes[0]._hex).toNumber()
+    const vestingInterval = stageTimes.length > 1 ? new BigNumber(stageTimes[1]._hex).toNumber() - new BigNumber(stageTimes[0]._hex).toNumber() : new BigNumber(stageTimes[0]._hex).toNumber()
     const vestingPercent = new BigNumber(stagePercents[0]._hex).toNumber()
     const vestingEnabled = vestingInterval !== 0 || vestingPercent !== 100
     const airdropAmount = new BigNumber(airdropAmount_._hex)
@@ -231,6 +232,7 @@ export const getSale = async (address: string) : Promise<PublicSaleData> => {
         liquidity: new BigNumber(config.liquidityPercent._hex).toNumber(),
         openingTime: new BigNumber(config.startTime._hex).toNumber(),
         closingTime: new BigNumber(config.endTime._hex).toNumber(),
+        claimStartTime: new BigNumber(claimStartTime_._hex).toNumber(),
         finalized,
         canceled,
         minContribution: new BigNumber(config.minContribution._hex),

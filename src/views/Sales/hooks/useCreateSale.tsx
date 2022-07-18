@@ -28,6 +28,7 @@ interface CreateSaleParams {
   vestingPercent: number
   airdropAmount: string
   minVote: string
+  vestingStartTime: number
 }
 
 export const useCreateSale = () => {
@@ -35,19 +36,19 @@ export const useCreateSale = () => {
 
   const handleCreateSale = useCallback(
     async (params: CreateSaleParams) => {
-      const {title, feeAmount, wallet, token, baseToken, rate, rateDecimals, listingRate, listingRateDecimals, liquidityPercent, goal, cap, openingTime, closingTime, minContribution, maxContribution, whitelistEnabled, vestingInterval, vestingPercent, airdropAmount, minVote} = params;
+      const {title, feeAmount, wallet, token, baseToken, rate, rateDecimals, listingRate, listingRateDecimals, liquidityPercent, goal, cap, openingTime, closingTime, minContribution, maxContribution, whitelistEnabled, vestingInterval, vestingPercent, airdropAmount, minVote, vestingStartTime} = params;
       const gasPrice = getGasPrice()
       const stageTimes = []
       const stagePercents = []
       let totalPercent = 0;
-      let index = 1;
+      let index = 0;
       while (totalPercent < 100) {
         stageTimes.push(vestingInterval * 3600 * index);
         stagePercents.push(Math.min(vestingPercent, 100 - totalPercent));
         totalPercent += vestingPercent;
         index += 1;
       }
-      const args = [[rate, rateDecimals, listingRate, listingRateDecimals, liquidityPercent, goal, cap, minContribution, maxContribution, openingTime, closingTime, wallet, ROUTER_ADDRESS, token, baseToken,  whitelistEnabled, title], [airdropAmount, minVote, tokens.spy.address], stageTimes, stagePercents];
+      const args = [[rate, rateDecimals, listingRate, listingRateDecimals, liquidityPercent, goal, cap, minContribution, maxContribution, openingTime, closingTime, wallet, ROUTER_ADDRESS, token, baseToken,  whitelistEnabled, title], [airdropAmount, minVote, tokens.spy.address], stageTimes, stagePercents, vestingStartTime];
       const tx = await callWithEstimateGas(factory, 'createSale', args, { gasPrice}, 1000, feeAmount)
       const receipt = await tx.wait()
       if (receipt.status === 1) {

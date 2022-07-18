@@ -229,6 +229,11 @@
         "internalType": "uint256[]",
         "name": "_stagePercents",
         "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_claimStartTime",
+        "type": "uint256"
       }
     ],
     "name": "createSale",

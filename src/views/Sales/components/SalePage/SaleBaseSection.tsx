@@ -269,6 +269,12 @@ const SaleBaseSection: React.FC<SaleBaseSectionProps> = ({account, sale, onEditM
                         )}
                         
                     </InfoRow>
+                    {sale.vestingEnabled && (
+                    <InfoRow>
+                        <InfoLabel>{t('Vesting Start Time')}</InfoLabel>
+                        <InfoValue>{ format(sale.claimStartTime * 1000, 'yyyy/MM/dd hh:mm aa')}</InfoValue>
+                    </InfoRow>
+                    )}
                     <InfoRow>
                         <InfoLabel>{t('Airdrop Tokens')}</InfoLabel>
                         <Flex alignItems="center">
