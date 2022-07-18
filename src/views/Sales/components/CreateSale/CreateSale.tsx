@@ -107,6 +107,7 @@ const CreateSale: React.FC<CreateProps> = ({routeAddress}) => {
     const [ minContribution, setMinContribution ] = useState<string>('')
     const [ maxContribution, setMaxContribution ] = useState<string>('')
     const [ vestingEnabled, setVestingEnabled ] = useState<boolean>(true)
+    const [ releaseTokenAtEnd, setReleaseTokenAtEnd ] = useState<boolean>(false)
     const [ vestingInterval, setVestingInterval ] = useState<string>('168')
     const [ vestingPercent, setVestingPercent ] = useState<string>('10')
     const [ airdropAmount, setAirdropAmount ] = useState<string>('')
@@ -467,12 +468,14 @@ const CreateSale: React.FC<CreateProps> = ({routeAddress}) => {
                 closingTime:Math.floor(endDate.getTime() / 1000), 
                 minContribution:minContributionNumer.toJSON(), 
                 maxContribution:maxContributionNumer.toJSON(), 
+                vestingEnabled,
                 vestingPercent: vestingEnabled ? parseInt(vestingPercent) : 100,
                 vestingInterval: vestingEnabled ? parseInt(vestingInterval) : 0,
                 whitelistEnabled,
                 airdropAmount: airdropAmountNumber.toJSON(),
                 minVote,
-                vestingStartTime:vestingEnabled ? Math.floor(vestingStartDate.getTime() / 1000) : Math.floor(startDate.getTime() / 1000)
+                vestingStartTime:vestingEnabled ? Math.floor(vestingStartDate.getTime() / 1000) : Math.floor(startDate.getTime() / 1000),
+                releaseTokenAtFinalization: releaseTokenAtEnd
             })
             dispatch(fetchLaunchpadPublicDataAsync())
             dispatch(fetchLaunchpadUserDataAsync({account}))
@@ -484,7 +487,7 @@ const CreateSale: React.FC<CreateProps> = ({routeAddress}) => {
         } finally {
           setPendingTx(false)
         }
-    }, [onCreateSale, dispatch, toastError, t, validateInputs, history, account, deployFee, wallet, searchToken, rateNumber, rateDecimalsNumber, listingRateNumber, listingRateDecimalsNumber, liquidityPercentNumber, softCapNumber, hardCapNumber, startDate, endDate, minContributionNumer, maxContributionNumer, whitelistEnabled, contributionType, busdToken, vestingInterval, vestingPercent, vestingEnabled, title, airdropAmountNumber, minVote, vestingStartDate])
+    }, [onCreateSale, dispatch, toastError, t, validateInputs, history, account, deployFee, wallet, searchToken, rateNumber, rateDecimalsNumber, listingRateNumber, listingRateDecimalsNumber, liquidityPercentNumber, softCapNumber, hardCapNumber, startDate, endDate, minContributionNumer, maxContributionNumer, whitelistEnabled, contributionType, busdToken, vestingInterval, vestingPercent, vestingEnabled, title, airdropAmountNumber, minVote, vestingStartDate, releaseTokenAtEnd])
 
     const renderApprovalOrCreateButton = () => {
         return  (
@@ -499,12 +502,19 @@ const CreateSale: React.FC<CreateProps> = ({routeAddress}) => {
     }
 
     const vestingDecription = () => {
-        if (!vestingStartDate) {
+        if (!vestingStartDate || !startDate) {
             return (<></>)
         }
         let totalPercent = 0;
         let index = 0;
         const vestings: any[] = [];
+        if (releaseTokenAtEnd && startDate.getTime() < vestingStartDate.getTime()) {
+            totalPercent = parseInt(vestingPercent);
+            vestings.push({
+                time: 0,
+                percent: totalPercent
+            })
+        }
         while (totalPercent < 100) {
             vestings.push({
                 time: vestingStartDate.getTime() / 1000 + parseInt(vestingInterval) * 3600 * index,
@@ -520,7 +530,7 @@ const CreateSale: React.FC<CreateProps> = ({routeAddress}) => {
                 vestings.map((vesting) => {
                     return (
                     <Text>
-                        {vesting.percent}% at { format(vesting.time * 1000, 'yyyy/MM/dd hh:mm aa')}
+                        {vesting.percent}% { vesting.time === 0 ? 'when sale is closed' : `at ${format(vesting.time * 1000, 'yyyy/MM/dd hh:mm aa')}`}
                     </Text>
                     )
                 })
@@ -834,6 +844,30 @@ const CreateSale: React.FC<CreateProps> = ({routeAddress}) => {
                                             }}/>
                                     </StyledWrapperWithTooltip>
                                 </InputWrap>
+
+                            <InputWrap>
+                                <Flex  alignItems="center">
+                                    <Text color="primary">
+                                        {t('TGE:')}
+                                    </Text>
+                                </Flex>
+                                <Flex>
+                                    <Flex flex="1">
+                                        <RadioWithText
+                                            checked={releaseTokenAtEnd}
+                                            onClick={() => setReleaseTokenAtEnd(true)}
+                                            text={t('Enabled')}
+                                            />
+                                    </Flex>
+                                    <Flex flex="1">
+                                        <RadioWithText
+                                            checked={!releaseTokenAtEnd}
+                                            onClick={() => setReleaseTokenAtEnd(false)}
+                                            text={t('Disabled')}
+                                            />
+                                    </Flex>
+                                </Flex>
+                            </InputWrap>
                                 </>
                             )}
 

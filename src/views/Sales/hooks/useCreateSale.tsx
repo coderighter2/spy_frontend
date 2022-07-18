@@ -29,6 +29,8 @@ interface CreateSaleParams {
   airdropAmount: string
   minVote: string
   vestingStartTime: number
+  vestingEnabled: boolean
+  releaseTokenAtFinalization: boolean
 }
 
 export const useCreateSale = () => {
@@ -36,19 +38,35 @@ export const useCreateSale = () => {
 
   const handleCreateSale = useCallback(
     async (params: CreateSaleParams) => {
-      const {title, feeAmount, wallet, token, baseToken, rate, rateDecimals, listingRate, listingRateDecimals, liquidityPercent, goal, cap, openingTime, closingTime, minContribution, maxContribution, whitelistEnabled, vestingInterval, vestingPercent, airdropAmount, minVote, vestingStartTime} = params;
+      const {title, feeAmount, wallet, token, baseToken, rate, rateDecimals, listingRate, listingRateDecimals, liquidityPercent, goal, cap, openingTime, closingTime, minContribution, maxContribution, whitelistEnabled, vestingInterval, vestingPercent, airdropAmount, minVote, vestingStartTime, vestingEnabled, releaseTokenAtFinalization} = params;
       const gasPrice = getGasPrice()
       const stageTimes = []
       const stagePercents = []
-      let totalPercent = 0;
-      let index = 0;
-      while (totalPercent < 100) {
-        stageTimes.push(vestingInterval * 3600 * index);
-        stagePercents.push(Math.min(vestingPercent, 100 - totalPercent));
-        totalPercent += vestingPercent;
-        index += 1;
+      let realVestingStartTime = vestingStartTime;
+      if (vestingEnabled) {
+        stageTimes.push(0)
+        stagePercents.push(vestingPercent)
+        let totalPercent = 0;
+        let index = 0;
+        let timeOffset = 0;
+        if (releaseTokenAtFinalization && vestingStartTime > openingTime) {
+          realVestingStartTime = openingTime;
+          totalPercent = vestingPercent;
+        }
+
+        timeOffset = vestingStartTime - realVestingStartTime;
+        while (totalPercent < 100) {
+          stageTimes.push(timeOffset + vestingInterval * 3600 * index);
+          stagePercents.push(Math.min(vestingPercent, 100 - totalPercent));
+          totalPercent += vestingPercent;
+          index += 1;
+        }
+      } else {
+        realVestingStartTime = 0;
+        stagePercents.push(100);
+        stageTimes.push(0);
       }
-      const args = [[rate, rateDecimals, listingRate, listingRateDecimals, liquidityPercent, goal, cap, minContribution, maxContribution, openingTime, closingTime, wallet, ROUTER_ADDRESS, token, baseToken,  whitelistEnabled, title], [airdropAmount, minVote, tokens.spy.address], stageTimes, stagePercents, vestingStartTime];
+      const args = [[rate, rateDecimals, listingRate, listingRateDecimals, liquidityPercent, goal, cap, minContribution, maxContribution, openingTime, closingTime, wallet, ROUTER_ADDRESS, token, baseToken,  whitelistEnabled, title], [airdropAmount, minVote, tokens.spy.address], stageTimes, stagePercents, realVestingStartTime];
       const tx = await callWithEstimateGas(factory, 'createSale', args, { gasPrice}, 1000, feeAmount)
       const receipt = await tx.wait()
       if (receipt.status === 1) {
