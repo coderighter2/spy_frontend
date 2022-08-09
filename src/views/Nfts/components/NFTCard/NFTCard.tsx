@@ -11,7 +11,7 @@ import { LP_LOCK_TIMEOUT } from 'config/constants';
 import { useNFTCastAllowance } from 'state/nft/hooks';
 import { useTranslation } from 'contexts/Localization';
 import { getFullDisplayBalance } from 'utils/formatBalance';
-import { BIG_TEN } from 'utils/bigNumber';
+import { BIG_TEN, BIG_ZERO } from 'utils/bigNumber';
 import { getNFTSignatureMintProxyAddress } from 'utils/addressHelpers';
 import useToast from 'hooks/useToast';
 import { useSpyNFT } from 'hooks/useContract';
@@ -96,7 +96,7 @@ const NFTCard: React.FC<NFTCardProps> = ({account, gego, factoryAllowed, general
         const secS = sec < 10 ? `0${sec}`:`${sec}`;
         setCountdown(`${dayS}:${hourS}:${minS}:${secS}`);
       } else {
-        setCountdown(gego.expiringTime ? 'Expired' : '');
+        setCountdown(gego.expiringTime && gego.expiringTime.gt(BIG_ZERO) ? 'Expired' : '');
       }
     } else {
       setCountdown('');
