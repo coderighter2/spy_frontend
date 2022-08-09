@@ -86,7 +86,7 @@ const CastedModal: React.FC<InjectedModalProps & CastedModalProps> = ({ gego, ac
 
     try {
       setPendingTx(true)
-      await onStakeNFTMulti([gego.id], true)
+      await onStakeNFTMulti(gego.address, [gego.id], true)
       dispatch(fetchNFTUserBalanceDataAsync({account}))
       toastSuccess(t('Success'), t('Your NFT(s) have been staked'))
       onDismiss()
