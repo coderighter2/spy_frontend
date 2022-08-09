@@ -5,6 +5,7 @@ import { useTranslation } from 'contexts/Localization'
 import FlexLayout from 'components/Layout/Flex'
 import { useNFTBalances, useNFTFactoryAllowance, useNFTRewardAllowance, usePollNFTAllowanceData } from 'state/nft/hooks'
 import NFTCard from '../NFTCard/NFTCard'
+import { isSpyNFT } from '../../helpers'
 
 
 const Wrapper = styled.div`
@@ -57,11 +58,12 @@ const CardWrapper = styled.div`
 
 interface MyNFTsProps {
 account: string
+nftAddress?: string
 }
 
-const MyNFTs: React.FC<MyNFTsProps> = ({account}) => {
+const MyNFTs: React.FC<MyNFTsProps> = ({account, nftAddress}) => {
     const { t } = useTranslation()
-    const nftBalance = useNFTBalances ()
+    const nftBalance = useNFTBalances (nftAddress)
     const factoryAllowed = useNFTFactoryAllowance()
     const generalRewardAllowed = useNFTRewardAllowance()
 
@@ -71,7 +73,7 @@ const MyNFTs: React.FC<MyNFTsProps> = ({account}) => {
         <>
             <Wrapper>
                 <Header flexDirection="column">
-                    <Heading padding="12px 0px 12px 14px">{t('My NFTs')}</Heading>
+                    <Heading padding="12px 0px 12px 14px">{isSpyNFT(nftAddress) ? t('My NFTs') : t('My NFT Signatures')}</Heading>
                 </Header>
 
                 <NFTCards>

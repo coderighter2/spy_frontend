@@ -14,7 +14,7 @@ import { DeserializedNFTGego } from 'state/types'
 import { useNFTCastAllowance } from 'state/nft/hooks'
 import { fetchNFTUserBalanceDataAsync, fetchNFTUserDataAsync } from 'state/nft'
 import { getFullDisplayBalance } from 'utils/formatBalance'
-import { getNFTMintroxyAddress } from 'utils/addressHelpers'
+import { getNFTMintroxyAddress, getNFTSignatureMintProxyAddres } from 'utils/addressHelpers'
 import { BIG_ZERO } from 'utils/bigNumber'
 import SPYInput from '../SPYInput'
 import useApproveCastNFT from '../../hooks/useApproveCastNFT'
@@ -22,6 +22,7 @@ import useCastNFT from '../../hooks/useCastNFT'
 import { useDefaultsFromURLSearch } from '../../hooks/useDefaultsFromURLSearch'
 import CastConfirmModal from './CastConfirmModal'
 import CastedModal from './CastedModal'
+import { isSpyNFT } from '../../helpers'
 
 const Wrapper = styled.div`
     flex: 1 1 0;
@@ -58,10 +59,11 @@ const ModalActionsWrapper = styled.div `{
 
 
 interface CastNFTProps {
-    account: string
+    account?: string
+    nftAddress?: string
   }
 
-const CastNFT: React.FC<CastNFTProps> = ({account}) => {
+const CastNFT: React.FC<CastNFTProps> = ({account, nftAddress}) => {
     const { t } = useTranslation()
     const { toastError } = useToast()
     const [val, setVal] = useState('')
@@ -70,13 +72,25 @@ const CastNFT: React.FC<CastNFTProps> = ({account}) => {
     const [requestedApproval, setRequestedApproval] = useState(false)
     const [pendingTx, setPendingTx] = useState(false)
     const { balance: userBalance, fetchStatus: userBalanceFetchStatus } = useTokenBalance(tokens.spy.address)
-    const castNFTAllowance = useNFTCastAllowance()
+    const {nft: castNFTAllowance, signature: castSignatureAllowance} = useNFTCastAllowance()
     const [presentedCasting, setPresentedCasting] = useState(false)
     const { balance: spyBalance, fetchStatus: spyFetchStatus } = useTokenBalance(tokens.spy.address)
 
-    const isApproved = account && castNFTAllowance && castNFTAllowance.isGreaterThan(0);
     const parsedUrlParams = useDefaultsFromURLSearch()
     const didMount = useRef(false);
+
+    const isApproved = useMemo(() => {
+      if (!account) {
+        return false
+      }
+
+      if (isSpyNFT(nftAddress)) {
+        return castNFTAllowance && castNFTAllowance.isGreaterThan(0);
+      }
+
+      return castSignatureAllowance && castSignatureAllowance.isGreaterThan(0);
+      
+    }, [account, castNFTAllowance, castSignatureAllowance, nftAddress])
 
     const valNumber = useMemo(() => {
         return new BigNumber(val)
@@ -90,7 +104,7 @@ const CastNFT: React.FC<CastNFTProps> = ({account}) => {
     )
 
     const spyToken = useERC20(tokens.spy.address)
-    const { onApprove } = useApproveCastNFT(spyToken, getNFTMintroxyAddress())
+    const { onApprove } = useApproveCastNFT(spyToken, isSpyNFT(nftAddress) ? getNFTMintroxyAddress() : getNFTSignatureMintProxyAddress())
     const { onCastNFT } = useCastNFT()
 
     const handleApprove = useCallback(async() => {
@@ -196,10 +210,10 @@ const CastNFT: React.FC<CastNFTProps> = ({account}) => {
         <>
             <Wrapper>
                 <Group flexDirection="column">
-                    <Heading padding="12px 0px 12px 2px">{t('Cast NFTs')}</Heading>
+                    <Heading padding="12px 0px 12px 2px">{isSpyNFT(nftAddress) ? t('Cast NFTs') : t('Cast NFT Signatures')}</Heading>
 
                     <Text padding="12px 0px">
-                    {t("We're introducing Crypto NFTs as a new feature. Users can mint NFTs with unique characteristics and different rarities(by depositing SPY tokens) then stake it in the NFT Pools to generate rewards. Issue, trade NFTs and participate in auctions!")}
+                    {t("We're introducing Crypto %nft%s as a new feature. Users can mint %nft%s with unique characteristics and different rarities(by depositing SPY tokens) then stake it in the %nft% Pools to generate rewards. Issue, trade %nft%s and participate in auctions!", {nft: isSpyNFT(nftAddress) ? 'NFT' : 'NFT Signature'})}
                     </Text>
 
                     <BalanceWrapper flexDirection={["column", "column", "row"]}>

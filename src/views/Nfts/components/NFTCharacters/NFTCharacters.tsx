@@ -3,7 +3,9 @@ import styled from 'styled-components'
 import { Flex, Heading } from '@pancakeswap/uikit'
 import { useTranslation } from 'contexts/Localization'
 import { nftGrades } from 'config/constants/nft'
+import tokens from 'config/constants/tokens'
 import NFTGradeCard from './NFTGradeCard'
+import { isSpyNFT } from '../../helpers'
 
 const Wrapper = styled.div`
     flex: 1 1 0;
@@ -48,17 +50,25 @@ const Grades = styled(Flex)`
     }
 `
 
+interface NFTGradeCardProps {
+    nft?: string
+}
 
-const NFTCharacters: React.FC = () => {
+const NFTCharacters: React.FC<NFTGradeCardProps> = ({nft}) => {
     const { t } = useTranslation()
     return (
         <>
             <Wrapper>
                 <Group flexDirection="column">
+                    {isSpyNFT(nft) ? (
                     <Heading padding="12px 0px 12px 14px">{t('All NFTs Characters')}</Heading>
+                    ) : (
+                    <Heading padding="12px 0px 12px 14px">{t('All NFT Signatures Characters')}</Heading>
+                    )}
+                    
                     <Grades flexWrap="wrap">
                         {
-                            nftGrades.map((grade) => (
+                            nftGrades(nft).map((grade) => (
                                 <NFTGradeCard grade={grade} key={grade.level} />
                             ))
                         }

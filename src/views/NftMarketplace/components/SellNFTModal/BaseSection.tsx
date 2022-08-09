@@ -45,11 +45,11 @@ const BaseSection: React.FC<BaseSectionProps> = ({ gego, account, handleSell, pe
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
   const { toastError, toastSuccess } = useToast()
-  const gradeConfig = nftGrades.find((c) => c.level === gego.grade)
-  const nftContract = useSpyNFT(tokens.spynft.address)
+  const gradeConfig = nftGrades(gego.address).find((c) => c.level === gego.grade)
+  const nftContract = useSpyNFT(gego.address)
   const [requestedApproval, setRequestedApproval] = useState(false)
   const { onApproveNFTMarketplace } = useApproveMarketplace(nftContract)
-  const allowance = useNFTMarketplaceAllowance()
+  const allowance = useNFTMarketplaceAllowance(gego.address)
   const isApproved = account && allowance;
 
 

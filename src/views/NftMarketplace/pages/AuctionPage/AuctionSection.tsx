@@ -109,7 +109,7 @@ const AuctionSection: React.FC<AuctionSectionProps> = ({auction, account, reload
     const [approval, approveCallback] = useApproveCallback(!useEth && payToken ? new TokenAmount(payToken, JSBI.BigInt(bidAmount.toString())) : undefined, getNFTMarketplaceAddress())
     const { onPlaceBid } = usePlaceBid(auction.id)
     const { onClaimAuction } = useClaimAuction(auction.id)
-    const gradeConfig = nftGrades.find((c) => c.level === auction.gego.grade)
+    const gradeConfig = nftGrades(auction?.gego?.address).find((c) => c.level === auction.gego.grade)
     const lastPriceText = useMemo(() => {
         if (useEth) {
             return `${getFullDisplayBalance(auction.lastPrice)} BNB`

@@ -95,7 +95,7 @@ const TradingSection: React.FC<TradingSectionProps> = ({trade, account, reloadTr
     const payToken = useToken(useEth ? null : trade.payToken)
     const [approval, approveCallback] = useApproveCallback(!useEth && payToken ? new TokenAmount(payToken, JSBI.BigInt(trade.salePrice.toString())) : undefined, getNFTMarketplaceAddress())
     const { onPurchaseTrade } = usePurchaseTrade(trade.id)
-    const gradeConfig = nftGrades.find((c) => c.level === trade.gego.grade)
+    const gradeConfig = nftGrades(trade?.gego?.address).find((c) => c.level === trade.gego.grade)
     const salePriceText = useMemo(() => {
         if (useEth) {
             return `${getFullDisplayBalance(trade.salePrice)} BNB`

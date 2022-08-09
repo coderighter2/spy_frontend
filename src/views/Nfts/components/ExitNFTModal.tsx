@@ -44,7 +44,7 @@ const ExitNFTModal: React.FC<InjectedModalProps & ExitNFTModalProps> = ({ accoun
 
     try {
       setPendingTx(true)
-      await onExitNFT(isV2)
+      await onExitNFT(gegos[0].address, isV2)
       dispatch(fetchNFTUserBalanceDataAsync({account}))
       toastSuccess(t('Success'), t('Your NFTs has been unstaked'))
       onDismiss()
@@ -59,7 +59,7 @@ const ExitNFTModal: React.FC<InjectedModalProps & ExitNFTModalProps> = ({ accoun
     } finally {
       setPendingTx(false)
     }
-  }, [onExitNFT, onDismiss, toastError, toastSuccess, t, dispatch, account, isV2])
+  }, [onExitNFT, onDismiss, toastError, toastSuccess, t, dispatch, account, isV2, gegos])
 
   return (
     <StyledModalContainer minWidth="320px">

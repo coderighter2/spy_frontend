@@ -7,8 +7,8 @@ import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import tokens from 'config/constants/tokens'
 import getGasPrice from 'utils/getGasPrice'
 
-const useTransferNFT = () => {
-  const nftContract = useSpyNFT(tokens.spynft.address)
+const useTransferNFT = (nftAddress) => {
+  const nftContract = useSpyNFT(nftAddress)
 
   const handleTransferNFT = useCallback(async (tokenId: string, from: string, to: string) => {
     const gasPrice = getGasPrice()

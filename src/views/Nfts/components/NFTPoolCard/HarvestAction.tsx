@@ -9,6 +9,7 @@ import useToast from 'hooks/useToast'
 import { getBalanceAmount } from 'utils/formatBalance'
 import { BIG_ZERO } from 'utils/bigNumber'
 import { useWeb3React } from '@web3-react/core'
+import tokens from 'config/constants/tokens'
 import { usePriceCakeBusd } from 'state/farms/hooks'
 import { fetchNFTPoolUserDataAsync } from 'state/nft'
 import Balance from 'components/Balance'
@@ -45,7 +46,7 @@ const HarvestAction: React.FC<NFTPoolCardActionsProps> = ({ earnings, nextHarves
         onClick={async () => {
           setPendingTx(true)
           try {
-            await onHarvest()
+            await onHarvest(tokens.spynft.address)
             toastSuccess(
               `${t('Harvested')}!`,
               t('Your %symbol% earnings have been sent to your wallet!', { symbol: 'SPY' }),

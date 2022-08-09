@@ -53,12 +53,11 @@ interface CastedModalProps {
 const CastedModal: React.FC<InjectedModalProps & CastedModalProps> = ({ gego, account, customOnDismiss, onDismiss }) => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
-  const gradeConfig = nftGrades.find((c) => c.level === gego.grade)
-  const nftContract = useSpyNFT(tokens.spynft.address)
+  const gradeConfig = nftGrades(gego.address).find((c) => c.level === gego.grade)
   const { toastError, toastSuccess } = useToast()
   const [pendingTx, setPendingTx] = useState(false)
   const [requestedApproval, setRequestedApproval] = useState(false)
-  const { onApproveGeneralReward: onApprove } = useApproveGeneralReward(nftContract)
+  const { onApproveGeneralReward: onApprove } = useApproveGeneralReward(tokens.spynft.address)
   const { onStakeNFTMulti } = useStakeNFT()
   const allowance = useNFTRewardAllowance()
   const isApproved = account && allowance;
@@ -140,10 +139,12 @@ const CastedModal: React.FC<InjectedModalProps & CastedModalProps> = ({ gego, ac
           <Text color="secondary" mr="8px">{t('Grade')}:</Text>
           <Text color="primary">{gego.grade}</Text>
         </Flex>
+        {gego.lockedDays > 0 && (
         <Flex justifyContent="center">
           <Text color="secondary" mr="8px">{t('Locked days')}:</Text>
           <Text color="primary">{gego.lockedDays}</Text>
         </Flex>
+        )}
         <Flex justifyContent="center">
           <Text color="secondary" mr="8px">{t('Mining Power')}:</Text>
           <Text color="primary">{gego.efficiency.multipliedBy(gego.amount).div(BIG_TEN.pow(tokens.spy.decimals)).div(100000).toFixed(2)} SPY</Text>

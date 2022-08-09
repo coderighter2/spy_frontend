@@ -7,13 +7,14 @@ import { StyledAddressInput } from 'components/StyledControls';
 import { useTranslation } from 'contexts/Localization'
 import { useAppDispatch } from 'state';
 import { DeserializedNFTGego } from 'state/types'
-import { fetchNFTUserBalanceDataAsync } from 'state/nft';
+import { fetchNFTUserBalanceDataAsync, fetchNFTSignatureUserBalanceDataAsync } from 'state/nft';
 import useToast from 'hooks/useToast';
 import tokens from 'config/constants/tokens';
 import { isAddress } from 'utils';
 import useUnstakeNFT from '../hooks/useUnstakeNFT';
 import useTransferNFT from '../hooks/useTransferNFT';
 import NFTGradeRow from './NFTGradeRow';
+import { isSpyNFT } from '../helpers';
 
 
 
@@ -45,7 +46,7 @@ const TransferNFTModal: React.FC<InjectedModalProps & TransferNFTModalProps> = (
   const [pendingTx, setPendingTx] = useState(false)
   const [toAddress, setToAddress] = useState('')
   const validToAddress = isAddress(toAddress)
-  const { onTransferNFT } = useTransferNFT()
+  const { onTransferNFT } = useTransferNFT(gego.address)
   const handleTransfer = useCallback(async() => {
 
     if (!validToAddress) {
@@ -55,7 +56,12 @@ const TransferNFTModal: React.FC<InjectedModalProps & TransferNFTModalProps> = (
     try {
       setPendingTx(true)
       await onTransferNFT(gego.id, account, validToAddress)
-      dispatch(fetchNFTUserBalanceDataAsync({account}))
+      if (isSpyNFT(gego.address)) {
+        dispatch(fetchNFTUserBalanceDataAsync({account}))
+      } else {
+        dispatch(fetchNFTSignatureUserBalanceDataAsync({account}))
+      }
+      
       toastSuccess(t('Success'), t('Your NFTs has been transferred'))
       onDismiss()
     } catch (e) {

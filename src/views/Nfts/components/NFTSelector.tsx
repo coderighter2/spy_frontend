@@ -16,7 +16,7 @@ interface NFTSelectorProps {
 const NFTSelector: React.FC<NFTSelectorProps> = ({ gegos, onSelect }) => {
   const { t } = useTranslation()
   const getGradeConfig = (g: DeserializedNFTGego) =>  {
-    return nftGrades.find((c) => c.level === g.grade)
+    return nftGrades(g.address).find((c) => c.level === g.grade)
   }
 
   return (
