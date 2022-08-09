@@ -40,7 +40,7 @@ export const testnetTokens = {
   spy: new Token(TESTNET, '0x6F25144001Ce324E745c3FF25a646A292883feD5', 0, 'SPY', 'SmartyPay Token', 'http://test.smarty-pay.com'),
   busd: new Token(TESTNET, '0x2aFD1d7DADEfb7fE31364A4f57f704c1558C8Edc', 18, 'BUSD', 'Binance USD', 'https://www.paxos.com/busd/'),
   spynft: new Token(TESTNET, '0xa7aa050D7B6bc477e4a0128BA657380c944b9404', 0, 'SPY-NFT', 'SPY NFT', 'http://test.smarty-pay.com'),
-  signature: new Token(TESTNET, '0xD52cB191284e0FF5d87033e7D1f812f6e9939Bb0', 0, 'NFT Signature', 'NFT Signature', 'http://app.spy-token.io'),
+  signature: new Token(TESTNET, '0xC4D0027c0E22B51d6168AB059Bc47F5dE2799d1b', 0, 'NFT Signature', 'NFT Signature', 'http://app.spy-token.io'),
   usdc: new Token(TESTNET, '0x5eC8797235c38A854447c8f21D226c09dC812D70', 18, 'USDC', 'Binance-Peg USD Coin', 'https://www.centre.io/usdc'),
   minitokie: new Token(TESTNET, '0xe378225E1ccFFccEaE6bc7E32C6b716a434b4e81', 9, 'TOKIE', 'Mini Tokie', 'https://spy-token.io'),
 }
