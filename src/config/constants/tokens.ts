@@ -32,7 +32,7 @@ export const mainnetTokens = {
   spy: new Token(MAINNET, '0x17fd3cAa66502C6F1CbD5600D8448f3aF8f2ABA1', 0, 'SPY', 'Smarty Pay Token', 'https://app.spy-token.io'),
   spynft: new Token(MAINNET, '0xEe7Eb563531703944cb0351901689e35f3DE13a2', 0, 'SPY-NFT', 'SPY NFT', 'http://app.spy-token.io'),
   minitokie: new Token(MAINNET, '0x85966D9B57C81767eb5dAB7A63Bf97D54b6A355A', 9, 'TOKIE', 'Mini Tokie', 'https://spy-token.io'),
-  signature: new Token(MAINNET, '0x524bD13340EFe9f6C8EE1242d2aE7b0234cFA1d9', 0, 'NFT Signature', 'NFT Signature', 'http://app.spy-token.io'),
+  signature: new Token(MAINNET, '0xB6e03AEd91740CD1Da70F0Cd900AC6F89086e094', 0, 'NFT Signature', 'NFT Signature', 'http://app.spy-token.io'),
 }
 export const testnetTokens = {
   wbnb: new Token(TESTNET, '0xf9a7A2b01Bf758776703677719F8aCf018600070', 18, 'WBNB', 'Wrapped BNB', 'https://www.binance.com/'),
