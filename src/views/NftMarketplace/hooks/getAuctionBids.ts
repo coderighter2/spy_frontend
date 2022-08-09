@@ -30,6 +30,7 @@ interface AuctionFields {
     gego: GegoFields
     seller?: string
     lastBidder?: string
+    nft: string
     payToken? : {
         id: string
         name: string
@@ -54,9 +55,10 @@ interface BidsQueryResponse {
     bids?: BidFields[]
 }
 
-function convertAuctionGegoResponse(gego: GegoFields) : DeserializedNFTGego{
+function convertAuctionGegoResponse(gego: GegoFields, nft: string) : DeserializedNFTGego{
     const {tokenId, amount, creationTime, grade, lockedDays, quality} = gego
     return {
+        address: nft,
         id: tokenId,
         grade,
         lockedDays,
@@ -64,7 +66,7 @@ function convertAuctionGegoResponse(gego: GegoFields) : DeserializedNFTGego{
         createdTime: parseInt(creationTime),
         amount: new BigNumber(amount),
         staked: false,
-        efficiency: getFixRate(grade, quality)
+        efficiency: getFixRate(grade, quality, nft)
     };
 }
 
@@ -81,7 +83,7 @@ function convertAuctionResponse(auction: AuctionFields) : NFTAuction {
         lastPrice: lastPrice ? parseFloat(lastPrice) : undefined,
         payToken : payToken ? (payToken.id === tokens.spy.address ? tokens.spy : new Token(parseInt(process.env.REACT_APP_CHAIN_ID, 10), payToken.id, parseInt(payToken.decimals), payToken.symbol, payToken.decimals)) : null,
         status,
-        gego: convertAuctionGegoResponse(gego)
+        gego: convertAuctionGegoResponse(gego, auction.nft)
     }
 }
 
@@ -168,6 +170,7 @@ export const getMyBids = async(address: string) : Promise<NFTAuctionBid[]> => {
                     startingPrice
                     lastPrice
                     status
+                    nft
                     payToken {
                         id
                         name

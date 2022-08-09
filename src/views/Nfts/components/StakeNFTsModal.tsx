@@ -8,8 +8,8 @@ import { ModalActions } from 'components/Modal'
 import { useTranslation } from 'contexts/Localization'
 import { useAppDispatch } from 'state';
 import { DeserializedNFTGego } from 'state/types'
-import { fetchNFTAllowancesAsync, fetchNFTUserBalanceDataAsync } from 'state/nft';
-import { useNFTRewardAllowance, useOldNFTRewardAllowance } from 'state/nft/hooks';
+import { fetchNFTAllowancesAsync, fetchNFTUserBalanceDataAsync, fetchNFTSignatureUserBalanceDataAsync} from 'state/nft';
+import { useNFTRewardAllowance, useNFTSignatureRewardAllowance, useOldNFTRewardAllowance } from 'state/nft/hooks';
 import { BIG_TEN } from 'utils/bigNumber';
 import { useSpyNFT } from 'hooks/useContract';
 import useToast from 'hooks/useToast';
@@ -18,6 +18,7 @@ import useApproveGeneralReward from '../hooks/useApproveGeneralReward';
 import useStakeNFT from '../hooks/useStakeNFT';
 import NFTGradeRow from './NFTGradeRow';
 import NFTSelector from './NFTSelector';
+import { isSpyNFT } from '../helpers';
 
 enum StakeModalView {
   main,
@@ -58,12 +59,21 @@ const StakeNFTsModal: React.FC<InjectedModalProps & StakeNFTsModalProps> = ({ ac
   const [pendingTx, setPendingTx] = useState(false)
   const [loaded, setLoaded] = useState(false)
   const [selectedGegos, setSelectedGegos] = useState({})
-  const nftContract = useSpyNFT(tokens.spynft.address)
-  const { onApproveGeneralReward: onApprove } = useApproveGeneralReward(nftContract)
+  const nftAddress = gego ? gego.address : gegos ? gegos[0].address : ''
+  const { onApproveGeneralReward: onApprove } = useApproveGeneralReward(nftAddress)
   const { onStakeNFTMulti } = useStakeNFT()
   const oldAllowance = useOldNFTRewardAllowance()
   const allowance = useNFTRewardAllowance()
-  const isApproved = account && ((isV2 && allowance) || (!isV2 && oldAllowance));
+  const signatureAllowance = useNFTSignatureRewardAllowance()
+  const isApproved = useMemo(() => {
+    if (!account) {
+      return false
+    }
+    if (isSpyNFT(nftAddress)) {
+      return (isV2 && allowance) || (!isV2 && oldAllowance)
+    }
+    return signatureAllowance
+  }, [account, isV2, allowance, oldAllowance, nftAddress, signatureAllowance])
 
   useEffect(() => {
     if (!loaded) {
@@ -127,8 +137,12 @@ const StakeNFTsModal: React.FC<InjectedModalProps & StakeNFTsModalProps> = ({ ac
     try {
       setPendingTx(true)
       const gegoIds = selectedGegoIds
-      await onStakeNFTMulti(gegoIds, isV2)
-      dispatch(fetchNFTUserBalanceDataAsync({account}))
+      await onStakeNFTMulti(nftAddress, gegoIds, isV2)
+      if (isSpyNFT(nftAddress)) {
+        dispatch(fetchNFTUserBalanceDataAsync({account}))
+      } else {
+        dispatch(fetchNFTSignatureUserBalanceDataAsync({account}))
+      }
       toastSuccess(t('Success'), t('Your NFT(s) have been staked'))
       onDismiss()
     } catch (e) {
@@ -142,7 +156,7 @@ const StakeNFTsModal: React.FC<InjectedModalProps & StakeNFTsModalProps> = ({ ac
     } finally {
       setPendingTx(false)
     }
-  }, [onStakeNFTMulti, onDismiss, toastError, toastSuccess, t, dispatch, account, selectedGegoIds, isV2])
+  }, [onStakeNFTMulti, onDismiss, toastError, toastSuccess, t, dispatch, account, nftAddress, selectedGegoIds, isV2])
 
   const renderApprovalOrStakeButton = () => {
     return isApproved ? (

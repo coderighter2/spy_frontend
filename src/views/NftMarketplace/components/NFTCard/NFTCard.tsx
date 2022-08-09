@@ -8,6 +8,7 @@ import { useTranslation } from 'contexts/Localization';
 import { getFullDisplayBalance } from 'utils/formatBalance';
 import { BIG_TEN } from 'utils/bigNumber';
 import useInterval from 'hooks/useInterval';
+import { isSpyNFT } from 'views/Nfts/helpers';
 
 const StyledCard = styled(Card)`
   align-self: baseline;
@@ -42,7 +43,7 @@ interface NFTCardProps {
 
 const NFTCard: React.FC<NFTCardProps> = ({gego}) => {
   const { t } = useTranslation()
-  const gradeConfig = nftGrades.find((c) => c.level === gego.grade)
+  const gradeConfig = nftGrades(gego.address).find((c) => c.level === gego.grade)
 
   const [countdown, setCountdown] = useState('')
 
@@ -76,9 +77,20 @@ const NFTCard: React.FC<NFTCardProps> = ({gego}) => {
   return (
     <StyledCard>
       <CardInnerContainer>
-        { gradeConfig && (
+        { isSpyNFT(gego.address) && gradeConfig && (
           <GradeImageWrapper>
             <img src={`/images/nft/${gradeConfig.image}`} alt={gradeConfig.grade}/>
+
+            { countdown !== '' && (
+              <Countdown>
+                {countdown}
+              </Countdown>
+            )}
+          </GradeImageWrapper>
+        )}
+        { !isSpyNFT(gego.address) && (
+          <GradeImageWrapper>
+            <img src={`/images/signatures/${gego.resBaseId?.toNumber()}.jpg`} alt={gradeConfig.grade}/>
 
             { countdown !== '' && (
               <Countdown>

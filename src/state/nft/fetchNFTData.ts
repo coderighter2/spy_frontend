@@ -1,13 +1,14 @@
 import BigNumber from 'bignumber.js'
 import spyNFTABI from 'config/abi/spyNFT.json'
 import nftFactoryABI from 'config/abi/spyNFTFactory.json'
+import tokens from 'config/constants/tokens'
 import multicall from 'utils/multicall'
-import { getOldGeneralNFTRewardAddress, getGeneralNFTRewardAddress, getNFTFactoryAddress, getNFTMarketplaceAddress } from 'utils/addressHelpers'
+import { getOldGeneralNFTRewardAddress, getGeneralNFTRewardAddress, getNFTFactoryAddress, getNFTMarketplaceAddress, getNFTSignatureRewardAddress } from 'utils/addressHelpers'
 import { getFixRate } from 'utils/nftHelpers'
 import { getSpyNFTContract } from 'utils/contractHelpers'
-import tokens from 'config/constants/tokens'
 
 export type PublicNFTData = {
+    address: string
     id: SerializedBigNumber
     grade: number
     lockedDays: number
@@ -16,6 +17,7 @@ export type PublicNFTData = {
     quality: number
     amount: SerializedBigNumber
     efficiency: SerializedBigNumber
+    resBaseId: SerializedBigNumber
     staked: boolean
 }
 
@@ -32,6 +34,7 @@ export const fetchNFTGegos = async (tokenIds: string[]): Promise<PublicNFTData[]
         const grade = new BigNumber(rawNFTGego.grade?._hex).toNumber()
         const efficiency = getFixRate(grade, quality).toJSON()
         return {
+            address: tokens.spynft.address,
             id: tokenIds[index],
             grade,
             lockedDays: new BigNumber(rawNFTGego.lockedDays?._hex).toNumber(),
@@ -39,6 +42,7 @@ export const fetchNFTGegos = async (tokenIds: string[]): Promise<PublicNFTData[]
             createdTime: new BigNumber(rawNFTGego.createdTime?._hex).toNumber(),
             quality,
             amount: new BigNumber(rawNFTGego.amount?._hex).toJSON(),
+            resBaseId: new BigNumber(rawNFTGego.resBaseId?._hex).toJSON(),
             efficiency,
             staked: false
         }
@@ -47,7 +51,7 @@ export const fetchNFTGegos = async (tokenIds: string[]): Promise<PublicNFTData[]
     return parsedNFTGegos;
 }
 
-export const fetchNFTAllowances = async (account: string): Promise<{factoryAllowance: boolean, rewardAllowance: boolean, oldRewardAllowance:boolean, marketplaceAllowance: boolean}> => {
+export const fetchNFTAllowances = async (account: string): Promise<{factoryAllowance: boolean, rewardAllowance: boolean, oldRewardAllowance:boolean, marketplaceAllowance: boolean, signatureRewardAllowance: boolean, signatureMarketplaceAllowance: boolean}> => {
     const nftAddress = tokens.spynft.address
     const nftMarketplaceAddress = getNFTMarketplaceAddress();
     const nftFactoryAddress = getNFTFactoryAddress();
@@ -75,14 +79,26 @@ export const fetchNFTAllowances = async (account: string): Promise<{factoryAllow
           name: 'isApprovedForAll',
           params: [account, nftMarketplaceAddress],
         },
+        {
+          address: tokens.signature.address,
+          name: 'isApprovedForAll',
+          params: [account, getNFTSignatureRewardAddress()],
+        },
+        {
+          address: tokens.signature.address,
+          name: 'isApprovedForAll',
+          params: [account, nftMarketplaceAddress],
+        },
     ];
 
-    const [[factoryAllowance], [rewardAllowance], [oldRewardAllowance], [marketplaceAllowance]] = await multicall(spyNFTABI, calls)
+    const [[factoryAllowance], [rewardAllowance], [oldRewardAllowance], [marketplaceAllowance], [signatureRewardAllowance], [signatureMarketplaceAllowance]] = await multicall(spyNFTABI, calls)
 
     return {
         factoryAllowance,
         rewardAllowance,
         oldRewardAllowance,
-        marketplaceAllowance
+        marketplaceAllowance,
+        signatureRewardAllowance,
+        signatureMarketplaceAllowance
     };
 }

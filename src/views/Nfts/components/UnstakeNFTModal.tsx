@@ -9,13 +9,14 @@ import Dots from 'components/Loader/Dots';
 import { useTranslation } from 'contexts/Localization'
 import { useAppDispatch } from 'state';
 import { DeserializedNFTGego } from 'state/types'
-import { fetchNFTUserBalanceDataAsync } from 'state/nft';
+import { fetchNFTSignatureUserBalanceDataAsync, fetchNFTUserBalanceDataAsync } from 'state/nft';
 import { BIG_TEN } from 'utils/bigNumber';
 import { useSpyNFT } from 'hooks/useContract';
 import useToast from 'hooks/useToast';
 import useUnstakeNFT from '../hooks/useUnstakeNFT';
 import NFTGradeRow from './NFTGradeRow';
 import NFTSelector from './NFTSelector';
+import { isSpyNFT } from '../helpers';
 
 
 enum UnstakeModalView {
@@ -60,8 +61,13 @@ const UnstakeNFTModal: React.FC<InjectedModalProps & UnstakeNFTModalProps> = ({ 
 
     try {
       setPendingTx(true)
-      await onUnstakeNFT(selectedGego.id, isV2)
-      dispatch(fetchNFTUserBalanceDataAsync({account}))
+      await onUnstakeNFT(selectedGego.address, selectedGego.id, isV2)
+      if (isSpyNFT(selectedGego.address)) {
+        dispatch(fetchNFTUserBalanceDataAsync({account}))
+      } else {
+        dispatch(fetchNFTSignatureUserBalanceDataAsync({account}))
+      }
+      
       toastSuccess(t('Success'), t('Your NFT #%id% has been unstaked', {id: selectedGego.id}))
       onDismiss()
     } catch (e) {

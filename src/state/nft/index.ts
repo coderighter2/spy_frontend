@@ -1,21 +1,26 @@
 
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { SerializedNFTState } from 'state/types'
+import { SerializedNFTState, SerialzedNFTFactoryPublicData } from 'state/types'
 import { fetchNFTBalance, fetchOldStakedNFTs, fetchStakedNFTs } from './fetchNFT'
 import { fetchNFTGegos, fetchNFTAllowances, PublicNFTData } from './fetchNFTData'
 import { fetchGeneralNFTRewardUserData, fetchGeneralNFTRewardPublicData, PublicNFTRewardUserData, PublicNFTRewardPoolData } from './fetchNFTReward'
-import { fetchPublicNFTData } from './fetchPublicNFTData'
+import { fetchNFTSignatureBalance, fetchStakedNFTSignatures } from './fetchNFTSignature'
+import { fetchNFTSignatureGegos } from './fetchNFTSignatureData'
+import { fetchNFTSignatureRewardPublicData, fetchNFTSignatureRewardUserData } from './fetchNFTSignatureReward'
+import { fetchNFTSignatureFactoryData, fetchPublicNFTData } from './fetchPublicNFTData'
 
 const initialState: SerializedNFTState = {
     userDataLoaded: false,
     loadArchivedData: false,
     nftBalance: [],
     oldNftBalance: [],
+    signatureBalance: []
 }
 
 interface NFTUserDataResponse {
     spyBalance: string
     castNFTAllowance: string
+    castNFTSignatureAllowance: string
 }
 
 interface NFTAllowanceDataResponse {
@@ -23,6 +28,8 @@ interface NFTAllowanceDataResponse {
     rewardAllowance: boolean
     oldRewardAllowance:boolean
     marketplaceAllowance: boolean
+    signatureRewardAllowance: boolean
+    signatureMarketplaceAllowance: boolean
 }
 
 export const fetchNFTUserDataAsync = createAsyncThunk<NFTUserDataResponse, { account: string}>(
@@ -31,6 +38,7 @@ export const fetchNFTUserDataAsync = createAsyncThunk<NFTUserDataResponse, { acc
         const publicData = await fetchPublicNFTData(account)
         return {
             spyBalance: publicData.tokenAmountTotal,
+            castNFTSignatureAllowance: publicData.nftSignatureCastAllowance,
             castNFTAllowance: publicData.nftCastAllowance
         }
     },
@@ -83,6 +91,53 @@ export const fetchNFTUserBalanceDataAsync = createAsyncThunk<{old: PublicNFTData
     },
 )
 
+
+export const fetchNFTSignatureFactoryPublicDataAsync = createAsyncThunk<SerialzedNFTFactoryPublicData>(
+    'nft/fetchNFTSignatureFactoryPublicDataAsync',
+    async () => {
+        const publicData = await fetchNFTSignatureFactoryData()
+        return publicData
+    },
+)
+
+export const fetchNFTSignaturePoolPublicDataAsync = createAsyncThunk<PublicNFTRewardPoolData>(
+    'nft/fetchNFTSignaturePoolPublicDataAsync',
+    async () => {
+        const publicData = await fetchNFTSignatureRewardPublicData()
+        return publicData
+    },
+)
+
+export const fetchNFTSignaturePoolUserDataAsync = createAsyncThunk<PublicNFTRewardUserData, { account: string}>(
+    'nft/fetchNFTSignaturePoolUserDataAsync',
+    async ({account}) => {
+        const userData = await fetchNFTSignatureRewardUserData(account)
+        return userData
+    },
+)
+
+export const fetchNFTSignatureUserBalanceDataAsync = createAsyncThunk<PublicNFTData[], { account: string}>(
+    'nft/fetchNFTSignatureUserBalanceDataAsync',
+    async ({account}) => {
+        const tokenIds = await fetchNFTSignatureBalance(account);
+        const tokenIdsStaked = await fetchStakedNFTSignatures(account);
+        const tokenGegos = await fetchNFTSignatureGegos([...tokenIds.filter((id) => id !== '0'), ...tokenIdsStaked.filter((id) => id !== '0')]);
+        const unstakedGegos = tokenGegos.filter((gego, index) =>  {
+            return tokenIds.indexOf(gego.id) !== -1;
+        })
+        const stakedGegos = tokenGegos.filter((gego, index) =>  {
+            return tokenIdsStaked.indexOf(gego.id) !== -1;
+        })
+        unstakedGegos.forEach((gego, index) => {
+            unstakedGegos[index].staked = false;
+        })
+        stakedGegos.forEach((gego, index) => {
+            stakedGegos[index].staked = true;
+        })
+        return [...unstakedGegos, ...stakedGegos];
+    },
+)
+
 export const fetchNFTAllowancesAsync = createAsyncThunk<NFTAllowanceDataResponse, { account: string}>(
     'nft/fetchNFTAllowancesAsync',
     async ({account}) => {
@@ -104,6 +159,7 @@ export const nftSlice = createSlice({
         builder.addCase(fetchNFTUserDataAsync.fulfilled, (state,action) => {
             state.spyBalance = action.payload.spyBalance
             state.castNFTAllowance = action.payload.castNFTAllowance
+            state.castSignatureAllowance = action.payload.castNFTSignatureAllowance
         })
         builder.addCase(fetchNFTPoolPublicDataAsync.fulfilled, (state,action) => {
             state.poolPublicData = {
@@ -144,6 +200,36 @@ export const nftSlice = createSlice({
             state.rewardAllowance = action.payload.rewardAllowance
             state.factoryAllowance = action.payload.factoryAllowance
             state.marketplaceAllowance = action.payload.marketplaceAllowance
+            state.signatureRewardAllowance = action.payload.signatureRewardAllowance
+            state.signatureMarketplaceAllowance = action.payload.signatureMarketplaceAllowance
+        })
+
+        builder.addCase(fetchNFTSignatureFactoryPublicDataAsync.fulfilled, (state, action) => {
+            state.signatureFactoryData = {
+                ...state.signatureFactoryData,
+                ...action.payload
+            }
+        })
+
+        builder.addCase(fetchNFTSignaturePoolUserDataAsync.fulfilled, (state,action) => {
+            state.signaturePoolUserData = {
+                ...state.poolUserData,
+                ...action.payload,
+                userDataLoaded: true
+            }
+        })
+        builder.addCase(fetchNFTSignaturePoolPublicDataAsync.fulfilled, (state,action) => {
+            state.signaturePoolPublicData = {
+                ...state.poolPublicData,
+                ...action.payload
+            }
+        })
+        builder.addCase(fetchNFTSignatureUserBalanceDataAsync.fulfilled, (state,action) => {
+            state.signatureBalance = action.payload.map((gego) => {
+                return {
+                    ...gego
+                }
+            })
         })
     }
 })

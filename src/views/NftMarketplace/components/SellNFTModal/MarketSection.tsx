@@ -74,7 +74,7 @@ const MarketSection: React.FC<MarketSectionProps> = ({ gego, account, onDismiss 
 
     try {
       setPendingTx(true)
-      const marketId = await onListMarket(useToken, gego.id, priceNumber.toString())
+      const marketId = await onListMarket(useToken, gego.address, gego.id, priceNumber.toString())
       dispatch(fetchNFTUserBalanceDataAsync({account}))
       toastSuccess(t('Success'), t('Your NFT #%id% has been listed on the market', {id: gego.id}))
       onDismiss()

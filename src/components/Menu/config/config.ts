@@ -59,6 +59,10 @@ const config: (t: ContextApi['t']) => ConfigMenuItemsType[] = (t) => [
         href: '/auto-pools',
       },
       {
+        label: t('NFT Signature Pool'),
+        href: '/signatures-pool'
+      },
+      {
         label: t('Referral'),
         href: '/referral',
       },
@@ -113,6 +117,10 @@ const config: (t: ContextApi['t']) => ConfigMenuItemsType[] = (t) => [
       {
         label: t('NFTs'),
         href: '/nfts',
+      },
+      {
+        label: t('NFT Signatures'),
+        href: '/signatures',
       },
       {
         label: t('Marketplace'),

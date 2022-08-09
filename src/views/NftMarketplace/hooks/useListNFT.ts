@@ -5,13 +5,14 @@ import { useGeneralNFTReward, useOldGeneralNFTReward, useSpyNFTMarketplace } fro
 import getGasPrice from 'utils/getGasPrice'
 import tokens from 'config/constants/tokens'
 import BigNumber from 'bignumber.js'
+import { getAddress } from '@ethersproject/address'
 
 export const useListNFTMarket = () => {
     const marketplaceContract = useSpyNFTMarketplace()
 
-    const handleListMarket = useCallback(async (useToken: boolean, tokenId: string, price: string) => {
+    const handleListMarket = useCallback(async (useToken: boolean, nftAddress:string, tokenId: string, price: string) => {
         const params = [
-            tokens.spynft.address,
+            getAddress(nftAddress),
             tokenId,
             useToken ? tokens.spy.address : AddressZero,
             price
@@ -45,10 +46,10 @@ export const useListNFTMarket = () => {
 export const useListNFTAuction = () => {
     const marketplaceContract = useSpyNFTMarketplace()
 
-    const handleListAuction = useCallback(async (useToken: boolean, tokenId: string, price,duration) => {
+    const handleListAuction = useCallback(async (useToken: boolean, nftAddress: string, tokenId: string, price,duration) => {
         const params = [
             useToken ? tokens.spy.address : AddressZero,
-            tokens.spynft.address,
+            getAddress(nftAddress),
             tokenId,
             price,
             duration

@@ -111,10 +111,12 @@ const GegoSection: React.FC<GegoSectionProps> = ({gego, owner, account, showCanc
                         <InfoLabel>{t('Mining Efficiency')}</InfoLabel>
                         <InfoValue>{gego.efficiency.div(1000).toFixed(2)}</InfoValue>
                     </InfoRow>
+                    {gego.address.toLowerCase() === tokens.spynft.address.toLowerCase() && (
                     <InfoRow>
                         <InfoLabel>{t('Decomposable in')}</InfoLabel>
                         <InfoValue>{countdown}</InfoValue>
                     </InfoRow>
+                    )}
 
                     { showCancel && (
                         <Button

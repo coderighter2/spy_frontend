@@ -26,6 +26,7 @@ interface MarketFields {
     price: string
     seller: string
     purchaser: string
+    nft: string
     payToken?: {
         id: string
         symbol: string
@@ -43,9 +44,10 @@ interface MyMarketsQueryResponse {
     purchases: MarketFields[]
 }
 
-function convertMarketGegoResponse(gego: GegoFields) : DeserializedNFTGego{
+function convertMarketGegoResponse(gego: GegoFields, nft: string) : DeserializedNFTGego{
     const {tokenId, amount, creationTime, grade, lockedDays, quality} = gego
     return {
+        address: nft,
         id: tokenId,
         grade,
         lockedDays,
@@ -53,12 +55,12 @@ function convertMarketGegoResponse(gego: GegoFields) : DeserializedNFTGego{
         createdTime: parseInt(creationTime),
         amount: new BigNumber(amount),
         staked: false,
-        efficiency: getFixRate(grade, quality)
+        efficiency: getFixRate(grade, quality, nft)
     };
 }
 
 function convertMarketResponse(auction: MarketFields) : NFTTrade {
-    const {id, listingId, creationTime, price, payToken, status, gego, seller, purchaser} = auction
+    const {id, listingId, creationTime, price, payToken, status, gego, seller, purchaser, nft} = auction
     return {
         id,
         listingId,
@@ -68,7 +70,7 @@ function convertMarketResponse(auction: MarketFields) : NFTTrade {
         seller, 
         purchaser,
         payToken : auction.payToken ? (auction.payToken.id === tokens.spy.address ? tokens.spy : new Token(parseInt(process.env.REACT_APP_CHAIN_ID, 10), auction.payToken.id, parseInt(auction.payToken.decimals), auction.payToken.symbol, auction.payToken.decimals)) : null,
-        gego: convertMarketGegoResponse(gego)
+        gego: convertMarketGegoResponse(gego, nft)
     }
 }
 
@@ -104,6 +106,7 @@ export const getAllTrades = async(filter: NFTMarketPlaceSearchFilter) : Promise<
                 price
                 seller
                 purchaser
+                nft
                 payToken {
                     id
                     symbol
@@ -147,6 +150,7 @@ export const getMyTrades = async(address:string) : Promise<NFTTrade[]> => {
                 price
                 seller
                 purchaser
+                nft
                 payToken {
                     id
                     symbol
@@ -172,6 +176,7 @@ export const getMyTrades = async(address:string) : Promise<NFTTrade[]> => {
                 price
                 seller
                 purchaser
+                nft
                 payToken {
                     id
                     symbol

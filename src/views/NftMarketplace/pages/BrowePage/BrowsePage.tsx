@@ -4,6 +4,7 @@ import { useWeb3React } from '@web3-react/core'
 import { Button, Flex, Heading, Skeleton, useModal } from '@pancakeswap/uikit'
 import styled from 'styled-components'
 import { nftGrades } from 'config/constants/nft';
+import tokens from 'config/constants/tokens'
 import { useNFTBalances, usePollNFTPublicData } from 'state/nft/hooks'
 import { useNFTMarketplaceSearchFilter, useNFTMarketplaceSearchGrade } from 'state/nftMarketplace/hooks'
 import { NFTMarketPlaceSearchFilter } from 'state/types'
@@ -165,7 +166,7 @@ const NFTMarketplaceBrowsePage: React.FC = () => {
                                         label: t('All NFTs'),
                                         value: -1,
                                     },
-                                    ...nftGrades.map((grade) => {
+                                    ...nftGrades(tokens.spynft.address).map((grade) => {
                                         return {
                                             label: grade.grade.toString(),
                                             value: grade.level

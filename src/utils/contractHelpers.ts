@@ -38,6 +38,9 @@ import {
   getAdminAddress,
   getOldMasterChefAddress,
   getSaleFactoryAddress,
+  getNFTSignatureFactoryAddress,
+  getNFTSignatureMintProxyAddress,
+  getNFTSignatureRewardAddress,
 } from 'utils/addressHelpers'
 
 // ABI
@@ -79,6 +82,9 @@ import spyNFT from 'config/abi/spyNFT.json'
 import spyNFTFactory from 'config/abi/spyNFTFactory.json'
 import spyNFTMintProxy from 'config/abi/spyNFTMintProxy.json'
 import spyNFTMarketplace from 'config/abi/spyNFTMarketplace.json'
+import nftSignatureFactorybi from 'config/abi/nftSignatureFactory.json'
+import nftSignatureMintProxybi from 'config/abi/nftSignatureMintProxy.json'
+import nftSignatureRewardAbi from 'config/abi/nftSignatureReward.json'
 import bnbSpyVaultAbi from 'config/abi/bnbSpyVault.json'
 import compoundVaultAbi from 'config/abi/compoundVault.json'
 import spyGovernorAbi from 'config/abi/spyGovernor.json'
@@ -163,6 +169,16 @@ export const getNFTFactoryContract = (signer?: ethers.Signer | ethers.providers.
 }
 export const getNFTMintProxyContract = (signer?: ethers.Signer | ethers.providers.Provider) => {
   return getContract(spyNFTMintProxy, getNFTMintroxyAddress(), signer)
+}
+
+export const getNFTSignatureFactoryContract = (signer?: ethers.Signer | ethers.providers.Provider) => {
+  return getContract(nftSignatureFactorybi, getNFTSignatureFactoryAddress(), signer)
+}
+export const getNFTSignatureMinProxyContract = (signer?: ethers.Signer | ethers.providers.Provider) => {
+  return getContract(nftSignatureMintProxybi, getNFTSignatureMintProxyAddress(), signer)
+}
+export const getNFTSignatureRewardContract = (signer?: ethers.Signer | ethers.providers.Provider) => {
+  return getContract(nftSignatureRewardAbi, getNFTSignatureRewardAddress(), signer)
 }
 export const getGovernanceContract = (signer?: ethers.Signer | ethers.providers.Provider) => {
   return getContract(spyGovernorAbi, getGovernanceAddress(), signer)

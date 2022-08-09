@@ -235,6 +235,31 @@ export interface SerialzedNFTPoolPublicData {
   harvestFee: SerializedBigNumber
 }
 
+export interface SerialzedNFTFactoryPublicData {
+  activeRuleId: SerializedBigNumber
+  maxMintAmount: SerializedBigNumber
+  maxMintQuantity: SerializedBigNumber
+  maxMintQuantityPerClick: SerializedBigNumber
+  mintCost: SerializedBigNumber
+  mintCostDiscount: SerializedBigNumber
+  mintCostDiscountQuantity: SerializedBigNumber
+  mintedQuantity: SerializedBigNumber
+  costToken: string
+}
+
+export interface DeserialzedNFTFactoryPublicData {
+  activeRuleId: BigNumber
+  maxMintAmount: BigNumber
+  maxMintQuantity: BigNumber
+  maxMintQuantityPerClick: BigNumber
+  mintCost: BigNumber
+  mintCostDiscount: BigNumber
+  mintCostDiscountQuantity: BigNumber
+  mintedQuantity: BigNumber
+  costToken?: string
+}
+  
+
 export interface SerialzedNFTPoolUserData {
   balance: SerializedBigNumber
   earning: SerializedBigNumber
@@ -267,6 +292,7 @@ export interface SerializedNFTState {
   
   spyBalance?: SerializedBigNumber
   castNFTAllowance?: SerializedBigNumber
+  castSignatureAllowance?: SerializedBigNumber
 
   poolPublicData?: SerialzedNFTPoolPublicData
   poolUserData?: SerialzedNFTPoolUserData
@@ -274,13 +300,20 @@ export interface SerializedNFTState {
   oldPoolPublicData?: SerialzedNFTPoolPublicData
   oldPoolUserData?: SerialzedNFTPoolUserData
 
+  signaturePoolPublicData?: SerialzedNFTPoolPublicData
+  signaturePoolUserData?: SerialzedNFTPoolUserData
+  signatureFactoryData?: SerialzedNFTFactoryPublicData
+
   nftBalance: SerializedNFTGego[]
   oldNftBalance: SerializedNFTGego[]
+  signatureBalance: SerializedNFTGego[]
 
   factoryAllowance?: boolean
   rewardAllowance?: boolean
   marketplaceAllowance?: boolean
   oldRewardAllowance?: boolean
+  signatureRewardAllowance?: boolean
+  signatureMarketplaceAllowance?: boolean
 }
 
 export interface DeserializedNFTState {
@@ -289,6 +322,7 @@ export interface DeserializedNFTState {
   
   spyBalance?: BigNumber
   castNFTAllowance?: BigNumber
+  castSignatureAllowance?: BigNumber
 
   oldPoolPublicData?: DeserialzedNFTPoolPublicData
   oldPoolUserData?: DeserialzedNFTPoolUserData
@@ -298,6 +332,7 @@ export interface DeserializedNFTState {
 
   nftBalance: DeserializedNFTGego[]
   oldNftBalance: DeserializedNFTGego[]
+  signatureBalance: DeserializedNFTGego[]
   factoryAllowance?: boolean
   rewardAllowance?: boolean
   marketplaceAllowance?: boolean
@@ -305,6 +340,7 @@ export interface DeserializedNFTState {
 }
 
 export interface SerializedNFTGego {
+  address: string
   staked: boolean
   id: string
   grade: number
@@ -314,9 +350,12 @@ export interface SerializedNFTGego {
   quality: number
   amount: SerializedBigNumber
   efficiency?: SerializedBigNumber
+  resBaseId?: SerializedBigNumber
+  expiringTime?: SerializedBigNumber
 }
 
 export interface DeserializedNFTGego {
+  address: string
   staked: boolean
   id: string
   grade: number
@@ -326,6 +365,8 @@ export interface DeserializedNFTGego {
   quality: number
   amount: BigNumber
   efficiency?: BigNumber
+  resBaseId?: BigNumber
+  expiringTime?: BigNumber
 }
 
 export interface SerializedFarmsState {

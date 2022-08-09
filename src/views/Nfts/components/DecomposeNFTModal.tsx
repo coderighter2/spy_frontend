@@ -51,7 +51,7 @@ const DecomposeNFTModal: React.FC<InjectedModalProps & DecomposeNFTModalProps> =
   const { toastError, toastSuccess } = useToast()
   const [requestedApproval, setRequestedApproval] = useState(false)
   const [pendingTx, setPendingTx] = useState(false)
-  const gradeConfig = nftGrades.find((c) => c.level === gego.grade)
+  const gradeConfig = nftGrades(gego.address).find((c) => c.level === gego.grade)
   const nftContract = useSpyNFT(tokens.spynft.address)
   const { onApprove } = useApproveNFTFactory(nftContract)
   const { onDecomposeNFT } = useDecomposeNFT()

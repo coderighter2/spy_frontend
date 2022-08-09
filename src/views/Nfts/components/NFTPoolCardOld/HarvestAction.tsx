@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import BigNumber from 'bignumber.js'
 import { Button, Flex, Heading } from '@pancakeswap/uikit'
 import { useTranslation } from 'contexts/Localization'
+import tokens from 'config/constants/tokens'
 import { useAppDispatch } from 'state'
 import { fetchFarmUserDataAsync } from 'state/farms'
 import useToast from 'hooks/useToast'
@@ -43,7 +44,7 @@ const HarvestAction: React.FC<NFTPoolCardActionsProps> = ({ earnings, nextHarves
         onClick={async () => {
           setPendingTx(true)
           try {
-            await onHarvest(false)
+            await onHarvest(tokens.spynft.address, false)
             toastSuccess(
               `${t('Harvested')}!`,
               t('Your %symbol% earnings have been sent to your wallet!', { symbol: 'SPY' }),

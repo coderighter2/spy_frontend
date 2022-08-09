@@ -1,23 +1,31 @@
 import React, { useCallback, useState } from 'react'
 import styled from 'styled-components'
 import { Card, Flex, Heading, Text, Button, useModal } from '@pancakeswap/uikit';
+import { JSBI, TokenAmount } from '@pancakeswap/sdk';
 import { nftGrades } from 'config/constants/nft';
 import tokens from 'config/constants/tokens';
 import { useAppDispatch } from 'state';
 import { DeserializedNFTGego } from 'state/types';
-import { fetchNFTAllowancesAsync } from 'state/nft';
+import { fetchNFTAllowancesAsync, fetchNFTSignatureUserBalanceDataAsync } from 'state/nft';
+import { useNFTCastAllowance } from 'state/nft/hooks';
 import { useTranslation } from 'contexts/Localization';
 import { getFullDisplayBalance } from 'utils/formatBalance';
 import { BIG_TEN } from 'utils/bigNumber';
+import { getNFTSignatureMintProxyAddress } from 'utils/addressHelpers';
 import useToast from 'hooks/useToast';
 import { useSpyNFT } from 'hooks/useContract';
 import useInterval from 'hooks/useInterval';
+import { ApprovalState, useApproveCallback } from 'hooks/useApproveCallback';
+import Dots from 'components/Loader/Dots';
 import SellNFTModal from 'views/NftMarketplace/components/SellNFTModal/SellNFTModal';
 import useApproveNFTFactory from '../../hooks/useApproveNFTFactory';
 import StakeNFTModal from '../StakeNFTModal';
 import UnstakeNFTModal from '../UnstakeNFTModal';
 import DecomposeNFTModal from '../DecomposeNFTModal';
 import TransferNFTModal from '../TransferNFTModal';
+import NFTSignatureInjectModal from '../NFTSignatureInjectModal';
+import { isSpyNFT } from '../../helpers';
+import {useInjectNFTSignature} from '../../hooks/useCastNFT';
 
 const StyledCard = styled(Card)`
   align-self: baseline;
@@ -57,17 +65,21 @@ const NFTCard: React.FC<NFTCardProps> = ({account, gego, factoryAllowed, general
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
   const { toastError, toastInfo } = useToast()
-  const gradeConfig = nftGrades.find((c) => c.level === gego.grade)
+  const gradeConfig = nftGrades(gego?.address).find((c) => c.level === gego.grade)
   const [requestedNFTFactoryApproval, setRequestedNFTFactoryApproval] = useState(false)
   const [pendingTx, setPendingTx] = useState(false)
+  const [injectingTx, setInjectingTx] = useState(false)
   const nftContract = useSpyNFT(tokens.spynft.address)
+
+  const [spyApproval, spyApproveCallback] = useApproveCallback(new TokenAmount(tokens.spy, JSBI.BigInt(BIG_TEN.pow(10).multipliedBy(BIG_TEN))), getNFTSignatureMintProxyAddress())
+  const {signature: castSignatureAllowance} = useNFTCastAllowance()
 
   const [countdown, setCountdown] = useState('')
 
   useInterval(() => {
     
     if (gego) {
-      const target = gego.createdTime + gego.lockedDays * 86400
+      const target = gego.expiringTime ? gego.expiringTime.toNumber() : (gego.createdTime + gego.lockedDays * 86400)
       const now = Math.floor(new Date().getTime() / 1000);
       const diffTime = target - now;
       if (diffTime > 0) {
@@ -83,7 +95,7 @@ const NFTCard: React.FC<NFTCardProps> = ({account, gego, factoryAllowed, general
         const secS = sec < 10 ? `0${sec}`:`${sec}`;
         setCountdown(`${dayS}:${hourS}:${minS}:${secS}`);
       } else {
-        setCountdown('');
+        setCountdown(gego.expiringTime ? 'Expired' : '');
       }
     } else {
       setCountdown('');
@@ -93,6 +105,25 @@ const NFTCard: React.FC<NFTCardProps> = ({account, gego, factoryAllowed, general
   const isNFTFactoryApproved = account && factoryAllowed;
 
   const { onApprove } = useApproveNFTFactory(nftContract)
+  const { onInjectNFTSignature } = useInjectNFTSignature()
+
+  const handleInjectNFTSignature = useCallback(async(amount) => {
+
+    try {
+      setInjectingTx(true)
+      await onInjectNFTSignature(gego.id, amount)
+      dispatch(fetchNFTSignatureUserBalanceDataAsync({account}))
+    } catch (e) {
+      const error = e as any
+      const msg = error?.data?.message ?? error?.message ?? t('Please try again. Confirm the transaction and make sure you are paying enough gas!')
+      toastError(
+        t('Error'),
+        msg,
+      )
+    } finally {
+      setInjectingTx(false)
+    }
+  }, [gego, t, toastError, onInjectNFTSignature, dispatch, account])
 
   const [onPresentUnstkeModal] = useModal(
     <UnstakeNFTModal gego={gego} account={account} />
@@ -112,6 +143,10 @@ const NFTCard: React.FC<NFTCardProps> = ({account, gego, factoryAllowed, general
 
   const [onPresentTransferNFTModal] = useModal(
     <TransferNFTModal gego={gego} account={account}/>
+  )
+
+  const [onPresentNFTSignatureInjectModal] = useModal(
+    <NFTSignatureInjectModal gego={gego} account={account} onConfirm={handleInjectNFTSignature}/>
   )
 
   const handleApproveNFTFactory = useCallback(async() => {
@@ -144,12 +179,40 @@ const NFTCard: React.FC<NFTCardProps> = ({account, gego, factoryAllowed, general
     )
   }
 
+  const renderApprovalOrInjectButton = () => {
+    return account && spyApproval === ApprovalState.APPROVED ? (
+      <Button
+        scale="sm"
+        disabled={injectingTx}
+        width="100%"
+        onClick={onPresentNFTSignatureInjectModal}
+      >
+        {injectingTx ? t('Injecting...') : t('Inject SPY')}
+      </Button>
+    ) : (
+      <Button scale="sm" mt="8px" width="100%" disabled={spyApproval === ApprovalState.PENDING || spyApproval === ApprovalState.UNKNOWN} onClick={spyApproveCallback}>
+        {spyApproval === ApprovalState.PENDING ? (<Dots>{t('Approving')}</Dots>) : t('Approve SPY')}
+      </Button>
+    )
+  }
+
   return (
     <StyledCard>
       <CardInnerContainer>
-        { gradeConfig && (
+        { isSpyNFT(gego.address) && gradeConfig && (
           <GradeImageWrapper>
             <img src={`/images/nft/${gradeConfig.image}`} alt={gradeConfig.grade}/>
+
+            { countdown !== '' && (
+              <Countdown>
+                {countdown}
+              </Countdown>
+            )}
+          </GradeImageWrapper>
+        )}
+        { !isSpyNFT(gego.address) && (
+          <GradeImageWrapper>
+            <img src={`/images/signatures/${gego.resBaseId?.toNumber()}.jpg`} alt={gradeConfig.grade}/>
 
             { countdown !== '' && (
               <Countdown>
@@ -175,7 +238,10 @@ const NFTCard: React.FC<NFTCardProps> = ({account, gego, factoryAllowed, general
           <Text textAlign="right">{gego.efficiency.div(1000).toFixed(2)}</Text>
         </Flex>
         {
-          renderApprovalOrDecomposeButton()
+          isSpyNFT(gego.address) && renderApprovalOrDecomposeButton()
+        }
+        {
+          !isSpyNFT(gego.address) && renderApprovalOrInjectButton()
         }
         <Flex mt="8px">
           { !gego.staked ? (
@@ -187,7 +253,7 @@ const NFTCard: React.FC<NFTCardProps> = ({account, gego, factoryAllowed, general
               {t('Unstake')}
             </Button>
           )}
-          <Button scale="sm" ml="8px" width="100%" disabled={gego.staked} onClick={onPresentSellNFTModal}>
+          <Button scale="sm" ml="8px" width="100%" disabled={gego.staked||!isSpyNFT(gego.address)} onClick={onPresentSellNFTModal}>
             {t('Sell')}
           </Button>
         </Flex>

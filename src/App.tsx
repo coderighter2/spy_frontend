@@ -46,6 +46,8 @@ const OldVaults = lazy(() => import('./views/Vaults/OldVaults'))
 const Governance = lazy(() => import('./views/Governance'))
 const MiniTokie = lazy(() => import('./views/MiniTokie'))
 const Nfts = lazy(() => import('./views/Nfts'))
+const Signatures = lazy(() => import('./views/Nfts/Signatures'))
+const SignaturePoolPage = lazy(() => import('./views/Nfts/pages/NFTSignaturePoolSummary'))
 const NftMarketplace = lazy(() => import('./views/NftMarketplace'))
 const FarmAuction = lazy(() => import('./views/FarmAuction'))
 const Lottery = lazy(() => import('./views/Lottery'))
@@ -154,6 +156,12 @@ const App: React.FC = () => {
               {/* NFT */}
               <Route path="/nfts">
                 <Nfts />
+              </Route>
+              <Route path="/signatures">
+                <Signatures />
+              </Route>
+              <Route path="/signatures-pool">
+                <SignaturePoolPage />
               </Route>
               <Route path="/nft-marketplace">
                 <NftMarketplace />

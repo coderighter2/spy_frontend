@@ -56,8 +56,7 @@ const CardActions: React.FC<NFTCardActionsProps> = ({ account, earnings, nextHar
 
 
   
-  const nftContract = useSpyNFT(tokens.spynft.address)
-  const { onApproveGeneralReward: onApprove } = useApproveGeneralReward(nftContract)
+  const { onApproveGeneralReward: onApprove } = useApproveGeneralReward(tokens.spynft.address)
 
   const [onPresentUnstkeModal] = useModal(
     <UnstakeNFTModal gegos={stakedBalances} account={account} />

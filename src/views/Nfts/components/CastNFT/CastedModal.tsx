@@ -43,7 +43,7 @@ interface CastedModalProps {
 
 const CastedModal: React.FC<InjectedModalProps & CastedModalProps> = ({ gego, customOnDismiss, onDismiss }) => {
   const { t } = useTranslation()
-  const gradeConfig = nftGrades.find((c) => c.level === gego.grade)
+  const gradeConfig = nftGrades(gego.address).find((c) => c.level === gego.grade)
 
   const handleDismiss = useCallback(() => {
     if (customOnDismiss) {
@@ -70,10 +70,12 @@ const CastedModal: React.FC<InjectedModalProps & CastedModalProps> = ({ gego, cu
           <Text color="secondary" mr="8px">{t('Grade')}:</Text>
           <Text color="primary">{gego.grade}</Text>
         </Flex>
+        {gego.lockedDays > 0 && (
         <Flex justifyContent="center">
           <Text color="secondary" mr="8px">{t('Locked days')}:</Text>
           <Text color="primary">{gego.lockedDays}</Text>
         </Flex>
+        )}
         <Flex justifyContent="center">
           <Text color="secondary" mr="8px">{t('Mining Power')}:</Text>
           <Text color="primary">{gego.efficiency.multipliedBy(gego.amount).div(BIG_TEN.pow(tokens.spy.decimals)).div(100000).toFixed(2)} SPY</Text>

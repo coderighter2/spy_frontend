@@ -1,11 +1,15 @@
 import { useCallback } from 'react'
-import { getGeneralNFTRewardAddress, getOldGeneralNFTRewardAddress } from 'utils/addressHelpers'
+import { getGeneralNFTRewardAddress, getNFTSignatureRewardAddress, getOldGeneralNFTRewardAddress } from 'utils/addressHelpers'
 import getGasPrice from 'utils/getGasPrice'
 import { callWithEstimateGas } from 'utils/calls'
+import { useSpyNFT } from 'hooks/useContract'
+import { getAddress } from 'ethers/lib/utils'
+import { isSpyNFT } from '../helpers'
 
-const useApproveGeneralReward = (nftContract) => {
-  const generalRewardAddress = getGeneralNFTRewardAddress()
-  const oldGeneralRewardAddress = getOldGeneralNFTRewardAddress()
+const useApproveGeneralReward = (nftAddress: string) => {
+  const nftContract = useSpyNFT(getAddress(nftAddress))
+  const generalRewardAddress = isSpyNFT(nftAddress) ? getGeneralNFTRewardAddress() : getNFTSignatureRewardAddress()
+  const oldGeneralRewardAddress = isSpyNFT(nftAddress) ? getOldGeneralNFTRewardAddress() : getNFTSignatureRewardAddress()
   
   const handleApprove = useCallback(async (isV2 = true) => {
     const gasPrice = getGasPrice()

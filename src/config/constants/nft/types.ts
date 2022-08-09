@@ -7,8 +7,16 @@ export enum NFTGrade {
     CEO = "CEO"
 }
 
+export enum SignatureGrade {
+    CLEANER = 'Cleaner',
+    CASHIER = 'Cashier',
+    CUSTOMER_SERVICE = 'Customer Service',
+    ACCOUNTING = 'Accounting',
+    MANAGER = 'Manager'
+}
+
 export interface NFTGradeConfig {
-    grade: NFTGrade
+    grade: NFTGrade|SignatureGrade
     level: number
     image: string
     qualityMin: number

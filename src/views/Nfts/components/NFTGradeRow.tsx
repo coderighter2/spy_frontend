@@ -5,6 +5,7 @@ import { nftGrades } from 'config/constants/nft'
 import { useTranslation } from 'contexts/Localization'
 import { DeserializedNFTGego } from 'state/types'
 import { BIG_TEN } from 'utils/bigNumber';
+import { isSpyNFT } from '../helpers'
 
 const RowButton = styled(Button)<{selected?: boolean}>`
   margin: 4px 0px;
@@ -54,7 +55,7 @@ interface NFTGradeRowProps {
 
 const NFTGradeRow: React.FC<NFTGradeRowProps> = ({ gego, selectable, selected, spyDecimals, onSelect }) => {
   const { t } = useTranslation()
-  const gradeConfig = nftGrades.find((c) => c.level === gego.grade)
+  const gradeConfig = nftGrades(gego.address).find((c) => c.level === gego.grade)
   return (
     <Flex flexDirection="column">
       <RowButton variant='text' style={{height: 'auto'}} selected={selected} onClick={() => {
@@ -63,16 +64,26 @@ const NFTGradeRow: React.FC<NFTGradeRowProps> = ({ gego, selectable, selected, s
         }
       }}>
         <RowWrapper alignItems="center" justifyContent="start">
-          { gradeConfig && (
+
+          { isSpyNFT(gego.address) && gradeConfig && (
             
             <GradeImageWrapper>
               <img src={`/images/nft/${gradeConfig.image}`} alt={gradeConfig.grade}/>
             </GradeImageWrapper>
           )}
+          { !isSpyNFT(gego.address) && (
+            <GradeImageWrapper>
+              <img src={`/images/signatures/${gego.resBaseId?.toNumber()}.jpg`} alt={gradeConfig.grade}/>
+            </GradeImageWrapper>
+          )}
           <Flex flexDirection="column" alignItems="start" flex="1">
+            { isSpyNFT(gego.address) ? (
             <Text fontSize="15px" fontWeight="bold" textAlign="center" color="primary">
               {gradeConfig.grade.toString()}
             </Text>
+            ) : (
+              <></>
+            )}
             <Text fontSize="12px" color="secondary" mr="8px">
               {t('Efficiency')}: {gego.efficiency.div(1000).toFixed(2)}% - {t('Power')}:{gego.efficiency.multipliedBy(gego.amount).div(BIG_TEN.pow(spyDecimals)).div(100000).toFixed(2)}
               </Text>
