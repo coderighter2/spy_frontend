@@ -26,7 +26,7 @@ const DetailsSection: React.FC<ExpandableSectionProps> = ({
         <Text>{t('Total Liquidity')}:</Text>
         {totalValueFormatted ? <Text>{totalValueFormatted}</Text> : <Skeleton width={75} height={25} />}
       </Flex>
-      <StyledLinkExternal href="/nfts">{t('Get SPY NFT')}</StyledLinkExternal>
+      <StyledLinkExternal href="/signatures">{t('Get SPY NFT')}</StyledLinkExternal>
       {/* <StyledLinkExternal href={infoAddress}>{t('See Pair Info')}</StyledLinkExternal> */}
     </Wrapper>
   )
