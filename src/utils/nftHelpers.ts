@@ -2,7 +2,7 @@ import BigNumber from "bignumber.js";
 import tokens from "config/constants/tokens";
 
 export const getFixRate = (grade: number, quality: number, nftAddress?: string) => {
-    if (nftAddress.toLowerCase() === tokens.signature.address.toLowerCase()) {
+    if (nftAddress?.toLowerCase() === tokens.signature.address.toLowerCase()) {
         if( grade === 1 ){
             return new BigNumber(quality).multipliedBy(40000).dividedBy(5000).plus(200000);
         }
