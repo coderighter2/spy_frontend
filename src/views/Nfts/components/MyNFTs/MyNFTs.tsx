@@ -78,7 +78,7 @@ const MyNFTs: React.FC<MyNFTsProps> = ({account, nftAddress}) => {
 
                 <NFTCards>
                     { account && nftBalance.map((nftGego) => (
-                        <CardWrapper>
+                        <CardWrapper key={nftGego.id}>
                             <NFTCard account={account} gego={nftGego} key={nftGego.id} factoryAllowed={factoryAllowed} generalRewardAllowed={generalRewardAllowed}/>
                         </CardWrapper>
                     ))
