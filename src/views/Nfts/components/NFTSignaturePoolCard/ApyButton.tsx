@@ -40,7 +40,7 @@ const ApyButton: React.FC<ApyButtonProps> = ({
       earningTokenPrice={tokenPrice.toNumber()}
       stakingTokenDecimal={0}
       apr={apr}
-      linkHref="/nfts"
+      linkHref="/signatures"
     />,
   )
 
