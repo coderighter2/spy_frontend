@@ -37,7 +37,7 @@ export const getAuctionData = async (id: string) : Promise<NFTAuctionData> => {
     const marketplaceContract = getNFTMarketplaceContract();
     const {payToken, seller, lastBidder, nft, tokenId, lastPrice, raisedAmount, duration: duration_, startedAt: startedAt_, isTaken} = await marketplaceContract.auctions(id)
     let gego
-    if (nft === tokens.spynft.address.toLowerCase()) {
+    if (nft.toLowerCase() === tokens.spynft.address.toLowerCase()) {
         gego = await getGego(getNFTFactoryContract(), nft, new BigNumber(tokenId._hex).toString())
     } else {
         gego = await getGego(getNFTSignatureFactoryContract(), nft, new BigNumber(tokenId._hex).toString())
@@ -64,7 +64,7 @@ export const getTradeData = async (id: string) : Promise<NFTTradeData> => {
     const marketplaceContract = getNFTMarketplaceContract();
     const {nft, tokenId, price, isSold, payToken, purchaser, seller} = await marketplaceContract.markets(id)
     let gego
-    if (nft === tokens.spynft.address.toLowerCase()) {
+    if (nft.toLowerCase() === tokens.spynft.address.toLowerCase()) {
         gego = await getGego(getNFTFactoryContract(), nft, new BigNumber(tokenId._hex).toString())
     } else {
         gego = await getGego(getNFTSignatureFactoryContract(), nft, new BigNumber(tokenId._hex).toString())
