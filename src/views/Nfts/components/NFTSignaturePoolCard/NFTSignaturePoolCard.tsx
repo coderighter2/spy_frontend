@@ -34,6 +34,7 @@ interface NFTPoolCardProps {
 const NFTSignaturePoolCard: React.FC<NFTPoolCardProps> = ({account}) => {
   const { t } = useTranslation()
   const [showExpandableSection, setShowExpandableSection] = useState(false)
+  const [harvestCountdown, setHarvestCountdown] = useState('')
 
   const poolData = useNFTSignaturePoolPublicData()
   const poolUserData = useNFTSignaturePoolUserData()
@@ -42,6 +43,29 @@ const NFTSignaturePoolCard: React.FC<NFTPoolCardProps> = ({account}) => {
   const nextHarvestUntil = poolUserData?.nextHarvestUntil ? (poolUserData.nextHarvestUntil + (account ? new BigNumber(account.toLowerCase()).modulo(16).toNumber() * 86400 : 0)) : 0 ;
   const totalValueFormatted = poolData ? poolData.totalSupply.toJSON() : undefined;
   const apr = poolData ? poolData.rewardRate.multipliedBy(86400*365).multipliedBy(100).div(poolData.rewardPrecisionFactor) : null
+
+  useInterval(() => {
+
+    if (nextHarvestUntil > 0) {
+      const now = Math.floor(new Date().getTime() / 1000);
+      const diffTime = nextHarvestUntil - now;
+      if (diffTime > 0) {
+        const duration = diffTime;
+        const hour = Math.floor(duration / 3600);
+        const min = Math.floor((duration % 3600) / 60);
+        const sec = duration % 60;
+
+        const hourS = hour < 10 ? `0${hour}`:`${hour}`;
+        const minS = min < 10 ? `0${min}`:`${min}`;
+        const secS = sec < 10 ? `0${sec}`:`${sec}`;
+        setHarvestCountdown(`${hourS}:${minS}:${secS}`);
+      } else {
+        setHarvestCountdown('00:00:00');
+      }
+    } else {
+      setHarvestCountdown('--:--:--');
+    }
+  }, 1000)
 
   usePollNFTSignaturePublicData()
   usePollNFTAllowanceData()
@@ -89,6 +113,11 @@ const NFTSignaturePoolCard: React.FC<NFTPoolCardProps> = ({account}) => {
             <Text bold>-</Text>
           )}
           
+        </Flex>
+        <Flex justifyContent="space-between">
+          <Text>{t('Next Harvest In')}:</Text>
+          {/* <Text>{t('APR will be reset once the countdown is over')}:</Text> */}
+          <Text bold>{harvestCountdown}</Text>
         </Flex>
         <CardActionsContainer account={account} earnings={poolUserData.earning} nextHarvestUntil={nextHarvestUntil}/>
       </CardInnerContainer>
