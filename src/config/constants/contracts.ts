@@ -57,7 +57,7 @@ export default {
   },
   communityGovernance: {
     97: '0x24c58c42e2bca6d6d172E6bdc0f673225DF3207B',
-    56: '0xda1d9E408FE4E076E24beb90fae181Fcf8b4229d',
+    56: '0xD63437fad823315E5bD66a91C0f522eaED307460',
   },
   admin: {
     97: '0x605a4B1A8a7584b4699a1B90E0783997F8855285',
