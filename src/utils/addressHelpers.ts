@@ -108,6 +108,9 @@ export const getNFTMarketplaceAddress = () => {
 export const getGovernanceAddress = () => {
   return getAddress(addresses.governance)
 }
+export const getCommunityGovernanceAddress = () => {
+  return getAddress(addresses.communityGovernance)
+}
 
 export const getAdminAddress = () => {
   return getAddress(addresses.admin)
