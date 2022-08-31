@@ -1,1 +1,1 @@
-export const VOTE_THRESHOLD = 10
+export const VOTE_THRESHOLD = 100000
