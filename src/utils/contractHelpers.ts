@@ -43,6 +43,7 @@ import {
   getNFTSignatureFactoryAddress,
   getNFTSignatureMintProxyAddress,
   getNFTSignatureRewardAddress,
+  getCommunityGovernanceAddress,
 } from 'utils/addressHelpers'
 
 // ABI
@@ -91,6 +92,7 @@ import nftSignatureRewardAbi from 'config/abi/nftSignatureReward.json'
 import bnbSpyVaultAbi from 'config/abi/bnbSpyVault.json'
 import compoundVaultAbi from 'config/abi/compoundVault.json'
 import spyGovernorAbi from 'config/abi/spyGovernor.json'
+import spyCommunityGovernorAbi from 'config/abi/spyCommunityGovernor.json'
 import spyAdminAbi from 'config/abi/spyAdmin.json'
 import saleFactoryAbi from 'config/abi/saleFactory.json'
 import saleAbi from 'config/abi/presale.json'
@@ -187,6 +189,9 @@ export const getNFTSignatureRewardContract = (signer?: ethers.Signer | ethers.pr
 }
 export const getGovernanceContract = (signer?: ethers.Signer | ethers.providers.Provider) => {
   return getContract(spyGovernorAbi, getGovernanceAddress(), signer)
+}
+export const getCommunityGovernanceContract = (signer?: ethers.Signer | ethers.providers.Provider) => {
+  return getContract(spyCommunityGovernorAbi, getCommunityGovernanceAddress(), signer)
 }
 export const getAdminContract = (signer?: ethers.Signer | ethers.providers.Provider) => {
   return getContract(spyAdminAbi, getAdminAddress(), signer)

@@ -8,7 +8,7 @@ import useTheme from 'hooks/useTheme'
 import { useBlock } from 'state/block/hooks'
 import { BIG_ZERO } from 'utils/bigNumber'
 import { useGovernanceQuorum } from 'state/governance/hooks'
-import { ProposalData, ProposalStateGQ } from '../../types'
+import { ProposalData, ProposalStateGQ } from '../types'
 
 
 const LinkWrapper = styled(Link)`
@@ -59,22 +59,20 @@ interface ProposalRawProps {
 const ProposalRow: React.FC<ProposalRawProps> = ({proposal}) => {
 
     const { t } = useTranslation()
-    const { currentBlock } = useBlock()
     const { theme } = useTheme()
-    const quorum = useGovernanceQuorum()
 
     const state = useMemo(() => {
 
         let res = proposal.state
-        if (res === ProposalStateGQ.Pending && proposal.startBlock < currentBlock) {
+        if (res === ProposalStateGQ.Pending && proposal.startTime < new Date().getTime() / 1000) {
             res = ProposalStateGQ.Active
         }
 
-        if (res === ProposalStateGQ.Active && proposal.endBlock < currentBlock) {
-            res = proposal.currentYesVote.lte(proposal.currentNoVote) || proposal.currentYesVote.lt(quorum) ? ProposalStateGQ.Failed : ProposalStateGQ.Succeeded
+        if (res === ProposalStateGQ.Active && proposal.endTime < new Date().getTime() / 1000) {
+            res = proposal.currentYesVote.lte(proposal.currentNoVote) ? ProposalStateGQ.Failed : ProposalStateGQ.Succeeded
         }
         return res
-    }, [proposal, currentBlock, quorum])
+    }, [proposal])
 
     const stateColor = useMemo(() => {
         switch(state) {
@@ -118,7 +116,7 @@ const ProposalRow: React.FC<ProposalRawProps> = ({proposal}) => {
     }, [theme, proposal.currentYesVote, proposal.currentNoVote])
 
     return (
-        <LinkWrapper to={`/governance/core/${proposal.proposalId}`} key={proposal.proposalId}>
+        <LinkWrapper to={`/governance/community/${proposal.proposalId}`} key={proposal.proposalId}>
             <Wrapper>
                 <Flex flexDirection={["column", null, null, "row"]} marginX={["24px", null, null, "48px"]} paddingY="12px">
                     <Flex flex="1" flexDirection="column">

@@ -38,6 +38,7 @@ import {
   getBNBVaultContract,
   getCompoundVaultContract,
   getGovernanceContract,
+  getCommunityGovernanceContract,
   getOldMasterchefContract,
   getAdminContract,
   getSaleContract,
@@ -163,6 +164,11 @@ export const useSpyNFTMarketplace = () => {
 export const useGovernanceContract = () => {
   const { library } = useActiveWeb3React()
   return useMemo(() => getGovernanceContract(library.getSigner()), [library])
+}
+
+export const useCommunityGovernanceContract = () => {
+  const { library } = useActiveWeb3React()
+  return useMemo(() => getCommunityGovernanceContract(library.getSigner()), [library])
 }
 
 export const useSousChef = (id) => {

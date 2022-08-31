@@ -863,6 +863,7 @@ export interface State {
   lottery: LotteryState
   nftMarket: NftMarketState
   governance: SerializedGovernanceState
+  communityGovernance: SerializedGovernanceState
   launchpad: SerializedLaunchpadState
   swapPool: SerializedSwapPoolState
 }

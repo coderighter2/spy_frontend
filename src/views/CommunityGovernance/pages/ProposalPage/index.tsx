@@ -91,7 +91,7 @@ const ProposalPage: React.FC<RouteComponentProps<{id: string}>> = ({
                         <>
                         <Flex style={{padding: "12px 0px"}}>
                             <Breadcrumbs mb="32px" separator={<ChevronRightIcon color="secondary" width="24px" />}>
-                            <Link to="/governance/core">
+                            <Link to="/governance/community">
                                 <Text color="secondary">{t('Governance')}</Text>
                             </Link>
                             <Flex>

@@ -183,13 +183,13 @@ const config: (t: ContextApi['t']) => ConfigMenuItemsType[] = (t) => [
   // },
   {
     label: '',
-    href: '/governance/proposals',
+    href: '/governance/core',
     icon: 'More',
     hideSubNav: true,
     items: [
       {
         label: t('Governance'),
-        href: '/governance/proposals',
+        href: '/governance/core',
       },
       // {
       //   label: t('IFO'),

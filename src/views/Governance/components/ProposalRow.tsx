@@ -8,7 +8,7 @@ import useTheme from 'hooks/useTheme'
 import { useBlock } from 'state/block/hooks'
 import { BIG_ZERO } from 'utils/bigNumber'
 import { useGovernanceQuorum } from 'state/governance/hooks'
-import { ProposalData, ProposalStateGQ } from '../../types'
+import { ProposalData, ProposalStateGQ } from '../types'
 
 
 const LinkWrapper = styled(Link)`
