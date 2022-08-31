@@ -16,7 +16,6 @@ export const ProposalStates: string[] = [
   "Active",
   "Canceled",
   "Defeated",
-  "Succeeded",
   "Queued",
   "Expired",
   "Executed"
@@ -27,7 +26,6 @@ export enum ProposalState {
   Active,
   Canceled,
   Defeated,
-  Succeeded,
   Queued,
   Expired,
   Executed

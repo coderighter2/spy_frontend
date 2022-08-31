@@ -45,8 +45,6 @@ const ProposalHeader: React.FC<ProposalHeaderProps> = ({name, proposal, votesCou
 
     const stateColor = useMemo(() => {
         switch(proposal.state) {
-            case ProposalState.Succeeded:
-                return theme.colors.success
             case ProposalState.Executed:
                 return theme.colors.success
             case ProposalState.Canceled:

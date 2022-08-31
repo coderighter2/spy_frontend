@@ -95,14 +95,14 @@ const ProposalHistory: React.FC<ProposalHeaderProps> = ({ proposalId, proposal, 
                     </Flex>
                 )}
 
-                {proposal && proposal.state === ProposalState.Succeeded && (
+                {/* {proposal && proposal.state === ProposalState.Succeeded && (
                     <Flex alignItems="center" my="8px">
                         <Flex flex="1" flexDirection="column">
                             <Text color="secondary" fontSize="14px">{ProposalStates[ProposalState.Succeeded]}</Text>
                             <Text fontSize="12px">{proposal.endTime > 0 ? format(new Date(proposal.endTime * 1000), 'MMMM dd yyyy hh:mm aa') : ''}</Text>
                         </Flex>
                     </Flex>
-                )}
+                )} */}
             </Flex>
         </Wrapper>
     )

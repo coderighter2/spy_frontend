@@ -108,7 +108,7 @@ const ProposalAdminAction: React.FC<ProposalActionProps> = ({proposalId, proposa
                 </Flex>
                 <Flex justifyContent="center">
                     <Flex paddingX="8px">
-                        <Button onClick={handleExecute} disabled={pendingTx || cancelingTx || queueingTx || proposal.state !== ProposalState.Queued || proposal.expiringTime >= new Date().getTime() / 1000}>
+                        <Button onClick={handleExecute} disabled={pendingTx || cancelingTx || queueingTx || proposal.canceled || proposal.executed || proposal.expiringTime < new Date().getTime() / 1000}>
                             { pendingTx ? (<Dots>{t('Executing')}</Dots>) : t('Execute')}
                         </Button>
                     </Flex>

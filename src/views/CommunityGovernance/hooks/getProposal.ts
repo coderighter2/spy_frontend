@@ -50,6 +50,8 @@ const useGetProposal = () => {
         canceled
       }, [state]] = await multicallv2(spyCommunityGovernorAbi, calls)
 
+      console.log('state', state)
+
       if (proposer === AddressZero) {
         return null
       }
