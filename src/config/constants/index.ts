@@ -64,7 +64,7 @@ export const NetworkContextName = 'NETWORK'
 
 
 export const SALE_FINALIZE_DEADLINE = 86400 * 7
-export const LP_LOCK_TIMEOUT = 1672531200
+export const LP_LOCK_TIMEOUT = 1664550000
 // default allowed slippage, in bips
 export const INITIAL_ALLOWED_SLIPPAGE = 50
 // 20 minutes, denominated in seconds

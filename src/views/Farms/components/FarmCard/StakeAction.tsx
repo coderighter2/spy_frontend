@@ -71,8 +71,8 @@ const StakeAction: React.FC<FarmCardActionsProps> = ({
       return lockUntil
     }
 
-    return new BigNumber(account.toLowerCase()).modulo(isOld ? 90 : 180).toNumber() * 86400 + lockUntil
-  }, [account, isOld, lockUntil])
+    return lockUntil
+  }, [account, lockUntil])
 
   const handleStake = async (amount: string) => {
     await onStake(amount)

@@ -108,7 +108,7 @@ const fetchFarm = async (farm: SerializedFarm, isOld = false): Promise<PublicFar
     multiplier: `${allocPoint.div(100).toString()}X`,
     harvestInterval: harvestInterval.toJSON(),
     spyPerBlock: spyPerBlockBN.toJSON(),
-    lockUntil: isOld ? 1663329600 : info ? new BigNumber(info.lpLockUntil?._hex).toNumber() : 1672574400
+    lockUntil: isOld ? 1664550000 : info ? new BigNumber(info.lpLockUntil?._hex).toNumber() : 1664550000
   }
 }
 

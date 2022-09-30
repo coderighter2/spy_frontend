@@ -149,7 +149,7 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({ onConfirm, onDismiss, tok
         <PercentageButton onClick={() => handleChangePercent(75)}>75%</PercentageButton>
         <PercentageButton onClick={() => handleChangePercent(100)}>{t('Max')}</PercentageButton>
       </Flex>
-      <Text color="secondary" fontSize="12px" textAlign="center" mt="8px">{t('LP is locked till Jan 1st, 2023')}</Text>
+      <Text color="secondary" fontSize="12px" textAlign="center" mt="8px">{t('LP is locked till Sep 30, 2022')}</Text>
       <ModalActions>
         <Button variant="secondary" onClick={onDismiss} width="100%" disabled={pendingTx}>
           {t('Cancel')}
